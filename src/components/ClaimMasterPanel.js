@@ -22,6 +22,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
+import ProgramPicker from "../pickers/ProgramPicker";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -411,6 +412,20 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.admin}
                 onChange={(v, s) => this.updateAttribute("admin", v)}
                 readOnly
+                required
+              />
+            </Grid>
+          }
+        />
+        <ControlledField
+          module="claim"
+          id="Claim.program"
+          field={
+            <Grid item xs={4} className={classes.item}>
+              <ProgramPicker
+                value={edited.program}
+                onChange={(v, s) => this.updateAttribute("program", v)}
+                readOnl={false}
                 required
               />
             </Grid>
