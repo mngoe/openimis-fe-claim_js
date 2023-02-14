@@ -22,7 +22,6 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
-import ProgramPicker from "../pickers/ProgramPicker";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -422,11 +421,14 @@ class ClaimMasterPanel extends FormPanel {
           id="Claim.program"
           field={
             <Grid item xs={4} className={classes.item}>
-              <ProgramPicker
+              <PublishedComponent
+                pubRef="program.ProgramPicker"
+                label="claim.ProgramPicker.label"
                 value={edited.program}
+                reset={reset}
+                readOnly={true}
                 onChange={(v, s) => this.updateAttribute("program", v)}
-                readOnl={false}
-                required
+                required={true}
               />
             </Grid>
           }

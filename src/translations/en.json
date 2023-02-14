@@ -7,7 +7,6 @@
   "claim.newClaim.adminAndHFRequired": "Please select Health Facility and Claim Administrator first",
   "claim.newClaim.tooltip": "Create new claim",
   "claim.ClaimAdminPicker.placeholder": "Search a Claim Administrator",
-  "claim.ProgramPicker.placeholder": "Select Program",
   "claim.ClaimAdminPicker.label": "Claim Administrator",
   "claim.ProgramPicker.label": "Claim Program",
   "claim.ClaimAdminPicker.null": "Any",

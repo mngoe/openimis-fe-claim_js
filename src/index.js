@@ -33,7 +33,6 @@ const DEFAULT_CONFIG = {
     { key: "claim.route.feedback", ref: ROUTE_CLAIM_FEEDBACK },
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
-    { key: "claim.ProgramPicker", ref: ProgramPicker },
     {
       key: "claim.ClaimAdminPicker.projection",
       ref: [
