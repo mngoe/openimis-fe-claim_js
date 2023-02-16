@@ -120,6 +120,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "status",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
+    "program {idProgram nameProgram validityDate}",
   ];
   if (withAttachmentsCount) {
     projections.push("attachmentsCount");
