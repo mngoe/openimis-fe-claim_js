@@ -187,6 +187,7 @@ export function formatClaimGQL(mm, claim) {
     dateClaimed: "${claim.dateClaimed}"
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     visitType: "${claim.visitType}"
+    program: "${claim.program}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
     ${!!claim.explanation ? `explanation: "${formatGQLString(claim.explanation)}"` : ""}
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}

@@ -416,6 +416,23 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
+        <ControlledField
+          module="claim"
+          id="Claim.program"
+          field={
+            <Grid item xs={4} className={classes.item}>
+              <PublishedComponent
+                pubRef="program.ProgramPicker"
+                label="claim.ProgramPicker.label"
+                value={edited.program}
+                reset={reset}
+                readOnly={true}
+                onChange={(v, s) => this.updateAttribute("program", v)}
+                required={true}
+              />
+            </Grid>
+          }
+        />
         {!forFeedback && (
           <Fragment>
             <ControlledField

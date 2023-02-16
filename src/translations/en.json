@@ -8,6 +8,7 @@
   "claim.newClaim.tooltip": "Create new claim",
   "claim.ClaimAdminPicker.placeholder": "Search a Claim Administrator",
   "claim.ClaimAdminPicker.label": "Claim Administrator",
+  "claim.ProgramPicker.label": "Claim Program",
   "claim.ClaimAdminPicker.null": "Any",
   "claim.ClaimOfficerPicker.label": "Enrolment Officer",
   "claim.ClaimOfficerPicker.placeholder": "Search an Enrolment Officer",
