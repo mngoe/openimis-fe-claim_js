@@ -423,10 +423,11 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={4} className={classes.item}>
               <PublishedComponent
                 pubRef="program.ProgramPicker"
+                name="program"
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
-                readOnly={false}
+                readOnly={ro}
                 onChange={(v, s) => this.updateAttribute("program", v)}
                 required={true}
               />
