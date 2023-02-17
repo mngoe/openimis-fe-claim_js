@@ -173,6 +173,7 @@ class ClaimForm extends Component {
       }
       if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
+    console.log(this.state.claim);
     return true;
   };
 
