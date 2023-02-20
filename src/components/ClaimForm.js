@@ -188,6 +188,7 @@ class ClaimForm extends Component {
 
   onEditedChanged = (claim) => {
     this.setState({ claim, newClaim: false });
+    console.log(claim);
   };
 
   _save = (claim) => {

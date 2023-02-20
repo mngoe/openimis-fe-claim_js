@@ -12,6 +12,7 @@ import {
   Contributions,
   AmountInput,
   TextInput,
+  decodeId
 } from "@openimis/fe-core";
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
@@ -422,8 +423,10 @@ class ClaimMasterPanel extends FormPanel {
           field={
             <Grid item xs={4} className={classes.item}>
               <PublishedComponent
-                pubRef="program.ProgramPicker"
+                pubRef="claim.ClaimProgramPicker"
                 name="program"
+                insureeId={ edited?.insuree? decodeId(edited.insuree.id): 0}
+                visitDateFrom={ edited?.dateFrom? edited.dateFrom:""}
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
