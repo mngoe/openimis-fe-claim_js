@@ -5,6 +5,7 @@ import ReviewsPage from "./pages/ReviewsPage";
 import ReviewPage from "./pages/ReviewPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
+import ClaimProgramPicker from "./pickers/ClaimProgramPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
@@ -32,6 +33,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.route.feedback", ref: ROUTE_CLAIM_FEEDBACK },
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
+    { key: "claim.ClaimProgramPicker", ref: ClaimProgramPicker},
     {
       key: "claim.ClaimAdminPicker.projection",
       ref: [
