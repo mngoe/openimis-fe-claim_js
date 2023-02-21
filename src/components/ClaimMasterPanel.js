@@ -84,7 +84,7 @@ class ClaimMasterPanel extends FormPanel {
   );
 
   render() {
-    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback } = this.props;
+    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, user_programs } = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -248,6 +248,25 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
+        {!!user_programs.include('VIH') && (
+          <ControlledField
+            module="claim"
+            id="Claim.tarfCode"
+            field={
+              <Grid item xs={2} className={classes.item}>
+                <TextInput
+                  module="claim"
+                  label="tarfCode"
+                  required
+                  value={edited.tarfCode}
+                  reset={reset}
+                  onChange={(v) => this.updateAttribute("tarfCode", v)}
+                  readOnly={ro}
+                />
+              </Grid>
+            }
+          />
+        )}
         <ControlledField
           module="claim"
           id="Claim.guarantee"
@@ -425,8 +444,8 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef="claim.ClaimProgramPicker"
                 name="program"
-                insureeId={ edited?.insuree? decodeId(edited.insuree.id): 0}
-                visitDateFrom={ edited?.dateFrom? edited.dateFrom:""}
+                insureeId={edited?.insuree ? decodeId(edited.insuree.id) : 0}
+                visitDateFrom={edited?.dateFrom ? edited.dateFrom : ""}
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
@@ -495,6 +514,7 @@ const mapStateToProps = (state, props) => ({
   fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
   claimCodeCount: state.claim.claimCodeCount,
   errorClaimCodeCount: state.claim.errorClaimCodeCount,
+  user_programs: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.programs : [],
 });
 
 const mapDispatchToProps = (dispatch) => {
