@@ -18,7 +18,8 @@ const ClaimProgramPicker = (props) => {
     extraFragment,
     hfFilter,
     visitDateFrom,
-    insureeId
+    insureeId,
+    hfId
   } = props;
 
   const modulesManager = useModulesManager();
@@ -26,8 +27,8 @@ const ClaimProgramPicker = (props) => {
   const [searchString, setSearchString] = useState("");
   const { isLoading, data, error } = useGraphqlQuery(
     `
-      query ProgramPicker($visitDateFrom: Date, $insureeId: Int) {
-          program(visitDateFrom: $visitDateFrom,  insureeId: $insureeId, first: 10) {
+      query ProgramPicker($hfId: Int, $visitDateFrom: Date, $insureeId: Int) {
+          program(hfId: $hfId, visitDateFrom: $visitDateFrom,  insureeId: $insureeId, first: 10) {
               edges {
                   node {
                       id
@@ -40,7 +41,7 @@ const ClaimProgramPicker = (props) => {
             }
         }
         `,
-        { visitDateFrom: visitDateFrom, insureeId: insureeId },
+        { hfId: hfId, visitDateFrom: visitDateFrom, insureeId: insureeId },
   );
 
   return (

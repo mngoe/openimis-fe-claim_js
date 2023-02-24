@@ -425,6 +425,7 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef="claim.ClaimProgramPicker"
                 name="program"
+                hfId={edited?.healthFacility? decodeId(edited.healthFacility.id): 0}
                 insureeId={ edited?.insuree? decodeId(edited.insuree.id): 0}
                 visitDateFrom={ edited?.dateFrom? edited.dateFrom:""}
                 label={formatMessage(intl, "claim", "programPicker.label")}
