@@ -15,6 +15,7 @@ import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
+import messages_fr from "./translations/fr.json";
 import reducer from "./reducer";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
@@ -24,7 +25,7 @@ const ROUTE_CLAIM_REVIEW = "claim/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
 
 const DEFAULT_CONFIG = {
-  "translations": [{ key: "en", messages: messages_en }],
+  "translations": [{ key: "en", messages: messages_en }, { key: "fr", messages: messages_fr }],
   "reducers": [{ key: "claim", reducer }],
   "refs": [
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
