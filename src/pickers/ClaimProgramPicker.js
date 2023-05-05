@@ -34,7 +34,7 @@ const ClaimProgramPicker = (props) => {
                       id
                       idProgram
                       nameProgram
-                      validityDate
+                      validityDateFrom
                       ${extraFragment ?? ""}
                     }
                 }

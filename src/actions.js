@@ -248,7 +248,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd2" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
-    "program {id idProgram nameProgram validityDate}",
+    "program {id idProgram nameProgram validityDateFrom}",
     "jsonExt",
   ];
   if (!!forFeedback) {
