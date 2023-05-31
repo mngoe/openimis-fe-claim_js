@@ -26,10 +26,10 @@ import _ from "lodash";
 
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
-import ClaimChildPanelReview from "./ClaimChildPanelReview";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_PRINT } from "../constants";
+import ClaimChildPanelReview from "./ClaimChildPanelReview";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
 
@@ -42,21 +42,13 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    if(!this.props.forReview){
-      return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
-    }else{
-      return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
-    }
+    return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    if(!this.props.forReview){
-      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
-    }else{
-      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
-    }
+    return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
   }
 }
 
@@ -149,15 +141,15 @@ class ClaimForm extends Component {
     if (!d[type]) return false;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
-    if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
     return true;
   };
 
   checkQtySubService = () => {
-
+    
   }
 
   canSave = (forFeedback) => {
+    console.log(this.state);
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -168,28 +160,20 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-
-    if (this.state.claim.services !== undefined) {
-      if(this.props.forReview){
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
-          return false;
-        }
-      }else{
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
-          return false;
-        }
-      }
-      
-    }else{
-      return false;
-    }
-
     if (!forFeedback) {
       //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
       //if there are items or services, they have to be complete
+      let items = [];
+      if (!!this.state.claim.items) {
+        items = [...this.state.claim.items];
+        if (!this.props.forReview) items.pop();
+        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item")).length) {
+          return false;
+        }
+      }
       let services = [];
       if (!!this.state.claim.services) {
         services = [...this.state.claim.services];
@@ -198,7 +182,7 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
     return true;
   };
@@ -312,7 +296,7 @@ class ClaimForm extends Component {
               forReview={forReview}
               forFeedback={forFeedback}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               onEditedChanged={this.onEditedChanged}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} />
