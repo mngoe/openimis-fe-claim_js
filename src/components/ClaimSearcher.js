@@ -71,7 +71,7 @@ class ClaimSearcher extends Component {
       prms.push(`orderBy: ["dateClaimed", "?"]`);
       this.setState({ random });
     } else {
-      prms.push(`orderBy: ["${state.orderBy}"]`);
+      //prms.push(`orderBy: ["${state.orderBy}"]`);
       this.setState({ random: null });
     }
     if (!forced.length && !random) {
