@@ -154,25 +154,6 @@ class ClaimMasterPanel extends FormPanel {
         />
         <ControlledField
           module="claim"
-          id="Claim.tarvCode"
-          field={
-            <Grid item xs={2} className={classes.item}>
-              <TextInput
-                module="claim"
-                label={formatMessage(intl, "claim", "tarvCode")}
-                value={edited?.insuree?.tarvCode? edited.insuree.tarvCode:""}
-                reset={reset}
-                onChange={this.debounceUpdateCode}
-                readOnly={true}
-                inputProps={{
-                  "maxLength": this.codeMaxLength,
-                }}
-              />
-            </Grid>
-          }
-        />
-        <ControlledField
-          module="claim"
           id="Claim.visitDateFrom"
           field={
             <Grid item xs={2} className={classes.item}>
