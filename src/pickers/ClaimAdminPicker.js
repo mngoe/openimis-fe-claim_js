@@ -45,6 +45,7 @@ const ClaimAdminPicker = (props) => {
                                 code name id uuid
                               }
                           }
+                          program {edges{node{idProgram nameProgram}}}
                       }
                       ${extraFragment ?? ""}
                     }
