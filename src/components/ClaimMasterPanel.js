@@ -149,7 +149,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.insuree"
           field={
-            <Grid item xs={3} className={classes.item}>
+            <Grid item xs={4} className={classes.item}>
               <PublishedComponent
                 pubRef={this.insureePicker}
                 value={edited.insuree}
