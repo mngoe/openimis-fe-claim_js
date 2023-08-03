@@ -315,7 +315,7 @@ class ClaimForm extends Component {
               forReview={forReview}
               forFeedback={forFeedback}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               onEditedChanged={this.onEditedChanged}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} />
