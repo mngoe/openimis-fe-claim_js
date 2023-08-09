@@ -49,12 +49,12 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
-    this.claimPrefix =props.modulesManager.getConf(
+    this.claimPrefix = props.modulesManager.getConf(
       "fe-claim",
       "claimPrex",
       0,
     );
-    this.hideSecDiagnos =props.modulesManager.getConf(
+    this.hideSecDiagnos = props.modulesManager.getConf(
       "fe-claim",
       "hideSecDiagnos",
       0,
@@ -79,8 +79,8 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
-    if(this.claimPrefix==1){
-      if(this.state.data?.insuree?.chfId != undefined){
+    if (this.claimPrefix == 1) {
+      if (this.state.data?.insuree?.chfId != undefined) {
         v = this.state.data?.insuree?.chfId + v
       }
     }
@@ -113,11 +113,20 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    if(edited.code && this.claimPrefix){
+    if (edited.code && this.claimPrefix) {
       edited.code = edited.code.replace(edited.insuree?.chfId, '');
     }
 
     let ro = readOnly || !!forReview || !!forFeedback;
+
+    let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
+    let policyNumber;
+    
+    insureePolicies.forEach(function (policy) {
+      if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
+        policyNumber = policy.policy.policyNumber;
+      }
+    })
 
     return (
       <Grid container>
@@ -252,7 +261,7 @@ class ClaimMasterPanel extends FormPanel {
           id="Claim.codechfId"
           field={
             <Grid item xs={1} className={classes.item}>
-               <TextInput
+              <TextInput
                 module="claim"
                 label="codechfId"
                 required
@@ -284,7 +293,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        
+
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -443,9 +452,9 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef="claim.ClaimProgramPicker"
                 name="program"
-                hfId={edited?.healthFacility? decodeId(edited.healthFacility.id): 0}
-                insureeId={ edited?.insuree? decodeId(edited.insuree.id): 0}
-                visitDateFrom={ edited?.dateFrom? edited.dateFrom:""}
+                hfId={edited?.healthFacility ? decodeId(edited.healthFacility.id) : 0}
+                insureeId={edited?.insuree ? decodeId(edited.insuree.id) : 0}
+                visitDateFrom={edited?.dateFrom ? edited.dateFrom : ""}
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
@@ -456,6 +465,25 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
+        {policyNumber != undefined && policyNumber != null && (
+          <ControlledField
+            module="policy"
+            id="Claim.policyNumber"
+            field={
+              <Grid item xs={2} className={classes.item}>
+                <TextInput
+                  module="policy"
+                  label="policy.PolicyNumber"
+                  name="policyNumber"
+                  value={policyNumber}
+                  readOnly={true}
+                  reset={reset}
+                />
+              </Grid>
+            }
+          />
+        )
+        }
         {!forFeedback && (
           <Fragment>
             <ControlledField
