@@ -53,9 +53,9 @@ class ClaimServicesPanel extends Component {
 class ClaimItemsPanel extends Component {
   render() {
     if(!this.props.forReview){
-      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPickerFilter" />;
     }else{
-      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
+      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPickerFilter" />;
     }
   }
 }
