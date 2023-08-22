@@ -234,7 +234,6 @@ class ClaimChildPanel extends Component {
       `claim.edit.items.appPrice`,
     ];
     
-    //let hfPrograms = edited.healthFacility.program?.edges.map((p) => p.node);
 
     let itemFormatters = [
       (i, idx) => (
@@ -244,7 +243,7 @@ class ClaimChildPanel extends Component {
             pubRef={picker}
             withLabel={false}
             value={i[type]}
-            hfPrograms={edited.healthFacility.program?.edges.map((p) => p.node)}
+            claimProgram={edited.program?.idProgram}
             fullWidth
             pricelistUuid={edited.healthFacility[`${this.props.type}sPricelist`].uuid}
             date={edited.dateClaimed}
