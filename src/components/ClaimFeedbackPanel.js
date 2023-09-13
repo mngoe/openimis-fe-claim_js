@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from "react-intl";
 import _ from "lodash";
-import { Grid, Typography, Divider, Slider, Paper } from "@material-ui/core";
+import { Grid, Typography, Divider, Slider, Paper, TextField } from "@material-ui/core";
 import {
   FormattedMessage,
   PublishedComponent,
@@ -27,7 +27,6 @@ const styles = (theme) => ({
     width: "480px",
   },
 });
-
 class ClaimFeedbackPanel extends Component {
   constructor(props) {
     super(props);
@@ -111,8 +110,42 @@ class ClaimFeedbackPanel extends Component {
     </Grid>
   );
 
+  _textinputs = (f) => (
+    <Grid container alignItems="center" justify="center" direction="column">
+      <Grid item>
+        <FormattedMessage module="claim" id={`Feedback.${f}`} />
+      </Grid>
+      <Grid>
+        {f == "age" ?
+          <TextField
+            className={this.props.classes.tristate}
+            value={this.props.edited.feedback[f]}
+            disabled={!!this.props.readOnly}
+            defaultValue={0}
+            valueLabelDisplay="off"
+            marks={this.tristateMarks}
+            onChange={(e, v) => this._onChange(f, v)}
+          />
+          :
+          <TextField
+            multiline
+            className={this.props.classes.tristate}
+            value={this.props.edited.feedback[f]}
+            disabled={!!this.props.readOnly}
+            defaultValue=""
+            valueLabelDisplay="off"
+            marks={this.tristateMarks}
+            onChange={(e, v) => this._onChange(f, v)}
+          />
+        }
+
+      </Grid>
+    </Grid>
+  )
+
   render() {
     const { classes, edited, readOnly = false } = this.props;
+    const nameProgram = this.props?.edited?.program?.nameProgram;
     if (!edited.feedback) {
       edited.feedback = {};
     }
@@ -200,46 +233,105 @@ class ClaimFeedbackPanel extends Component {
                   </Grid>
                 }
               />
-              <Grid item xs={3} />
+              {nameProgram == "VIH" ?
+                <Grid container alignItems="center" justify="center">
+                  <ControlledField
+                    module="claim"
+                    id="Feedback.sex"
+                    field={
+                      <Grid item xs={6} className={classes.item}>
+                        <PublishedComponent
+                          pubRef="claim.FeedbackSexPicker"
+                          readOnly={readOnly}
+                          value={edited?.feedback?.sexe}
+                          onChange={(v, s) => this._onChange("sexe", null)}
+                        />
+                      </Grid>
+                    }
+                  />
+
+                  <ControlledField
+                    module="claim"
+                    id="Feedback.age"
+                    field={
+                      <Grid item xs={6} className={classes.item}>
+                        {this._textinputs("age")}
+                      </Grid>
+                    }
+                  />
+
+                  <ControlledField
+                    module="claim"
+                    id="Feedback.policyNational"
+                    field={
+                      <Grid item xs={6} className={classes.item}>
+                        {this._tristate("policyNational")}
+                      </Grid>
+                    }
+                  />
+
+                  <ControlledField
+                    module="claim"
+                    id="Feedback.pregnant"
+                    field={
+                      <Grid item xs={6} className={classes.item}>
+                        {this._tristate("pregnant")}
+                      </Grid>
+                    }
+                  />
+
+                  <ControlledField
+                    module="claim"
+                    id="Feedback.meansInformation"
+                    field={
+                      <Grid item xs={10} className={classes.item}>
+                        {this._textinputs("meansInformation")}
+                      </Grid>
+                    }
+                  />
+                </Grid>
+                : null
+            }
+                  <Grid item xs={3} />
+                </Grid>
+          </Grid>
+            <Grid item xs={12} className={classes.item}>
+              <Divider />
             </Grid>
-          </Grid>
-          <Grid item xs={12} className={classes.item}>
-            <Divider />
-          </Grid>
-          <ControlledField
-            module="claim"
-            id="Feedback.overallAssesment"
-            field={
-              <Fragment>
-                <Grid item xs={2} />
-                <Grid item xs={8} className={classes.item}>
-                  <Grid container alignItems="center" justify="center" direction="column">
-                    <Grid item className={classes.assessmentContainer}>
-                      <Typography gutterBottom>
-                        <FormattedMessage module="claim" id="Feedback.overallAssesment" />
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Slider
-                        className={classes.assessment}
-                        min={-1}
-                        max={!!this.marks ? this.marks.length - 2 : -1}
-                        step={1}
-                        disabled={readOnly}
-                        value={this._mapAssessmentValue(edited.feedback.asessment)}
-                        defaultValue={-1}
-                        valueLabelDisplay="off"
-                        marks={this.marks}
-                        onChange={(e, v) => this._onChange("asessment", v)}
-                      />
+            <ControlledField
+              module="claim"
+              id="Feedback.overallAssesment"
+              field={
+                <Fragment>
+                  <Grid item xs={2} />
+                  <Grid item xs={8} className={classes.item}>
+                    <Grid container alignItems="center" justify="center" direction="column">
+                      <Grid item className={classes.assessmentContainer}>
+                        <Typography gutterBottom>
+                          <FormattedMessage module="claim" id="Feedback.overallAssesment" />
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Slider
+                          className={classes.assessment}
+                          min={-1}
+                          max={!!this.marks ? this.marks.length - 2 : -1}
+                          step={1}
+                          disabled={readOnly}
+                          value={this._mapAssessmentValue(edited.feedback.asessment)}
+                          defaultValue={-1}
+                          valueLabelDisplay="off"
+                          marks={this.marks}
+                          onChange={(e, v) => this._onChange("asessment", v)}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-              </Fragment>
-            }
-          />
-          <Contributions contributionKey={CLAIM_FEEDBACK_CONTRIBUTION_KEY} />
-        </Grid>
+                </Fragment>
+              }
+            />
+            <Contributions contributionKey={CLAIM_FEEDBACK_CONTRIBUTION_KEY} />
+          </Grid>
       </Paper>
     );
   }

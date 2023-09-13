@@ -1,3 +1,15 @@
 {
-    "claim.programPicker.label": "Programme de la prestation"
+    "claim.programPicker.label": "Programme de la prestation",
+    "claim.Feedback.sex": "Sexe",
+    "claim.Feedback.age": "Quel age avez vous",
+    "claim.Feedback.pregnant": "Êtes vous enceinte ?",
+    "claim.Feedback.policyNational": "Êtes vous au courant de la politique nationale sur la gratuité des services de lutte contre le VIH/SIDA",
+    "claim.FeedbackPolicyNational": "Êtes vous au courant de la politique nationale sur la gratuité des services de lutte contre le VIH/SIDA",
+    "claim.Feedback.meansInformation": "Par quel(s) moyen(s) avez vous été informés ",
+    "claim.Feedback.payment": "Combien avez vous payer ",
+    "claim.feedbackSex": "Sexe",
+    "claim.feedbackSex.null": " ",
+    "claim.feedbackSex.Masculin": "Masculin",
+    "claim.feedbackSex.Feminin": "Feminin",
+    "claim.feedbackAge":"Age"
 }
