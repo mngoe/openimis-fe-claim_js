@@ -10,6 +10,6 @@
     "claim.feedbackSex": "Sexe",
     "claim.feedbackSex.null": " ",
     "claim.feedbackSex.Masculin": "Masculin",
-    "claim.feedbackSex.Feminin": "Feminin",
-    "claim.feedbackAge":"Age"
+    "claim.feedbackSex.Feminin": "Feminin"
+
 }
