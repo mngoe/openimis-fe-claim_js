@@ -223,7 +223,7 @@ class ClaimForm extends Component {
 
   changeProgram = () => {
     //console.log(this.state.claim);
-    if (!!this.state.claim.services) {
+    if (!!this.state.claim.services || !!this.state.claim.items) {
       this.setState({ resetServices: this.state.reset + 1 });
     }
   }
