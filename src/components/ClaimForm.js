@@ -181,7 +181,7 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      
+
     }else{
       return false;
     }
@@ -202,10 +202,12 @@ class ClaimForm extends Component {
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
-    console.log(this.state.claim);
     return true;
   };
-
+  NAME_PROGRAM = {
+    Cheque_Sante : "Cheque Santé",
+    Vih : "VIH",
+  }
   reload = () => {
     this.props.fetchClaim(
       this.props.modulesManager,
@@ -217,7 +219,6 @@ class ClaimForm extends Component {
 
   onEditedChanged = (claim) => {
     this.setState({ claim, newClaim: false });
-    console.log(claim);
   };
 
   _save = (claim) => {
@@ -251,6 +252,7 @@ class ClaimForm extends Component {
       forFeedback = false,
     } = this.props;
     const { claim, claim_uuid, lockNew } = this.state;
+    const nameProgram = claim?.program?.nameProgram
     let readOnly =
       lockNew ||
       (!forReview && !forFeedback && claim.status !== 2) ||
@@ -316,7 +318,7 @@ class ClaimForm extends Component {
               forReview={forReview}
               forFeedback={forFeedback}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : nameProgram == this.NAME_PROGRAM.Cheque_Sante ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               onEditedChanged={this.onEditedChanged}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} />
