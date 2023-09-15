@@ -42,9 +42,9 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    if(!this.props.forReview){
+    if (!this.props.forReview) {
       return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePickerFilter" />;
-    }else{
+    } else {
       return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePickerFilter" />;
     }
   }
@@ -52,9 +52,9 @@ class ClaimServicesPanel extends Component {
 
 class ClaimItemsPanel extends Component {
   render() {
-    if(!this.props.forReview){
+    if (!this.props.forReview) {
       return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPickerFilter" />;
-    }else{
+    } else {
       return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPickerFilter" />;
     }
   }
@@ -64,6 +64,7 @@ class ClaimForm extends Component {
   state = {
     lockNew: false,
     reset: 0,
+    resetServices: 0,
     claim_uuid: null,
     claim: this._newClaim(),
     newClaim: true,
@@ -79,7 +80,7 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
-    this.claimPrefix =props.modulesManager.getConf(
+    this.claimPrefix = props.modulesManager.getConf(
       "fe-claim",
       "claimPrex",
       0,
@@ -172,17 +173,17 @@ class ClaimForm extends Component {
     if (!this.state.claim.icd) return false;
 
     if (this.state.claim.services !== undefined) {
-      if(this.props.forReview){
+      if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
-      }else{
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
+      } else {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
       }
-      
-    }else{
+
+    } else {
       return false;
     }
 
@@ -202,7 +203,7 @@ class ClaimForm extends Component {
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
-    console.log(this.state.claim);
+    //console.log(this.state.claim);
     return true;
   };
 
@@ -217,8 +218,15 @@ class ClaimForm extends Component {
 
   onEditedChanged = (claim) => {
     this.setState({ claim, newClaim: false });
-    console.log(claim);
+    //console.log(claim);
   };
+
+  changeProgram = () => {
+    //console.log(this.state.claim);
+    if (!!this.state.claim.services) {
+      this.setState({ resetServices: this.state.reset + 1 });
+    }
+  }
 
   _save = (claim) => {
     this.setState(
@@ -316,6 +324,8 @@ class ClaimForm extends Component {
               forReview={forReview}
               forFeedback={forFeedback}
               HeadPanel={ClaimMasterPanel}
+              changeProgram={this.changeProgram}
+              resetServices={this.state.resetServices}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               onEditedChanged={this.onEditedChanged}
             />
