@@ -429,7 +429,7 @@ export function deliverFeedback(claim, clientMutationLabel) {
       : ""
     }
       ${feedback.asessment !== undefined && feedback.asessment !== null ? `asessment: ${feedback.asessment}` : ""}
-      ${!!feedback.sexe ? `sexe: ${feedback.sexe}` : "" }
+      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : "" }
       ${!!feedback.age ? `age: ${feedback.age}` : ""}
       ${feedback.policyNational !== undefined && feedback.policyNational !== null
         ? `policyNational: ${feedback.policyNational}`
@@ -439,7 +439,7 @@ export function deliverFeedback(claim, clientMutationLabel) {
         ? `pregnant: ${feedback.pregnant}`
         : ""
       }
-      ${!!feedback.meansInformation ? `meansInformation: ${feedback.meansInformation}` : ""}
+      ${!!feedback.meansInformation ? `meansInformation: "${feedback.meansInformation}"` : ""}
     }
   `;
   let mutation = formatMutation("deliverClaimFeedback", feedbackGQL, clientMutationLabel);
