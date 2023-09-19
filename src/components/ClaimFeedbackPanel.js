@@ -244,7 +244,7 @@ class ClaimFeedbackPanel extends Component {
                           pubRef="claim.FeedbackSexPicker"
                           readOnly={readOnly}
                           value={edited?.feedback?.sexe}
-                          onChange={(v, s) => this._onChange("sexe", null)}
+                          onChange={(v, s) => this._onChange("sexe", v)}
                         />
                       </Grid>
                     }
