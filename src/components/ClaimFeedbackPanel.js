@@ -42,6 +42,9 @@ class ClaimFeedbackPanel extends Component {
         label: formatMessage(props.intl, "claim", `Feedback.OverallAssesment.${value}`),
       };
     });
+    this.state = {
+      age : ""
+    }
   }
 
   _onChange = (attr, v) => {
@@ -64,6 +67,15 @@ class ClaimFeedbackPanel extends Component {
     }
   };
 
+  _onTextInputsChange = (e) =>{
+ 
+    let age = (e.target.validity.valid) ? e.target.value : this.state[e.target.name]
+   
+    this.setState({[e.target.name] : age })
+    let agefinal = this.state.age
+    this.props.edited.feedback[e.target.name] = age;
+  }
+
   _mapTristateValue = (v) => {
     switch (v) {
       case null:
@@ -76,7 +88,7 @@ class ClaimFeedbackPanel extends Component {
         return 1;
     }
   };
-
+  
   _mapAssessmentValue = (v) => {
     switch (v) {
       case null:
@@ -116,16 +128,20 @@ class ClaimFeedbackPanel extends Component {
         <FormattedMessage module="claim" id={`Feedback.${f}`} />
       </Grid>
       <Grid>
-        {f == "age" ?
+        {f == "age" ?(
           <TextField
             className={this.props.classes.tristate}
-            value={this.props.edited.feedback[f]}
+            value={this.state.age}
+            inputProps=
+            {{ inputmode: 'numeric' , pattern:"[0-9]*"}}
+            pattern="[0-9]*"
+            name="age"
             disabled={!!this.props.readOnly}
             defaultValue={0}
             valueLabelDisplay="off"
             marks={this.tristateMarks}
-            onChange={(e, v) => this._onChange(f, v)}
-          />
+            onChange={this._onTextInputsChange}
+          />)
           :
           <TextField
             multiline
@@ -135,12 +151,13 @@ class ClaimFeedbackPanel extends Component {
             defaultValue=""
             valueLabelDisplay="off"
             marks={this.tristateMarks}
-            onChange={(e, v) => this._onChange(f, v)}
+            onChange={(e, v) => this._onChange(f, e.target.value)}
           />
         }
 
       </Grid>
     </Grid>
+   
   )
 
   render() {
