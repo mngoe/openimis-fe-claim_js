@@ -27,6 +27,8 @@ import {
 } from "../actions";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
+import PrescriberTypePicker from "../pickers/PrescriberTypePicker";
+import OtherTypePicker from "../pickers/OtherTypePicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
 
@@ -99,7 +101,7 @@ class ClaimMasterPanel extends FormPanel {
 
     return totalServices + totalItems;
   }
-  
+
   render() {
     const {
       intl,
@@ -128,6 +130,8 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     let ro = readOnly || !!forReview || !!forFeedback;
+    console.log("claim pannel ", edited)
+    console.log("state: ", this.state)
     return (
       <Grid container>
         <ControlledField
@@ -157,6 +161,36 @@ class ClaimMasterPanel extends FormPanel {
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
                 readOnly={ro}
                 required={true}
+              />
+            </Grid>
+          }
+        />
+        <ControlledField
+          module="insuree"
+          id="Insuree.age"
+          field={
+            <Grid item xs={2} className={classes.item}>
+              <TextInput
+                module="insuree"
+                label="age"
+                value={edited?.insuree?.age}
+                reset={reset}
+                readOnly={true}
+              />
+            </Grid>
+          }
+        />
+        <ControlledField
+          module="claim"
+          id="insuree.gender"
+          field={
+            <Grid item xs={2} className={classes.item}>
+              <TextInput
+                module="insuree"
+                label="gender"
+                value={edited?.insuree?.gender?.gender}
+                reset={reset}
+                readOnly={true}
               />
             </Grid>
           }
@@ -220,6 +254,23 @@ class ClaimMasterPanel extends FormPanel {
         />
         <ControlledField
           module="claim"
+          id="Claim.practicien"
+          field={
+            <Grid item xs={2} className={classes.item}>
+              <TextInput
+                module="claim"
+                label="practicien"
+                value={edited.practicien}
+                reset={reset}
+                onChange={(v) => this.updateAttribute("practicien", v)}
+                readOnly={ro}
+                required
+              />
+            </Grid>
+          }
+        />
+        <ControlledField
+          module="claim"
           id="Claim.visitType"
           field={
             <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
@@ -236,7 +287,24 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        {!forFeedback && (
+        {edited.visitType == "O" &&
+          <ControlledField
+            module="claim"
+            id="Claim.othertype"
+            field={
+              <Grid item xs={2} className={classes.item}>
+                <PublishedComponent
+                  pubRef="claim.OtherTypePicker"
+                  value={edited.othertype}
+                  reset={reset}
+                  onChange={(v, s) => this.updateAttribute("otherType", v)}
+                  readOnly={ro}
+                />
+              </Grid>
+            }
+          />
+        }
+        {!forFeedback && 
           <ControlledField
             module="claim"
             id="Claim.mainDiagnosis"
@@ -255,7 +323,7 @@ class ClaimMasterPanel extends FormPanel {
               </Grid>
             }
           />
-        )}
+        }
         {!!this.allowReferHF && <ControlledField
           module="claim"
           id="Claim.referHealthFacility"
@@ -264,17 +332,33 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef="location.HealthFacilityReferPicker"
                 label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
-                value={(edited.visitType === this.claimTypeReferSymbol ? edited.referFrom: edited.referTo) ?? this.EMPTY_STRING}
+                value={(edited.visitType === this.claimTypeReferSymbol ? edited.referFrom : edited.referTo) ?? this.EMPTY_STRING}
                 reset={reset}
                 readOnly={ro}
                 required={edited.visitType === this.claimTypeReferSymbol ? true : false}
-                filterOptions={(options)=>options?.filter((option)=>option.uuid !== userHealthFacilityFullPath?.uuid)}
+                filterOptions={(options) => options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)}
                 filterSelectedOptions={true}
                 onChange={(d) => this.updateAttribute("referHF", d)}
               />
             </Grid>
           }
         />}
+        <ControlledField
+          module="claim"
+          id="Claim.prescribertype"
+          field={
+            <Grid item xs={2} className={classes.item}>
+              <PublishedComponent
+                pubRef="claim.PrescriberTypePicker"
+                value={edited.prescriberType}
+                reset={reset}
+                onChange={(v, s) => this.updateAttribute("prescriberType", v)}
+                readOnly={ro}
+                required
+              />
+            </Grid>
+          }
+        />
         <ControlledField
           module="claim"
           id="Claim.code"
@@ -406,57 +490,8 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis2"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis2"
-                    label={formatMessage(intl, "claim", "secDiagnosis2")}
-                    value={edited.icd2}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd2", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis3"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis3"
-                    label={formatMessage(intl, "claim", "secDiagnosis3")}
-                    value={edited.icd3}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd3", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis4"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis4"
-                    label={formatMessage(intl, "claim", "secDiagnosis4")}
-                    value={edited.icd4}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd4", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
+
+
           </Fragment>
         )}
         <ControlledField

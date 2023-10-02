@@ -164,6 +164,9 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
+    if (!this.state.claim.prescriberType) return false;
+    if (!this.state.claim.practicien) return false;
+    if (this.state.claim.visitType === "R" && !this.state.claim.attachments) return false
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
@@ -234,6 +237,7 @@ class ClaimForm extends Component {
       forFeedback = false,
     } = this.props;
     const { claim, claim_uuid, lockNew } = this.state;
+    console.log("state form : ", this.state, this.claimTypeReferSymbol )
     let readOnly =
       lockNew ||
       (!forReview && !forFeedback && claim.status !== 2) ||
@@ -263,23 +267,23 @@ class ClaimForm extends Component {
     }
 
     const editingProps = {
-              edited_id: claim_uuid,
-              edited: this.state.claim,
-              reset: this.state.reset,
-              back: back,
-              forcedDirty: this.state.forcedDirty,
-              add: !!add && !this.state.newClaim ? this._add : null,
-              save: !!save ? this._save : null,
-              fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
-              fabAction: this._deliverReview,
-              fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
-              canSave: (e) => this.canSave(forFeedback),
-              reload: (claim_uuid || readOnly) && this.reload,
-              actions: actions,
-              readOnly: readOnly,
-              forReview: forReview,
-              forFeedback: forFeedback,
-              onEditedChanged: this.onEditedChanged,
+      edited_id: claim_uuid,
+      edited: this.state.claim,
+      reset: this.state.reset,
+      back: back,
+      forcedDirty: this.state.forcedDirty,
+      add: !!add && !this.state.newClaim ? this._add : null,
+      save: !!save ? this._save : null,
+      fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
+      fabAction: this._deliverReview,
+      fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
+      canSave: (e) => this.canSave(forFeedback),
+      reload: (claim_uuid || readOnly) && this.reload,
+      actions: actions,
+      readOnly: readOnly,
+      forReview: forReview,
+      forFeedback: forFeedback,
+      onEditedChanged: this.onEditedChanged,
     };
     return (
       <Fragment>
@@ -303,11 +307,11 @@ class ClaimForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel]}
               openDirty={save}
               {...editingProps}
             />
-            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps}/>
+            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
           </Fragment>
         )}
       </Fragment>

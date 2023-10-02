@@ -213,6 +213,9 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.icd3 ? `icd3Id: ${decodeId(claim.icd3.id)}` : ""}
     ${!!claim.icd4 ? `icd4Id: ${decodeId(claim.icd4.id)}` : ""}
     ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
+    practicien: ${claim.practicien}
+    prescriberType: ${claim.prescriberType}
+    ${!!claim.otherType ? `otherType: ${claim.otherType}`: ""}
     feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
     reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
@@ -224,16 +227,12 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
-    ${
-      !!claim.attachments && !!claim.attachments.length
-        ? `attachments: ${formatAttachments(mm, claim.attachments)}`
-        : ""
-    }
   `;
 }
 
 export function createClaim(mm, claim, clientMutationLabel) {
   let mutation = formatMutation("createClaim", formatClaimGQL(mm, claim), clientMutationLabel);
+  console.log('mutation :', mutation)
   var requestedDateTime = new Date();
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_CREATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
     clientMutationId: mutation.clientMutationId,
