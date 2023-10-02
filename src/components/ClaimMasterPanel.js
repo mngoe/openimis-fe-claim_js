@@ -99,7 +99,7 @@ class ClaimMasterPanel extends FormPanel {
 
     return totalServices + totalItems;
   }
-  
+
   render() {
     const {
       intl,
@@ -304,25 +304,6 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
-          module="claim"
-          id="Claim.guarantee"
-          field={
-            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
-              <TextInput
-                module="claim"
-                label="guaranteeId"
-                value={edited.guaranteeId}
-                reset={reset}
-                onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                readOnly={ro}
-                inputProps={{
-                  "maxLength": this.guaranteeIdMaxLength,
-                }}
-              />
-            </Grid>
-          }
-        />
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -401,57 +382,6 @@ class ClaimMasterPanel extends FormPanel {
                     value={edited.icd1}
                     reset={reset}
                     onChange={(v, s) => this.updateAttribute("icd1", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis2"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis2"
-                    label={formatMessage(intl, "claim", "secDiagnosis2")}
-                    value={edited.icd2}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd2", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis3"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis3"
-                    label={formatMessage(intl, "claim", "secDiagnosis3")}
-                    value={edited.icd3}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd3", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis4"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis4"
-                    label={formatMessage(intl, "claim", "secDiagnosis4")}
-                    value={edited.icd4}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd4", v)}
                     readOnly={ro}
                   />
                 </Grid>
