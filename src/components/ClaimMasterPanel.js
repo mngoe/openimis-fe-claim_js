@@ -130,8 +130,6 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     let ro = readOnly || !!forReview || !!forFeedback;
-    console.log("claim pannel ", edited)
-    console.log("state: ", this.state)
     return (
       <Grid container>
         <ControlledField

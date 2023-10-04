@@ -6,7 +6,7 @@ export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const APPROVAL_STATUS = [1, 2];
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
-export const PRESCRIBER_TYPE = ['Infirmier', 'Sage_femme', 'Technicien_de_santé', 'Médecin_Géneraliste', 'Médecin_Spécialisé', 'Dentiste'];
+export const PRESCRIBER_TYPE = [ 1, 2, 3, 4, 5, 6];
 export const OTHER_TYPE = ['Maladie', 'Maternité', 'Suivie_du_diabéte', 'Réanimation', 'AVP', 'Autre'];
 export const MODULE_NAME = "claim";
 
