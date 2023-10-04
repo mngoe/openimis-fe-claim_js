@@ -194,7 +194,7 @@ export function formatAttachments(mm, attachments) {
   ]`;
 }
 
-export function formatClaimGQL(mm, claim, props) {
+export function formatClaimGQL(mm, claim) {
   // claimTypeReferSymbol = props.modulesManager.getConf(
   //   "fe-claim",
   //   "claimForm.claimTypeReferSymbol",
