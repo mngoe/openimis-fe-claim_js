@@ -473,8 +473,6 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-
-
           </Fragment>
         )}
         <ControlledField
