@@ -195,11 +195,11 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
-  claimTypeReferSymbol = props.modulesManager.getConf(
-    "fe-claim",
-    "claimForm.claimTypeReferSymbol",
-    'R',
-  );
+  // claimTypeReferSymbol = props.modulesManager.getConf(
+  //   "fe-claim",
+  //   "claimForm.claimTypeReferSymbol",
+  //   'R',
+  // );
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -215,11 +215,10 @@ export function formatClaimGQL(mm, claim) {
     ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
     practicien: "${claim.practicien}"
     prescriberType: ${claim.prescriberType}
-    ${!!claim.otherType ? `otherType: ${claim.otherType}`: ""}
+    ${!!claim.otherType && claim.visitType == "O" ? `otherType: ${claim.otherType}`: ""}
     feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
     reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
-    ${claim.visitType === claimTypeReferSymbol ? `referFromId` : `referToId`}: ${decodeId(claim.referHF.id)}
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     visitType: "${claim.visitType}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
@@ -232,7 +231,7 @@ export function formatClaimGQL(mm, claim) {
 
 export function createClaim(mm, claim, clientMutationLabel) {
   let mutation = formatMutation("createClaim", formatClaimGQL(mm, claim), clientMutationLabel);
-  console.log('mutation :', mutation)
+  console.log('mutation :', formatClaimGQL(mm, claim))
   var requestedDateTime = new Date();
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_CREATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
     clientMutationId: mutation.clientMutationId,

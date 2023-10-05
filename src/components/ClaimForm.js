@@ -238,6 +238,7 @@ class ClaimForm extends Component {
       forFeedback = false,
     } = this.props;
     const { claim, claim_uuid, lockNew } = this.state;
+    console.log("claim = ", claim)
     let readOnly =
       lockNew ||
       (!forReview && !forFeedback && claim.status !== 2) ||
