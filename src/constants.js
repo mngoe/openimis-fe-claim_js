@@ -7,7 +7,7 @@ export const APPROVAL_STATUS = [1, 2];
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 export const PRESCRIBER_TYPE = [ 1, 2, 3, 4, 5, 6];
-export const OTHER_TYPE = [1, 2, 3, 4, 5, 6];
+export const VISIT_TYPES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 export const MODULE_NAME = "claim";
 
 export const RIGHT_CLAIM = 111000;

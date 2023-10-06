@@ -213,9 +213,7 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.icd3 ? `icd3Id: ${decodeId(claim.icd3.id)}` : ""}
     ${!!claim.icd4 ? `icd4Id: ${decodeId(claim.icd4.id)}` : ""}
     ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
-    practicien: "${claim.practicien}"
     prescriberType: ${claim.prescriberType}
-    ${!!claim.otherType && claim.visitType == "O" ? `otherType: ${claim.otherType}`: ""}
     feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
     reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"

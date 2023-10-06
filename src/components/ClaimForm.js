@@ -166,8 +166,7 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
     if (!this.state.claim.prescriberType) return false;
-    if (!this.state.claim.practicien) return false;
-    if (this.state.claim.visitType === "R" && !this.state.claim.attachments) return false
+    if (this.state.claim.visitType === 2 && !this.state.claim.attachments) return false
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;

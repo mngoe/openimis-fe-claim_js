@@ -12,7 +12,7 @@ import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
 import PrescriberTypePicker from "./pickers/PrescriberTypePicker";
-import OtherTypePicker from "./pickers/OtherTypePicker";
+import VisitTypePicker from "./pickers/VisitTypePicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
@@ -73,7 +73,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },
     { key: "claim.PrescriberTypePicker", ref: PrescriberTypePicker },
-    { key: "claim.OtherTypePicker", ref: OtherTypePicker },
+    { key: "claim.VisitTypePicker", ref: VisitTypePicker },
     { key: "claim.FeedbackStatusPicker.projection", ref: null },
     { key: "claim.RejectionReasonPicker", ref: RejectionReasonPicker },
     { key: "claim.RejectionReasonPicker.projection", ref: null },
