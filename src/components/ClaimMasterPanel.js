@@ -132,7 +132,7 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     let ro = readOnly || !!forReview || !!forFeedback;
-    let claimHideFields = [...this.claimHideFields];
+    let claimHideFields = this.claimHideFields;
     return (
       <Grid container>
         <ControlledField
@@ -306,7 +306,7 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         }
-        {!!claimHideFields && !claimHideFields.filter((f) => f === "guarantee") && (
+        {!!claimHideFields && !claimHideFields.filter((f) => f === "guarantee").length && (
           <ControlledField
             module="claim"
             id="Claim.guarantee"
@@ -410,7 +410,7 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis2") && (
+            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis2").length && (
               <ControlledField
                 module="claim"
                 id="Claim.secDiagnosis2"
@@ -429,7 +429,7 @@ class ClaimMasterPanel extends FormPanel {
                 }
               />
             )}
-            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis3") && (
+            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis3").length && (
               <ControlledField
                 module="claim"
                 id="Claim.secDiagnosis3"
@@ -448,7 +448,7 @@ class ClaimMasterPanel extends FormPanel {
                 }
               />
             )}
-            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis4") && (
+            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis4").length && (
               <ControlledField
                 module="claim"
                 id="Claim.secDiagnosis4"
