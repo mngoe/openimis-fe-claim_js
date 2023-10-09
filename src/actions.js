@@ -195,11 +195,11 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
-  claimTypeReferSymbol = props.modulesManager.getConf(
-    "fe-claim",
-    "claimForm.claimTypeReferSymbol",
-    'R',
-  );
+  // claimTypeReferSymbol = props.modulesManager.getConf(
+  //   "fe-claim",
+  //   "claimForm.claimTypeReferSymbol",
+  //   'R',
+  // );
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -213,10 +213,10 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.icd3 ? `icd3Id: ${decodeId(claim.icd3.id)}` : ""}
     ${!!claim.icd4 ? `icd4Id: ${decodeId(claim.icd4.id)}` : ""}
     ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
+    prescriberType: ${claim.prescriberType}
     feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
     reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
-    ${claim.visitType === claimTypeReferSymbol ? `referFromId` : `referToId`}: ${decodeId(claim.referHF.id)}
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     visitType: "${claim.visitType}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
@@ -224,16 +224,12 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
-    ${
-      !!claim.attachments && !!claim.attachments.length
-        ? `attachments: ${formatAttachments(mm, claim.attachments)}`
-        : ""
-    }
   `;
 }
 
 export function createClaim(mm, claim, clientMutationLabel) {
   let mutation = formatMutation("createClaim", formatClaimGQL(mm, claim), clientMutationLabel);
+  console.log('mutation :', formatClaimGQL(mm, claim))
   var requestedDateTime = new Date();
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_CREATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
     clientMutationId: mutation.clientMutationId,
