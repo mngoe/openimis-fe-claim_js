@@ -64,16 +64,28 @@ class ClaimMasterPanel extends FormPanel {
     this.allowReferHF = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.referHF",
-      true,
+      false,
     );
     this.claimTypeReferSymbol = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.claimTypeReferSymbol",
       'R',
     );
-    this.claimHideFields = props.modulesManager.getConf(
+    this.allowGuarantee = props.modulesManager.getConf(
       "fe-claim",
-      "claimForm.claimHideFields"
+      "claimForm.guarantee"
+    );
+    this.allowDiagnosis2 = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.secDiagnosis2"
+    );
+    this.allowDiagnosis2 = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.secDiagnosis3"
+    );
+    this.allowDiagnosis2 = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.secDiagnosis4"
     );
     this.EMPTY_STRING = ""
   }
@@ -132,7 +144,6 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     let ro = readOnly || !!forReview || !!forFeedback;
-    let claimHideFields = this.claimHideFields;
     return (
       <Grid container>
         <ControlledField
@@ -286,78 +297,6 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        {!forFeedback &&
-          <ControlledField
-            module="claim"
-            id="Claim.mainDiagnosis"
-            field={
-              <Grid item xs={3} className={classes.item}>
-                <PublishedComponent
-                  pubRef="medical.DiagnosisPicker"
-                  name="mainDiagnosis"
-                  label={formatMessage(intl, "claim", "mainDiagnosis")}
-                  value={edited.icd}
-                  reset={reset}
-                  onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro}
-                  required
-                />
-              </Grid>
-            }
-          />
-        }
-        {!!claimHideFields && !claimHideFields.filter((f) => f === "guarantee").length && (
-          <ControlledField
-            module="claim"
-            id="Claim.guarantee"
-            field={
-              <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
-                <TextInput
-                  module="claim"
-                  label="guaranteeId"
-                  value={edited.guaranteeId}
-                  reset={reset}
-                  onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                  readOnly={ro}
-                  inputProps={{
-                    "maxLength": this.guaranteeIdMaxLength,
-                  }}
-                />
-              </Grid>
-            }
-          />
-        )}
-        {!!forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.status"
-              field={
-                <Grid item xs={2} className={classes.item}>
-                  <ClaimStatusPicker readOnly={true} value={edited.status} />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.feedbackStatus"
-              field={
-                <Grid item xs={2} className={classes.item}>
-                  <FeedbackStatusPicker readOnly={true} value={edited.feedbackStatus} />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.reviewStatus"
-              field={
-                <Grid item xs={2} className={classes.item}>
-                  <ReviewStatusPicker readOnly={true} value={edited.reviewStatus} />
-                </Grid>
-              }
-            />
-          </Fragment>
-        )}
         {!forFeedback && (
           <ControlledField
             module="claim"
@@ -395,6 +334,24 @@ class ClaimMasterPanel extends FormPanel {
           <Fragment>
             <ControlledField
               module="claim"
+              id="Claim.mainDiagnosis"
+              field={
+                <Grid item xs={3} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="medical.DiagnosisPicker"
+                    name="mainDiagnosis"
+                    label={formatMessage(intl, "claim", "mainDiagnosis")}
+                    value={edited.icd}
+                    reset={reset}
+                    onChange={(v, s) => this.updateAttribute("icd", v)}
+                    readOnly={ro}
+                    required
+                  />
+                </Grid>
+              }
+            />
+            <ControlledField
+              module="claim"
               id="Claim.secDiagnosis1"
               field={
                 <Grid item xs={3} className={classes.item}>
@@ -410,26 +367,25 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis2").length && (
-              <ControlledField
-                module="claim"
-                id="Claim.secDiagnosis2"
-                field={
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="medical.DiagnosisPicker"
-                      name="secDiagnosis2"
-                      label={formatMessage(intl, "claim", "secDiagnosis2")}
-                      value={edited.icd2}
-                      reset={reset}
-                      onChange={(v, s) => this.updateAttribute("icd2", v)}
-                      readOnly={ro}
-                    />
-                  </Grid>
-                }
-              />
-            )}
-            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis3").length && (
+            {!!this.allowDiagnosis2 && <ControlledField
+              module="claim"
+              id="Claim.secDiagnosis2"
+              field={
+                <Grid item xs={3} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="medical.DiagnosisPicker"
+                    name="secDiagnosis2"
+                    label={formatMessage(intl, "claim", "secDiagnosis2")}
+                    value={edited.icd2}
+                    reset={reset}
+                    onChange={(v, s) => this.updateAttribute("icd2", v)}
+                    readOnly={ro}
+                  />
+                </Grid>
+              }
+            />
+            }
+            {!!this.allowDiagnosis3 && 
               <ControlledField
                 module="claim"
                 id="Claim.secDiagnosis3"
@@ -447,8 +403,8 @@ class ClaimMasterPanel extends FormPanel {
                   </Grid>
                 }
               />
-            )}
-            {!!claimHideFields && !claimHideFields.filter((f) => f === "secDiagnosis4").length && (
+            }
+            {!!this.allowDiagnosis4 && (
               <ControlledField
                 module="claim"
                 id="Claim.secDiagnosis4"
@@ -467,6 +423,57 @@ class ClaimMasterPanel extends FormPanel {
                 }
               />
             )}
+          </Fragment>
+        )}
+        {!!this.allowGuarantee && <ControlledField
+          module="claim"
+          id="Claim.guarantee"
+          field={
+            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
+              <TextInput
+                module="claim"
+                label="guaranteeId"
+                value={edited.guaranteeId}
+                reset={reset}
+                onChange={(v) => this.updateAttribute("guaranteeId", v)}
+                readOnly={ro}
+                inputProps={{
+                  "maxLength": this.guaranteeIdMaxLength,
+                }}
+              />
+            </Grid>
+          }
+        />
+        }
+        {!!forFeedback && (
+          <Fragment>
+            <ControlledField
+              module="claim"
+              id="Claim.status"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <ClaimStatusPicker readOnly={true} value={edited.status} />
+                </Grid>
+              }
+            />
+            <ControlledField
+              module="claim"
+              id="Claim.feedbackStatus"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <FeedbackStatusPicker readOnly={true} value={edited.feedbackStatus} />
+                </Grid>
+              }
+            />
+            <ControlledField
+              module="claim"
+              id="Claim.reviewStatus"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <ReviewStatusPicker readOnly={true} value={edited.reviewStatus} />
+                </Grid>
+              }
+            />
           </Fragment>
         )}
         <ControlledField
