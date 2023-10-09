@@ -79,11 +79,11 @@ class ClaimMasterPanel extends FormPanel {
       "fe-claim",
       "claimForm.secDiagnosis2"
     );
-    this.allowDiagnosis2 = props.modulesManager.getConf(
+    this.allowDiagnosis3 = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.secDiagnosis3"
     );
-    this.allowDiagnosis2 = props.modulesManager.getConf(
+    this.allowDiagnosis4 = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.secDiagnosis4"
     );
