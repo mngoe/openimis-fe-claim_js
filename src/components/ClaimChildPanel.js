@@ -293,6 +293,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
+              displayZero={true}
               value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == "F") {
@@ -345,6 +346,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={!!forReview || readOnly}
+                displayZero={true}
                 value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (i.service.packagetype == "F") {
