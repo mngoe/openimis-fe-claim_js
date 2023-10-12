@@ -178,6 +178,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.claimed",
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
+      "claimSummaries.prescriberType"
     ];
     if (this.claimAttachments) {
       result.push("claimSummaries.claimAttachments");
@@ -236,6 +237,7 @@ class ClaimSearcher extends Component {
       (c) => formatAmount(this.props.intl, c.claimed),
       (c) => formatAmount(this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
+      (c) => <PublishedComponent readOnly={true} pubRef="claim.PrescriberTypePicker" withLabel={false} value={c.prescriberType} />
     ];
     if (this.claimAttachments) {
       result.push(
@@ -286,7 +288,7 @@ class ClaimSearcher extends Component {
       onDoubleClick,
       actionsContributionKey,
     } = this.props;
-
+    console.log("items :" , claims)
     let count = !!this.state.random && this.state.random.value;
     if (!count) {
       count = claimsPageInfo.totalCount;

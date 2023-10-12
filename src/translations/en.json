@@ -98,6 +98,7 @@
   "claim.claimSummaries.markDeliveredReview": "Review Delivered",
   "claim.claimSummaries.markSkippedReview": "Skip Review",
   "claim.claimSummaries.processSelected": "Process Selected",
+  "claimSummaries.prescriberType": "Prescriber Type",
   "claim.attachments.title": "Attachments of claim {code}",
   "claim.edit.title": "Claim {code}",
   "claim.noservice": "No Service To Display",
