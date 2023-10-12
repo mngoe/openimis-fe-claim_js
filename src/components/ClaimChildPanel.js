@@ -38,6 +38,10 @@ class ClaimChildPanel extends Component {
       "claimForm.showJustificationAtEnter",
       false,
     );
+    this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.ComplexProductWithoutPriceImpact",
+    );
   }
 
   initData = () => {
@@ -162,7 +166,10 @@ class ClaimChildPanel extends Component {
     console.log(this.state.data[idx]);
     console.log(claimedAmount(this.state.data[idx]));
     */
-    this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
+    if (!this.ComplexProductWithoutPriceImpact) {
+      this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
+    }
+    //this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     let data = [...this.state.data];
     this._onEditedChanged(data);
   };
@@ -206,7 +213,7 @@ class ClaimChildPanel extends Component {
       );
     }
     const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
+      this.state.data.reduce((sum, r) => sum + claimedAmount(r, this.ComplexProductWithoutPriceImpact), 0),
       2,
     );
     const totalApproved = _.round(
@@ -259,7 +266,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={this.state.data[idx].service?.priceAsked}
+          value={!this.ComplexProductWithoutPriceImpact ? this.state.data[idx].service?.priceAsked : this.state.data[idx]?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
