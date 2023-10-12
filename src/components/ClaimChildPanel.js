@@ -41,6 +41,7 @@ class ClaimChildPanel extends Component {
     this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.ComplexProductWithoutPriceImpact",
+      false,
     );
   }
 
@@ -169,7 +170,6 @@ class ClaimChildPanel extends Component {
     if (!this.ComplexProductWithoutPriceImpact) {
       this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     }
-    //this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     let data = [...this.state.data];
     this._onEditedChanged(data);
   };

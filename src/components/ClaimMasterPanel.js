@@ -90,6 +90,7 @@ class ClaimMasterPanel extends FormPanel {
     this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.ComplexProductWithoutPriceImpact",
+      false,
     );
     this.EMPTY_STRING = ""
   }
