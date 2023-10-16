@@ -175,7 +175,7 @@ class ClaimForm extends Component {
     if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
-    // if (this.state.claim.visitType === this.claimTypeReferSymbol && !this.state.claim.referHF) return false;
+    if (this.state.claim.visitType === this.claimTypeReferSymbol && !this.state.claim.referHF) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -185,39 +185,39 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
     if (!this.state.claim.prescriberType) return false;
-    if (this.state.claim.visitType === 2 && !this.state.claim.attachments) return false;
+    // if (this.state.claim.visitType === 2 && !this.state.claim.attachments) return false;
 
-    if (this.state.claim.services !== undefined) {
-      if(this.props.forReview){
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
-          return false;
-        }
-      }else{
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
-          return false;
-        }
-      }
+    // if (this.state.claim.services !== undefined) {
+    //   if(this.props.forReview){
+    //     if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+    //       return false;
+    //     }
+    //   }else{
+    //     if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
+    //       return false;
+    //     }
+    //   }
       
-    }else{
-      return false;
-    }
+    // }else{
+    //   return false;
+    // }
 
-    if (!forFeedback) {
-      //this.checkQtySubService();
-      if (!this.state.claim.items && !this.state.claim.services) {
-        return !!this.canSaveClaimWithoutServiceNorItem;
-      }
-      //if there are items or services, they have to be complete
-      let services = [];
-      if (!!this.state.claim.services) {
-        services = [...this.state.claim.services];
-        if (!this.props.forReview) services.pop();
-        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service")).length) {
-          return false;
-        }
-      }
-      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
-    }
+    // if (!forFeedback) {
+    //   //this.checkQtySubService();
+    //   if (!this.state.claim.items && !this.state.claim.services) {
+    //     return !!this.canSaveClaimWithoutServiceNorItem;
+    //   }
+    //   //if there are items or services, they have to be complete
+    //   let services = [];
+    //   if (!!this.state.claim.services) {
+    //     services = [...this.state.claim.services];
+    //     if (!this.props.forReview) services.pop();
+    //     if (services.length && services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+    //       return false;
+    //     }
+    //   }
+    //   if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+    // }
     return true;
   };
 

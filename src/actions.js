@@ -234,36 +234,37 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
-  // claimTypeReferSymbol = props.modulesManager.getConf(
-  //   "fe-claim",
-  //   "claimForm.claimTypeReferSymbol",
-  //   'R',
-  // );
+  const claimTypeReferSymbol = mm.getConf(
+    "fe-claim",
+    "claimForm.claimTypeReferSymbol",
+    'R',
+  );
   return `
-    ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    code: "${claim.code}"
-    insureeId: ${decodeId(claim.insuree.id)}
-    adminId: ${decodeId(claim.admin.id)}
-    dateFrom: "${claim.dateFrom}"
-    ${claim.dateTo ? `dateTo: "${claim.dateTo}"` : ""}
-    icdId: ${decodeId(claim.icd.id)}
-    ${!!claim.icd1 ? `icd1Id: ${decodeId(claim.icd1.id)}` : ""}
-    ${!!claim.icd2 ? `icd2Id: ${decodeId(claim.icd2.id)}` : ""}
-    ${!!claim.icd3 ? `icd3Id: ${decodeId(claim.icd3.id)}` : ""}
-    ${!!claim.icd4 ? `icd4Id: ${decodeId(claim.icd4.id)}` : ""}
-    ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
-    prescriberType: ${claim.prescriberType}
-    feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
-    reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
-    dateClaimed: "${claim.dateClaimed}"
-    healthFacilityId: ${decodeId(claim.healthFacility.id)}
-    visitType: "${claim.visitType}"
-    ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
-    ${!!claim.explanation ? `explanation: "${formatGQLString(claim.explanation)}"` : ""}
-    ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
-    ${formatDetails("service", claim.services)}
-    ${formatDetails("item", claim.items)}
-  `;
+  ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
+  code: "${claim.code}"
+  insureeId: ${decodeId(claim.insuree.id)}
+  adminId: ${decodeId(claim.admin.id)}
+  dateFrom: "${claim.dateFrom}"
+  ${claim.dateTo ? `dateTo: "${claim.dateTo}"` : ""}
+  icdId: ${decodeId(claim.icd.id)}
+  ${!!claim.icd1 ? `icd1Id: ${decodeId(claim.icd1.id)}` : ""}
+  ${!!claim.icd2 ? `icd2Id: ${decodeId(claim.icd2.id)}` : ""}
+  ${!!claim.icd3 ? `icd3Id: ${decodeId(claim.icd3.id)}` : ""}
+  ${!!claim.icd4 ? `icd4Id: ${decodeId(claim.icd4.id)}` : ""}
+  ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
+  prescriberType: ${claim.prescriberType}
+  feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
+  reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
+  dateClaimed: "${claim.dateClaimed}"
+  ${claim.referHF ? (claim.visitType === claimTypeReferSymbol ? `referFromId: ${decodeId(claim.referHF.id)}` : `referToId: ${decodeId(claim.referHF.id)}`) : ""}
+  healthFacilityId: ${decodeId(claim.healthFacility.id)}
+  visitType: "${claim.visitType}"
+  ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
+  ${!!claim.explanation ? `explanation: "${formatGQLString(claim.explanation)}"` : ""}
+  ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
+  ${formatDetails("service", claim.services)}
+  ${formatDetails("item", claim.items)}
+`;
 }
 
 export function createClaim(mm, claim, clientMutationLabel) {
@@ -306,8 +307,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "adjustment",
     "attachmentsCount",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
-    //"referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
-    //"referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
+    "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection") + "{id}",
+    "referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection") + "{id}",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "visitType" + mm.getProjection("medical.VisitTypePicker.projection"),
     "admin" + mm.getProjection("claim.ClaimAdminPicker.projection"),
