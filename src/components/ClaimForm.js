@@ -194,7 +194,6 @@ class ClaimForm extends Component {
           return false;
         }
       } else {
-        console.log(this.state.claim.services);
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
