@@ -3,8 +3,6 @@ export function claimedAmount(r, v) {
   if (Object?.keys(r)?.length != 0) {
     if ('item' in r) {
       return !!r.qtyProvided && !!r.priceAsked ? r.qtyProvided * parseFloat(r.priceAsked) : 0;
-    } else if (v) {
-      totalPrice = r.priceAsked;
     } else {
       if (r?.service) {
         if (Object?.keys(r.service)?.length != 0) {
