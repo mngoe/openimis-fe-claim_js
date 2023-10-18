@@ -64,7 +64,7 @@ class ClaimMasterPanel extends FormPanel {
     this.allowReferHF = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.referHF",
-      false,
+      true,
     );
     this.claimTypeReferSymbol = props.modulesManager.getConf(
       "fe-claim",
@@ -117,6 +117,7 @@ class ClaimMasterPanel extends FormPanel {
       );
     }
 
+
     return totalServices + totalItems;
   }
 
@@ -149,7 +150,15 @@ class ClaimMasterPanel extends FormPanel {
     edited.approved = _.round(totalApproved, 2);
 
     let ro = readOnly || !!forReview || !!forFeedback;
-
+    let parse
+    if(edited.visitType) {
+      parse = parseInt(edited.visitType)
+      edited.visitType = parse
+    }
+    if(edited.prescriberType) {
+      parse = parseInt(edited.prescriberType)
+      edited.prescriberType = parse
+    }
     return (
       <Grid container>
         <ControlledField
@@ -336,6 +345,25 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Fragment>
         )}
+        {!!this.allowReferHF && <ControlledField
+          module="claim"
+          id="Claim.referHealthFacility"
+          field={
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="location.HealthFacilityPicker"
+                label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
+                value={edited.referHF ? edited.referHF : this.EMPTY_STRING}
+                reset={reset}
+                readOnly={ro}
+                required={edited.visitType === this.claimTypeReferSymbol ? true : false}
+                filterOptions={(options)=>options?.filter((option)=>option.uuid !== userHealthFacilityFullPath?.uuid)}
+                filterSelectedOptions={true}
+                onChange={(d) => this.updateAttribute("referHF", d)}
+              />
+            </Grid>
+          }
+        />}
         {!forFeedback && (
           <Fragment>
             <ControlledField
@@ -391,7 +419,7 @@ class ClaimMasterPanel extends FormPanel {
               }
             />
             }
-            {!!this.allowDiagnosis3 && 
+            {!!this.allowDiagnosis3 &&
               <ControlledField
                 module="claim"
                 id="Claim.secDiagnosis3"
@@ -496,25 +524,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        {!!this.allowReferHF && <ControlledField
-          module="claim"
-          id="Claim.referHealthFacility"
-          field={
-            <Grid item xs={3} className={classes.item}>
-              <PublishedComponent
-                pubRef="location.HealthFacilityReferPicker"
-                label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
-                value={(edited.visitType === this.claimTypeReferSymbol ? edited.referFrom : edited.referTo) ?? this.EMPTY_STRING}
-                reset={reset}
-                readOnly={ro}
-                required={edited.visitType === this.claimTypeReferSymbol ? true : false}
-                filterOptions={(options) => options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)}
-                filterSelectedOptions={true}
-                onChange={(d) => this.updateAttribute("referHF", d)}
-              />
-            </Grid>
-          }
-        />}
+
         {!forFeedback && (
           <Fragment>
             <ControlledField

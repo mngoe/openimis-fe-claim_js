@@ -99,7 +99,7 @@ class ClaimForm extends Component {
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
-    claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
+    claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "1");
     claim.jsonExt = {};
     return claim;
   }
@@ -176,7 +176,7 @@ class ClaimForm extends Component {
     if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
-    // if (this.state.claim.visitType === this.claimTypeReferSymbol && !this.state.claim.referHF) return false;
+    if (this.state.claim.visitType === this.claimTypeReferSymbol && !this.state.claim.referHF) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -266,7 +266,6 @@ class ClaimForm extends Component {
       forFeedback = false,
     } = this.props;
     const { claim, claim_uuid, lockNew } = this.state;
-    console.log("claim = ", claim)
     let readOnly =
       lockNew ||
       (!forReview && !forFeedback && claim.status !== 2) ||
