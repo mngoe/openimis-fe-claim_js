@@ -97,3 +97,5 @@ None
 - `canSubmitClaimWithZero`, wherever user can submit with 0 as claimed amount (probably a claim without service/item), default: false
 - `claimAttachments`, boolean to enable/disable claim attachments. Default true;
 - `claimForm.referHF`, boolean to enable/disable referal HF (mandatory when visit type = Referal, optional without). Default true;
+- `allowGuarantee`, boolean to enable/disable Guarantee field in form. Default true;
+- `allowDiagnosis2/3/4`, boolean to enable/disable diagnosis 2,3,4 field in form. default true

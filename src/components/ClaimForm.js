@@ -42,9 +42,9 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    if(!this.props.forReview){
+    if (!this.props.forReview) {
       return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
-    }else{
+    } else {
       return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
     }
   }
@@ -52,9 +52,9 @@ class ClaimServicesPanel extends Component {
 
 class ClaimItemsPanel extends Component {
   render() {
-    if(!this.props.forReview){
+    if (!this.props.forReview) {
       return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
-    }else{
+    } else {
       return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
     }
   }
@@ -79,7 +79,7 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
-    this.claimPrefix =props.modulesManager.getConf(
+    this.claimPrefix = props.modulesManager.getConf(
       "fe-claim",
       "claimPrex",
       0,
@@ -159,6 +159,7 @@ class ClaimForm extends Component {
 
   canSaveDetail = (d, type) => {
     if (!d[type]) return false;
+    if (d[type].packagetype === 'S') return true;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
@@ -180,7 +181,7 @@ class ClaimForm extends Component {
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
-    if (!this.state.claim.dateTo) return false ;
+    if (!this.state.claim.dateTo) return false;
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
@@ -188,17 +189,17 @@ class ClaimForm extends Component {
     if (this.state.claim.visitType === 2 && !this.state.claim.attachments) return false;
 
     if (this.state.claim.services !== undefined) {
-      if(this.props.forReview){
+      if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
-      }else{
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
+      } else {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
       }
 
-    }else{
+    } else {
       return false;
     }
 
