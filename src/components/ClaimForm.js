@@ -99,7 +99,7 @@ class ClaimForm extends Component {
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
-    claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "1");
+    claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "null");
     claim.jsonExt = {};
     return claim;
   }
