@@ -117,6 +117,7 @@ class ClaimMasterPanel extends FormPanel {
       );
     }
 
+
     return totalServices + totalItems;
   }
 
@@ -149,7 +150,15 @@ class ClaimMasterPanel extends FormPanel {
     edited.approved = _.round(totalApproved, 2);
 
     let ro = readOnly || !!forReview || !!forFeedback;
-
+    let parse
+    if(edited.visitType) {
+      parse = parseInt(edited.visitType)
+      edited.visitType = parse
+    }
+    if(edited.prescriberType) {
+      parse = parseInt(edited.prescriberType)
+      edited.prescriberType = parse
+    }
     return (
       <Grid container>
         <ControlledField
@@ -345,7 +354,7 @@ class ClaimMasterPanel extends FormPanel {
                 pubRef="location.HealthFacilityPicker"
                 label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
                 value={edited.referHF ? edited.referHF : this.EMPTY_STRING}
-                reset={reset} 
+                reset={reset}
                 readOnly={ro}
                 required={edited.visitType === this.claimTypeReferSymbol ? true : false}
                 filterOptions={(options)=>options?.filter((option)=>option.uuid !== userHealthFacilityFullPath?.uuid)}
@@ -410,7 +419,7 @@ class ClaimMasterPanel extends FormPanel {
               }
             />
             }
-            {!!this.allowDiagnosis3 && 
+            {!!this.allowDiagnosis3 &&
               <ControlledField
                 module="claim"
                 id="Claim.secDiagnosis3"

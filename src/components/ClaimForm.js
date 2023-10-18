@@ -99,7 +99,7 @@ class ClaimForm extends Component {
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
-    claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
+    claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "1");
     claim.jsonExt = {};
     return claim;
   }
@@ -185,39 +185,39 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
     if (!this.state.claim.prescriberType) return false;
-    // if (this.state.claim.visitType === 2 && !this.state.claim.attachments) return false;
+    if (this.state.claim.visitType === 2 && !this.state.claim.attachments) return false;
 
-    // if (this.state.claim.services !== undefined) {
-    //   if(this.props.forReview){
-    //     if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
-    //       return false;
-    //     }
-    //   }else{
-    //     if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
-    //       return false;
-    //     }
-    //   }
-      
-    // }else{
-    //   return false;
-    // }
+    if (this.state.claim.services !== undefined) {
+      if(this.props.forReview){
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+          return false;
+        }
+      }else{
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
+          return false;
+        }
+      }
 
-    // if (!forFeedback) {
-    //   //this.checkQtySubService();
-    //   if (!this.state.claim.items && !this.state.claim.services) {
-    //     return !!this.canSaveClaimWithoutServiceNorItem;
-    //   }
-    //   //if there are items or services, they have to be complete
-    //   let services = [];
-    //   if (!!this.state.claim.services) {
-    //     services = [...this.state.claim.services];
-    //     if (!this.props.forReview) services.pop();
-    //     if (services.length && services.filter((s) => !this.canSaveDetail(s, "service")).length) {
-    //       return false;
-    //     }
-    //   }
-    //   if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
-    // }
+    }else{
+      return false;
+    }
+
+    if (!forFeedback) {
+      //this.checkQtySubService();
+      if (!this.state.claim.items && !this.state.claim.services) {
+        return !!this.canSaveClaimWithoutServiceNorItem;
+      }
+      //if there are items or services, they have to be complete
+      let services = [];
+      if (!!this.state.claim.services) {
+        services = [...this.state.claim.services];
+        if (!this.props.forReview) services.pop();
+        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+          return false;
+        }
+      }
+      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+    }
     return true;
   };
 
@@ -265,7 +265,6 @@ class ClaimForm extends Component {
       forFeedback = false,
     } = this.props;
     const { claim, claim_uuid, lockNew } = this.state;
-    console.log("claim = ", claim)
     let readOnly =
       lockNew ||
       (!forReview && !forFeedback && claim.status !== 2) ||

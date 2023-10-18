@@ -178,13 +178,13 @@ export function formatDetail(type, detail) {
       subServices.push(d);
     })
   }
-  
+
   return `{
     ${detail.id !== undefined && detail.id !== null ? `id: ${detail.id}` : ""}
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
-    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     ${subItems !== null ?  `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: 1
     ${
@@ -306,6 +306,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "explanation",
     "adjustment",
     "attachmentsCount",
+    "prescriberType",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
     "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection") + "{id}",
     "referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection") + "{id}",
@@ -582,7 +583,7 @@ export function formatReviewDetail(type, detail) {
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
-    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     ${subItems !== null ?  `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
