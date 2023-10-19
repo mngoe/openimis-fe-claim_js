@@ -151,7 +151,7 @@ class ClaimMasterPanel extends FormPanel {
 
     let ro = readOnly || !!forReview || !!forFeedback;
     let parse
-    if(edited.visitType) {
+    if(edited.visitType && edited.visitType !== "null") {
       parse = parseInt(edited.visitType)
       edited.visitType = parse
     }
