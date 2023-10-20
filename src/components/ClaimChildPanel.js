@@ -322,7 +322,11 @@ class ClaimChildPanel extends Component {
                       u.qtyDisplayed = v;
                       u.qtyAsked = 0;
                     }
+                  }else {
+                    u.qtyDisplayed = v;
+                    u.qtyAsked = v;
                   }
+
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
               }}
@@ -378,6 +382,9 @@ class ClaimChildPanel extends Component {
                         u.qtyDisplayed = v;
                         u.qtyAsked = 0;
                       }
+                    } else {
+                      u.qtyDisplayed = v;
+                      u.qtyAsked = v;
                     }
                   }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
@@ -438,6 +445,9 @@ class ClaimChildPanel extends Component {
                       u.qtyDisplayed = v;
                       u.qtyAsked = 0;
                     }
+                  } else {
+                    u.qtyDisplayed = v;
+                    u.qtyAsked = v;
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
@@ -494,6 +504,9 @@ class ClaimChildPanel extends Component {
                         u.qtyDisplayed = v;
                         u.qtyAsked = 0;
                       }
+                    }else {
+                      u.qtyDisplayed = v;
+                      u.qtyAsked = v;
                     }
                   }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
