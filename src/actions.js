@@ -132,44 +132,44 @@ export function formatDetail(type, detail) {
   console.log(detail);
   let subServices = [];
   let subItems = [];
-  if(detail.service.servicesLinked !== null && detail.service.servicesLinked != undefined ){
-    detail.service.servicesLinked.forEach(d =>{
-      subItems.push(d);
-    })
+  if (type == 'service') {
+    if (detail.service.servicesLinked !== null && detail.service.servicesLinked != undefined) {
+      detail.service.servicesLinked.forEach(d => {
+        subItems.push(d);
+      })
+    };
+    if (detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined) {
+      detail.claimlinkedItem.forEach(d => {
+        subItems.push(d);
+      })
+    };
+    if (detail.service.serviceserviceSet !== null && detail.service.serviceserviceSet != undefined) {
+      detail.service.serviceserviceSet.forEach(d => {
+        subServices.push(d);
+      })
+    };
+    if (detail.claimlinkedService !== null && detail.claimlinkedService != undefined) {
+      detail.claimlinkedService.forEach(d => {
+        subServices.push(d);
+      })
+    }
   }
-  if(detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined){
-    detail.claimlinkedItem.forEach(d =>{
-      subItems.push(d);
-    })
-  }
-  if(detail.service.serviceserviceSet !== null && detail.service.serviceserviceSet != undefined){
-    detail.service.serviceserviceSet.forEach(d =>{
-      subServices.push(d);
-    })
-  }
-  if(detail.claimlinkedService !== null && detail.claimlinkedService != undefined){
-    detail.claimlinkedService.forEach(d =>{
-      subServices.push(d);
-    })
-  }
-  
+
   return `{
     ${detail.id !== undefined && detail.id !== null ? `id: ${detail.id}` : ""}
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
-    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${subItems !== null ?  `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${type == 'service' && subServices !== null ? `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${type == 'service' && subItems !== null ? `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: 1
-    ${
-      detail.explanation !== undefined && detail.explanation !== null
-        ? `explanation: "${formatGQLString(detail.explanation)}"`
-        : ""
+    ${detail.explanation !== undefined && detail.explanation !== null
+      ? `explanation: "${formatGQLString(detail.explanation)}"`
+      : ""
     }
-    ${
-      detail.justification !== undefined && detail.justification !== null
-        ? `justification: "${formatGQLString(detail.justification)}"`
-        : ""
+    ${detail.justification !== undefined && detail.justification !== null
+      ? `justification: "${formatGQLString(detail.justification)}"`
+      : ""
     }
   }`;
 }
@@ -232,10 +232,9 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
-    ${
-      !!claim.attachments && !!claim.attachments.length
-        ? `attachments: ${formatAttachments(mm, claim.attachments)}`
-        : ""
+    ${!!claim.attachments && !!claim.attachments.length
+      ? `attachments: ${formatAttachments(mm, claim.attachments)}`
+      : ""
     }
   `;
 }
@@ -292,19 +291,19 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   ];
   if (!!forFeedback) {
     projections.push(
-      "feedback{id, careRendered, paymentAsked, drugPrescribed, drugReceived, asessment, feedbackDate, officerId}",
+      "feedback{id, careRendered, paymentAsked, drugPrescribed, drugReceived, asessment, feedbackDate, officerId, sexe, age, policyNational, pregnant, meansInformation}",
     );
   } else {
     projections.push(
       "services{" +
 
-        "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
-        " claimlinkedItem{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
-        " claimlinkedService{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
-        "}",
+      "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
+      " claimlinkedItem{ item { id code name } qtyDisplayed priceAsked qtyProvided }" +
+      " claimlinkedService{ service {id code name} qtyProvided qtyDisplayed priceAsked }" +
+      "}",
       "items{" +
-        "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
-        "}",
+      "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
+      "}",
     );
   }
   const payload = formatQuery("claim", [`uuid: "${claimUuid}"`], projections);
@@ -412,28 +411,35 @@ export function deliverFeedback(claim, clientMutationLabel) {
     claimUuid: "${claim.uuid}"
     feedback: {
       ${!!feedback.feedbackDate ? `feedbackDate: "${feedback.feedbackDate}"` : ""}
-      ${!!feedback.officerId ? `officerId: ${feedback.officerId}` : ""}
-      ${
-        feedback.careRendered !== undefined && feedback.careRendered !== null
-          ? `careRendered: ${feedback.careRendered}`
-          : ""
-      }
-      ${
-        feedback.paymentAsked !== undefined && feedback.paymentAsked !== null
-          ? `paymentAsked: ${feedback.paymentAsked}`
-          : ""
-      }
-      ${
-        feedback.drugPrescribed !== undefined && feedback.drugPrescribed !== null
-          ? `drugPrescribed: ${feedback.drugPrescribed}`
-          : ""
-      }
-      ${
-        feedback.drugReceived !== undefined && feedback.drugReceived !== null
-          ? `drugReceived: ${feedback.drugReceived}`
-          : ""
-      }
+      ${!!feedback.officerId ? `officerId: ${decodeId(feedback.officerId.id)}` : ""}
+      ${feedback.careRendered !== undefined && feedback.careRendered !== null
+      ? `careRendered: ${feedback.careRendered}`
+      : ""
+    }
+      ${feedback.paymentAsked !== undefined && feedback.paymentAsked !== null
+      ? `paymentAsked: ${feedback.paymentAsked}`
+      : ""
+    }
+      ${feedback.drugPrescribed !== undefined && feedback.drugPrescribed !== null
+      ? `drugPrescribed: ${feedback.drugPrescribed}`
+      : ""
+    }
+      ${feedback.drugReceived !== undefined && feedback.drugReceived !== null
+      ? `drugReceived: ${feedback.drugReceived}`
+      : ""
+    }
       ${feedback.asessment !== undefined && feedback.asessment !== null ? `asessment: ${feedback.asessment}` : ""}
+      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : "" }
+      ${!!feedback.age ? `age: ${feedback.age}` : ""}
+      ${feedback.policyNational !== undefined && feedback.policyNational !== null
+        ? `policyNational: ${feedback.policyNational}`
+        : ""
+      }
+      ${feedback.pregnant !== undefined && feedback.pregnant !== null
+        ? `pregnant: ${feedback.pregnant}`
+        : ""
+      }
+      ${!!feedback.meansInformation ? `meansInformation: "${feedback.meansInformation}"` : ""}
     }
   `;
   let mutation = formatMutation("deliverClaimFeedback", feedbackGQL, clientMutationLabel);
@@ -498,14 +504,14 @@ export function formatReviewDetail(type, detail) {
   let subServices = [];
   let subItems = [];
 
-  if(detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined){
-    detail.claimlinkedItem.forEach(d =>{
+  if (detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined) {
+    detail.claimlinkedItem.forEach(d => {
       subItems.push(d);
     })
   }
 
-  if(detail.claimlinkedService !== null && detail.claimlinkedService != undefined){
-    detail.claimlinkedService.forEach(d =>{
+  if (detail.claimlinkedService !== null && detail.claimlinkedService != undefined) {
+    detail.claimlinkedService.forEach(d => {
       subServices.push(d);
     })
   }
@@ -516,8 +522,8 @@ export function formatReviewDetail(type, detail) {
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
-    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${subItems !== null ?  `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${subServices !== null ? `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${subItems !== null ? `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
   }`;

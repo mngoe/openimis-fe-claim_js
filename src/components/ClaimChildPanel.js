@@ -56,6 +56,20 @@ class ClaimChildPanel extends Component {
     return data;
   };
 
+  removeData = () => {
+    let data = [];
+    if (!!this.props.edited[`${this.props.type}s`]) {
+      data.push({});
+      let edited = { ...this.props.edited };
+      edited[`${this.props.type}s`] = data;
+
+      this.props.onEditedChanged(edited);
+    }else{
+      data.push({});
+    }
+    return data;
+  };
+
   componentDidMount() {
     this.setState({ data: this.initData() });
   }
@@ -75,7 +89,14 @@ class ClaimChildPanel extends Component {
       this.setState({
         data: this.initData(),
       });
-
+    } else if (
+      prevProps.resetServices !== this.props.resetServices ||
+      (!!this.props.edited[`program`] &&
+        !_.isEqual(prevProps.edited[`program`], this.props.edited[`program`]))
+    ) {
+      this.setState({
+        data: this.removeData(),
+      });
     }
   }
 
@@ -196,7 +217,7 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false, resetServices } = this.props;
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
@@ -233,7 +254,7 @@ class ClaimChildPanel extends Component {
       `edit.${type}s.quantity`,
       `claim.edit.items.appPrice`,
     ];
-    
+
 
     let itemFormatters = [
       (i, idx) => (
