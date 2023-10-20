@@ -424,6 +424,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={readOnly}
+              displayZero={true}
               value={u.qtyDisplayed ? u.qtyDisplayed : 0}
               onChange={(v) => {
                 if (i.service.packagetype == "F") {
@@ -483,6 +484,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={readOnly}
+                displayZero={true}
                 value={u.qtyDisplayed ? u.qtyDisplayed : 0}
                 onChange={(v) => {
                   if (i.service.packagetype == "F") {
