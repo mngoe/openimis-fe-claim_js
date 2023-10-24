@@ -41,6 +41,7 @@ class ClaimChildPanel extends Component {
     this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.ComplexProductWithoutPriceImpact",
+      true,
     );
   }
 
@@ -166,7 +167,7 @@ class ClaimChildPanel extends Component {
     console.log(this.state.data[idx]);
     console.log(claimedAmount(this.state.data[idx]));
     */
-    if (!this.ComplexProductWithoutPriceImpact) {
+    if (this.ComplexProductWithoutPriceImpact) {
       this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     }
     //this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
@@ -304,7 +305,7 @@ class ClaimChildPanel extends Component {
               value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == "F") {
-                  if (!this.ComplexProductWithoutPriceImpact) {
+                  if (this.ComplexProductWithoutPriceImpact) {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -314,7 +315,7 @@ class ClaimChildPanel extends Component {
                   u.qtyDisplayed = v;
                   u.qtyAsked = v;
                 } else if (i.service.packagetype == "P") {
-                  if (!this.ComplexProductWithoutPriceImpact) {
+                  if (this.ComplexProductWithoutPriceImpact) {
                     if (v == u.qtyProvided) {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
@@ -364,7 +365,7 @@ class ClaimChildPanel extends Component {
                 value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (i.service.packagetype == "F") {
-                    if (!this.ComplexProductWithoutPriceImpact) {
+                    if (this.ComplexProductWithoutPriceImpact) {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                           totalApproved: u.qtyProvided,
@@ -374,7 +375,7 @@ class ClaimChildPanel extends Component {
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   } else if (i.service.packagetype == "P") {
-                    if (!this.ComplexProductWithoutPriceImpact) {
+                    if (this.ComplexProductWithoutPriceImpact) {
                       if (v == u.qtyProvided) {
                         u.qtyAsked = u.qtyProvided;
                         u.qtyDisplayed = u.qtyProvided;
@@ -428,7 +429,7 @@ class ClaimChildPanel extends Component {
               value={u.qtyDisplayed ? u.qtyDisplayed : 0}
               onChange={(v) => {
                 if (i.service.packagetype == "F") {
-                  if (!this.ComplexProductWithoutPriceImpact) {
+                  if (this.ComplexProductWithoutPriceImpact) {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -438,7 +439,7 @@ class ClaimChildPanel extends Component {
                   u.qtyDisplayed = v;
                   u.qtyAsked = v;
                 } else if (i.service.packagetype == "P") {
-                  if (!this.ComplexProductWithoutPriceImpact) {
+                  if (this.ComplexProductWithoutPriceImpact) {
                     if (v == u.qtyProvided) {
                       u.qtyDisplayed = u.qtyProvided;
                       u.qtyAsked = u.qtyProvided;
@@ -488,7 +489,7 @@ class ClaimChildPanel extends Component {
                 value={u.qtyDisplayed ? u.qtyDisplayed : 0}
                 onChange={(v) => {
                   if (i.service.packagetype == "F") {
-                    if (!this.ComplexProductWithoutPriceImpact) {
+                    if (this.ComplexProductWithoutPriceImpact) {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                           totalApproved: u.qtyProvided,
@@ -498,7 +499,7 @@ class ClaimChildPanel extends Component {
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   } else if (i.service.packagetype == "P") {
-                    if (!this.ComplexProductWithoutPriceImpact) {
+                    if (this.ComplexProductWithoutPriceImpact) {
                       if (v == u.qtyProvided) {
                         u.qtyAsked = u.qtyProvided;
                         u.qtyDisplayed = u.qtyProvided;

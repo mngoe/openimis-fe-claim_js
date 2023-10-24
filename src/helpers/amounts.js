@@ -11,7 +11,7 @@ export function claimedAmount(r, v) {
             totalPrice += parseFloat(r.service.price);
           } else {
             // if this product has subItems we add everything
-            if (v) {
+            if (!v) {
               totalPrice += parseFloat(r.service.price);
             } else {
               if (r.service?.serviceserviceSet) {
