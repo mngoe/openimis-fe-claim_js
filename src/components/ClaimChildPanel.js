@@ -167,7 +167,7 @@ class ClaimChildPanel extends Component {
     console.log(this.state.data[idx]);
     console.log(claimedAmount(this.state.data[idx]));
     */
-    if (this.ComplexProductWithoutPriceImpact) {
+    if (!this.ComplexProductWithoutPriceImpact) {
       this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     }
     //this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
