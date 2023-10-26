@@ -304,7 +304,7 @@ class ClaimChildPanel extends Component {
               displayZero={true}
               value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
-                if (this.ComplexProductWithoutPriceImpact) {
+                if (!this.ComplexProductWithoutPriceImpact) {
                   if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -361,7 +361,7 @@ class ClaimChildPanel extends Component {
                 displayZero={true}
                 value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (this.ComplexProductWithoutPriceImpact) {
+                  if (!this.ComplexProductWithoutPriceImpact) {
                     if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -422,7 +422,7 @@ class ClaimChildPanel extends Component {
               displayZero={true}
               value={u.qtyDisplayed ? u.qtyDisplayed : 0}
               onChange={(v) => {
-                if (this.ComplexProductWithoutPriceImpact) {
+                if (!this.ComplexProductWithoutPriceImpact) {
                   if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -480,7 +480,7 @@ class ClaimChildPanel extends Component {
                 displayZero={true}
                 value={u.qtyDisplayed ? u.qtyDisplayed : 0}
                 onChange={(v) => {
-                  if (this.ComplexProductWithoutPriceImpact) {
+                  if (!this.ComplexProductWithoutPriceImpact) {
                     if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
