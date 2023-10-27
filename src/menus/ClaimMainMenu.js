@@ -25,11 +25,11 @@ class ClaimMainMenu extends Component {
         route: "/claim/reviews",
       });
     }
-    entries.push(
-      ...this.props.modulesManager
-        .getContribs(CLAIM_MAIN_MENU_CONTRIBUTION_KEY)
-        .filter((c) => !c.filter || c.filter(rights)),
-    );
+    // entries.push(
+    //   ...this.props.modulesManager
+    //     .getContribs(CLAIM_MAIN_MENU_CONTRIBUTION_KEY)
+    //     .filter((c) => !c.filter || c.filter(rights)),
+    // );
     if (!entries.length) return null;
     return (
       <MainMenuContribution
