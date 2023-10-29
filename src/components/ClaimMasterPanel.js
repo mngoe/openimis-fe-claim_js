@@ -100,6 +100,7 @@ class ClaimMasterPanel extends FormPanel {
 
   render() {
     const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props;
+    console.log('dited ', edited )
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -121,7 +122,7 @@ class ClaimMasterPanel extends FormPanel {
 
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
-    
+
     insureePolicies.forEach(function (policy) {
       if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
         policyNumber = policy.policy.policyNumber;
@@ -212,7 +213,7 @@ class ClaimMasterPanel extends FormPanel {
                 label="claimedDate"
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={ro}
+                readOnly={true}
                 required={true}
                 minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
               />
