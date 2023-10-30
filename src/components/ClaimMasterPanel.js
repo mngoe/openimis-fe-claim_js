@@ -57,7 +57,7 @@ class ClaimMasterPanel extends FormPanel {
     this.hideSecDiagnos = props.modulesManager.getConf(
       "fe-claim",
       "hideSecDiagnos",
-      0,
+      1,
     );
   }
 
