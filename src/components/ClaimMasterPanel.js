@@ -81,16 +81,19 @@ class ClaimMasterPanel extends FormPanel {
   validateClaimCode = (v) => {
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
+    var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
-    insureePolicies.forEach(function (policy) {
-      if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
-        policyNumber = policy.policy.policyNumber;
+    if (programName.toUpperCase() == "CHEQUE SANTÉ" || programName.toUpperCase() == "CHEQUE SANTE") {
+      insureePolicies.forEach(function (policy) {
+        if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
+          policyNumber = policy.policy.policyNumber;
+        }
+      })
+      if (policyNumber != undefined) {
+        v = policyNumber + v
       }
-    })
-
-    if (policyNumber != undefined) {
-      v = policyNumber + v
     }
+
     this.setState(
       {
         claimCodeError: null,
@@ -111,7 +114,8 @@ class ClaimMasterPanel extends FormPanel {
     let totalClaimed = 0;
     let totalApproved = 0;
     let policyNumber;
-    let claimCode;
+    let claimCode = edited.code;
+    var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
@@ -132,10 +136,10 @@ class ClaimMasterPanel extends FormPanel {
       }
     })
 
-    if (edited.code && policyNumber != undefined) {
-      claimCode = edited.code.replace(policyNumber, '');
-    }else{
-      claimCode = edited.code;
+    if (CLAIMPROGRAM.toUpperCase() == "CHEQUE SANTÉ" || CLAIMPROGRAM.toUpperCase() == "CHEQUE SANTE") {
+      if (edited.code && policyNumber != undefined) {
+        claimCode = edited.code.replace(policyNumber, '');
+      }
     }
 
     return (
