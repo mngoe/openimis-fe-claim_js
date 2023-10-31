@@ -41,7 +41,7 @@ class ClaimMasterPanel extends FormPanel {
 
   constructor(props) {
     super(props);
-    this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 8);
+    this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 6);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
     this.insureePicker = props.modulesManager.getConf(
@@ -79,10 +79,17 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
-    if (this.claimPrefix == 1) {
-      if (this.state.data?.insuree?.chfId != undefined) {
-        v = this.state.data?.insuree?.chfId + v
+    let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
+    let policyNumber;
+
+    insureePolicies.forEach(function (policy) {
+      if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
+        policyNumber = policy.policy.policyNumber;
       }
+    })
+
+    if (policyNumber != undefined) {
+      v = policyNumber + v
     }
     this.setState(
       {
@@ -103,6 +110,8 @@ class ClaimMasterPanel extends FormPanel {
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
+    let policyNumber;
+    let claimCode;
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
@@ -113,20 +122,21 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    if (edited.code && this.claimPrefix) {
-      edited.code = edited.code.replace(edited.insuree?.chfId, '');
-    }
 
     let ro = readOnly || !!forReview || !!forFeedback;
 
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
-    let policyNumber;
-
     insureePolicies.forEach(function (policy) {
       if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
         policyNumber = policy.policy.policyNumber;
       }
     })
+
+    if (edited.code && policyNumber != undefined) {
+      claimCode = edited.code.replace(policyNumber, '');
+    }else{
+      claimCode = edited.code;
+    }
 
     return (
       <Grid container>
@@ -282,7 +292,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="code"
                 required
-                value={edited.code}
+                value={claimCode}
                 error={this.state.claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}

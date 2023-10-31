@@ -148,6 +148,7 @@ class ClaimForm extends Component {
 
   canSaveDetail = (d, type) => {
     if (!d[type]) return false;
+    if (d[type].packagetype === 'S') return true;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
