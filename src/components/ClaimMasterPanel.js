@@ -300,7 +300,7 @@ class ClaimMasterPanel extends FormPanel {
                 error={this.state.claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
-                readOnly={ro}
+                readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
                   "maxLength": this.codeMaxLength,
                 }}
@@ -473,7 +473,7 @@ class ClaimMasterPanel extends FormPanel {
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
-                readOnly={ro}
+                readOnly={!!edited && edited[`uuid`] ? true : false}
                 onChange={(v, s) => {
                   this.updateAttribute("program", v);
                   changeProgram();
