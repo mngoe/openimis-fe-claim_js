@@ -52,7 +52,7 @@ class ClaimMasterPanel extends FormPanel {
     this.claimPrefix = props.modulesManager.getConf(
       "fe-claim",
       "claimPrex",
-      0,
+      1,
     );
     this.hideSecDiagnos = props.modulesManager.getConf(
       "fe-claim",
@@ -271,7 +271,7 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {!!this.claimPrefix && (<ControlledField
+        {!!this.claimPrefix && CLAIMPROGRAM == "Chèque Santé" && (<ControlledField
           module="claim"
           id="Claim.codechfId"
           field={
@@ -280,7 +280,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={edited.insuree?.chfId}
+                value={policyNumber}
                 readOnly="true"
               />
             </Grid>
