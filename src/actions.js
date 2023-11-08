@@ -208,9 +208,10 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
+  console.log('claim ', claim)
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    code: "${claim.code}"
+    ${claim.program.nameProgram === 'Cheque Santé' ?  `code:"${claim.code}"` : `code: "${claim.healthFacility.location.parent.name.substring(0,2)}.${claim?.dateTo.substring(0,4)}.${claim.program.code.substring(0,3)}.${claim.code}"`}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"

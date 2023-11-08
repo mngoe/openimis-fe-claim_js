@@ -33,6 +33,7 @@ const ClaimProgramPicker = (props) => {
                   node {
                       id
                       idProgram
+                      code
                       nameProgram
                       validityDateFrom
                       ${extraFragment ?? ""}
