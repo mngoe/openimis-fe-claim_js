@@ -208,7 +208,7 @@ class ClaimForm extends Component {
     return true;
   };
   NAME_PROGRAM = {
-    Cheque_Sante : "Cheque Santé",
+    Cheque_Sante : "Chèque Santé",
     Vih : "VIH",
   }
   reload = () => {

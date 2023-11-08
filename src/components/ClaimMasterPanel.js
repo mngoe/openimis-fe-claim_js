@@ -83,7 +83,7 @@ class ClaimMasterPanel extends FormPanel {
     let policyNumber;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
-    if (programName.toUpperCase() == "CHEQUE SANTÉ" || programName.toUpperCase() == "CHEQUE SANTE") {
+    if (programName == "Chèque Santé") {
       insureePolicies.forEach(function (policy) {
         if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
           policyNumber = policy.policy.policyNumber;
@@ -136,7 +136,7 @@ class ClaimMasterPanel extends FormPanel {
       }
     })
 
-    if (CLAIMPROGRAM.toUpperCase() == "CHEQUE SANTÉ" || CLAIMPROGRAM.toUpperCase() == "CHEQUE SANTE") {
+    if (CLAIMPROGRAM == "Chèque Santé") {
       if (edited.code && policyNumber != undefined) {
         claimCode = edited.code.replace(policyNumber, '');
       }
