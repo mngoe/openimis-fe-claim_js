@@ -211,7 +211,7 @@ export function formatClaimGQL(mm, claim) {
   console.log('claim ', claim)
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    ${claim.program.nameProgram === 'Cheque Santé' ?  `code:"${claim.code}"` : `code: "${claim.healthFacility.location.parent.name.substring(0,2)}.${claim?.dateTo.substring(0,4)}.${claim.program.code.substring(0,3)}.${claim.code}"`}
+    code: "${claim.code}"
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"
@@ -287,7 +287,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd2" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
-    "program {id idProgram nameProgram validityDateFrom}",
+    "program {id code idProgram nameProgram validityDateFrom}",
     "jsonExt",
   ];
   if (!!forFeedback) {

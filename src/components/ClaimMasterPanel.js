@@ -33,10 +33,14 @@ const styles = (theme) => ({
   item: theme.paper.item,
 });
 
-class ClaimMasterPanel extends FormPanel {
+class ClaimMasterPanel extends FormPanel {  
   state = {
     claimCode: null,
     claimCodeError: null,
+    dateAr:"",
+    programAr: "",
+    codeAr: "",
+    claimLabel: null
   };
 
   constructor(props) {
@@ -78,7 +82,32 @@ class ClaimMasterPanel extends FormPanel {
     }
   }
 
+  formatClaimCode = () =>{
+    console.log('entreee ')
+    this.setState({
+      dateAr: this.props.edited.dateTo ? this.props.edited.dateTo : "" ,
+      programAr: this.props.edited.program ? this.props.edited.program.nameProgram : ""
+    })
+    let label = `${this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0,2) : ""}.${this.state.dateAr ? this.state.dateAr.substring(0,4) : ""}.${this.state.programAr ? this.state.programAr.substring(0,3) : ""}.${this.state.codeAr && this.state.codeAr.includes('.') ? this.state.codeAr.split('.').pop() : this.state.codeAr}`
+    this.setState({
+      claimLabel : label,
+      claimCode: label,
+    },
+    (e)=>{this.props.validateClaimCode(this.state.claimLabel)}
+    )
+    console.log('le state ', this.state)
+    
+  }
+  onChangeValue = (name, value) =>{    
+    console.log('stateee ', this.state)
+    this.updateAttribute(name, value)
+    this.debounceChangeValue()
+  }
   validateClaimCode = (v) => {
+    let val = v
+    this.setState({
+      codeAr: v,
+    })
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
@@ -93,11 +122,13 @@ class ClaimMasterPanel extends FormPanel {
         v = policyNumber + v
       }
     }
-
+    
+    this.debounceChangeValue()
+   
     this.setState(
       {
         claimCodeError: null,
-        claimCode: v,
+        claimCode: programName.toUpperCase() == "CHEQUE SANTÉ" ? v : this.state.claimLabel,
       },
       (e) => this.props.validateClaimCode(v),
     );
@@ -107,7 +138,11 @@ class ClaimMasterPanel extends FormPanel {
     this.validateClaimCode,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
   );
-
+  debounceChangeValue = _debounce(
+    this.formatClaimCode,
+    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
+  )
+  
   render() {
     const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props;
     console.log('edited ', edited)
@@ -206,7 +241,10 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="visitDateTo"
                 reset={reset}
-                onChange={(d) => this.updateAttribute("dateTo", d)}
+                onChange={(d) => {
+                  this.debounceChangeValue();
+                  this.onChangeValue("dateTo", d);
+                }}
                 readOnly={ro}
                 required={true}
                 minDate={edited.dateFrom}
@@ -475,8 +513,10 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.program}
                 reset={reset}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
-                onChange={(v, s) => {
-                  this.updateAttribute("program", v);
+                onChange={(v) => {
+                  this.debounceChangeValue();
+                  this.onChangeValue("program", v);  
+                       
                   changeProgram();
                 }}
                 required={true}
