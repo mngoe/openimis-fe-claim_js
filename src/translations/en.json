@@ -114,6 +114,7 @@
   "claim.edit.services.MaxApproved": "Quantity set is more than quantity approved for this element. You will be reimbursed only for {totalApproved} element(s)",
   "claim.edit.services.service": "Service",
   "claim.edit.services.quantity": "Quantity",
+  "claim.edit.services.qtyAdjusted": "Quantity Adjusted",
   "claim.edit.services.price": "Price",
   "claim.edit.services.explanation": "Explanation",
   "claim.edit.services.justification": "Justification",
