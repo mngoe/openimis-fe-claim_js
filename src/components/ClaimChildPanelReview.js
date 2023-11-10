@@ -298,23 +298,25 @@ class ClaimChildPanel extends Component {
               readOnly={!!forReview}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (i.service.packagetype == "F") {
-                  if (u.qtyProvided < v) {
-                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                      totalApproved: u.qtyProvided,
-                    }));
-                  }
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
-                } else if (i.service.packagetype == "P") {
-                  if (v == u.qtyProvided) {
-                    u.qtyDisplayed = u.qtyProvided;
-                    u.qtyAsked = u.qtyProvided;
-                  } else {
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = 0;
-                  }
-                }
+                u.qtyDisplayed = v;
+                u.qtyAsked = v;
+                // if (i.service.packagetype == "F") {
+                //   if (u.qtyProvided < v) {
+                //     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                //       totalApproved: u.qtyProvided,
+                //     }));
+                //   }
+                //   u.qtyDisplayed = v;
+                //   u.qtyAsked = v;
+                // } else if (i.service.packagetype == "P") {
+                //   if (v == u.qtyProvided) {
+                //     u.qtyDisplayed = u.qtyProvided;
+                //     u.qtyAsked = u.qtyProvided;
+                //   } else {
+                //     u.qtyDisplayed = v;
+                //     u.qtyAsked = 0;
+                //   }
+                // }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
                 console.log(totalClaimed);
               }
@@ -327,6 +329,7 @@ class ClaimChildPanel extends Component {
               value={u.qtyAdjusted ? u.qtyAdjusted : "0"}
               onChange={(v) => {
                 u.qtyAdjusted = v;
+                u.qtyAsked = v;
                 this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
               }
               }
@@ -362,23 +365,25 @@ class ClaimChildPanel extends Component {
                 readOnly={!!forReview}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (i.service.packagetype == "F") {
-                    if (u.qtyProvided < v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                    u.qtyDisplayed = v
-                    u.qtyAsked = v;
-                  } else if (i.service.packagetype == "P") {
-                    if (v == u.qtyProvided) {
-                      u.qtyAsked = u.qtyProvided;
-                      u.qtyDisplayed = u.qtyProvided;
-                    } else {
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = 0;
-                    }
-                  }
+                  u.qtyDisplayed = v
+                  u.qtyAsked = v;
+                  // if (i.service.packagetype == "F") {
+                  //   if (u.qtyProvided < v) {
+                  //     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                  //       totalApproved: u.qtyProvided,
+                  //     }));
+                  //   }
+                  //   u.qtyDisplayed = v
+                  //   u.qtyAsked = v;
+                  // } else if (i.service.packagetype == "P") {
+                  //   if (v == u.qtyProvided) {
+                  //     u.qtyAsked = u.qtyProvided;
+                  //     u.qtyDisplayed = u.qtyProvided;
+                  //   } else {
+                  //     u.qtyDisplayed = v;
+                  //     u.qtyAsked = 0;
+                  //   }
+                  // }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
                   console.log(totalClaimed);
                 }
@@ -386,16 +391,17 @@ class ClaimChildPanel extends Component {
               />
             </TableCell>
             <TableCell>
-            <NumberInput
-              readOnly={readOnly}
-              value={u.qtyAdjusted ? u.qtyAdjusted : "0"}
-              onChange={(v) => {
-                u.qtyAdjusted = v;
-                this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
-              }
-              }
-            />
-          </TableCell>
+              <NumberInput
+                readOnly={readOnly}
+                value={u.qtyAdjusted ? u.qtyAdjusted : "0"}
+                onChange={(v) => {
+                  u.qtyAdjusted = v;
+                  u.qtyAsked = v;
+                  this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
+                }
+                }
+              />
+            </TableCell>
             <TableCell>
               <AmountInput
                 readOnly={true}
