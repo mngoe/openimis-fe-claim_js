@@ -85,12 +85,14 @@ class ClaimMasterPanel extends FormPanel {
   formatClaimCode = () => {
     this.setState({
       dateAr: this.props.edited.dateTo ? this.props.edited.dateTo : "",
-      programAr: this.props.edited.program ? this.props.edited.program.nameProgram : ""
+      programAr: this.props.edited.program ? this.props.edited.program.nameProgram : "", 
+      programCode: this.props.edited.program ? this.props.edited.program.code : ""
     })
 
-    let label = `${this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : ""}.${this.state.dateAr ? this.state.dateAr.substring(0, 4) : ""}.${this.state.programAr ? this.state.programAr.substring(0, 3) : ""}.`
-      if(this.state.programAr.toUpperCase() == "CHEQUE SANTÉ" )
+    let label = `${this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : ""}.${this.state.dateAr ? this.state.dateAr.substring(0, 4) : ""}.${this.state.programCode ? this.state.programCode.substring(0, 3) : ""}.` +this.state.codeAr
+      if(this.state.programAr.toUpperCase() == "CHEQUE SANTÉ" || (this.state.programAr.toUpperCase() == "CHEQUE SANTÉ" && (this.state.dateAr || this.state.programAr))  || (this.state.programAr == "" && this.state.dateAr ) || (this.state.programAr  && this.state.dateAr == "" ) )
       {
+        console.log('afficher entre', this.state.claimCode !== null)
         this.setState({
           claimCode: this.state.claimCode
         })
@@ -98,7 +100,7 @@ class ClaimMasterPanel extends FormPanel {
       else{
         this.setState({
           claimLabel: label,
-          claimCode: label + this.state.codeAr
+          claimCode: label 
         },
           (e) => { this.props.validateClaimCode(this.state.claimLabel) }
         )
@@ -130,7 +132,7 @@ class ClaimMasterPanel extends FormPanel {
     }
     else {
       this.debounceChangeValue()
-      v = this.state.claimLabel + v
+      v = this.state.claimLabel
     }
 
 
@@ -186,11 +188,12 @@ class ClaimMasterPanel extends FormPanel {
       }
     }
     else {
-      if(!CLAIMPROGRAM || CLAIMPROGRAM == ""){
+      if(!CLAIMPROGRAM || CLAIMPROGRAM == "" ){
+        console.log('enter', )
         claimCode = edited.code
       }
       if (edited.code && this.state.claimLabel && edited.healthFacility && this.state.dateAr && this.state.dateAr) {
-        claimCode = edited.code.replace(edited.healthFacility.location.parent.name.substring(0, 2), '').replace(this.state.programAr.substring(0, 3), '').replace(this.state.dateAr.substring(0, 4), '').replace('...', '')
+        claimCode = edited.code.replace(edited.healthFacility.location.parent.name.substring(0, 2), '').replace(this.state.programCode.substring(0, 3), '').replace(this.state.dateAr.substring(0, 4), '').replace('...', '')
       }
     }
 
