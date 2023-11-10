@@ -92,6 +92,9 @@ class ClaimMasterPanel extends FormPanel {
     let label = `${this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : ""}.${this.state.dateAr ? this.state.dateAr.substring(0, 4) : ""}.${this.state.programCode ? this.state.programCode.substring(0, 3) : ""}.` +this.state.codeAr
       if(this.state.programAr.toUpperCase() == "CHEQUE SANTÉ" || (this.state.programAr.toUpperCase() == "CHEQUE SANTÉ" && (this.state.dateAr || this.state.programAr))  || (this.state.programAr == "" && this.state.dateAr ) || (this.state.programAr  && this.state.dateAr == "" ) )
       {
+        if(this.state.claimCode != null ){
+          this.validateClaimCode(this.state.codeAr)
+        }
         console.log('afficher entre', this.state.claimCode !== null)
         this.setState({
           claimCode: this.state.claimCode
@@ -130,10 +133,11 @@ class ClaimMasterPanel extends FormPanel {
         v = policyNumber + v
       }
     }
-    else {
+    else if(this.props?.edited?.program !== undefined){
       this.debounceChangeValue()
       v = this.state.claimLabel
     }
+
 
 
     this.setState(
@@ -151,6 +155,7 @@ class ClaimMasterPanel extends FormPanel {
   );
   debounceChangeValue = _debounce(
     this.formatClaimCode,
+    this.validateClaimCode,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
   )
 
@@ -182,14 +187,19 @@ class ClaimMasterPanel extends FormPanel {
       }
     })
 
+
     if (CLAIMPROGRAM.toUpperCase() == "CHEQUE SANTÉ" || CLAIMPROGRAM.toUpperCase() == "CHEQUE SANTE") {
+
+      if(edited.code && edited.code.includes('.')){
+        let elements = edited.code.split(".")
+        claimCode = elements[3]
+      } else
       if (edited.code && policyNumber != undefined) {
         claimCode = edited.code.replace(policyNumber, '');
       }
     }
     else {
       if(!CLAIMPROGRAM || CLAIMPROGRAM == "" ){
-        console.log('enter', )
         claimCode = edited.code
       }
       if (edited.code && this.state.claimLabel && edited.healthFacility && this.state.dateAr && this.state.dateAr) {
