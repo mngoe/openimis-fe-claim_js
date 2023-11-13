@@ -209,6 +209,7 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
+  console.log('claim ', claim)
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -287,7 +288,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd2" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
-    "program {id idProgram nameProgram validityDateFrom}",
+    "program {id code idProgram nameProgram validityDateFrom}",
     "jsonExt",
   ];
   if (!!forFeedback) {

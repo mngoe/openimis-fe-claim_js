@@ -37,6 +37,10 @@ class ClaimMasterPanel extends FormPanel {
   state = {
     claimCode: null,
     claimCodeError: null,
+    dateAr: "",
+    programAr: "",
+    codeAr: "",
+    claimLabel: null
   };
 
   constructor(props) {
@@ -78,7 +82,42 @@ class ClaimMasterPanel extends FormPanel {
     }
   }
 
+  formatClaimCode = () => {
+    this.setState({
+      dateAr: this.props.edited.dateTo ? this.props.edited.dateTo : "",
+      programAr: this.props.edited.program ? this.props.edited.program.nameProgram : "",
+      programCode: this.props.edited.program ? this.props.edited.program.code : ""
+    })
+
+    let label = `${this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : ""}.${this.state.dateAr ? this.state.dateAr.substring(0, 4) : ""}.${this.state.programCode ? this.state.programCode.substring(0, 3) : ""}.` + this.state.codeAr
+    if (this.state.programAr == "Chèque Santé" || (this.state.programAr == "Chèque Santé" && (this.state.dateAr || this.state.programAr)) || (this.state.programAr == "" && this.state.dateAr) || (this.state.programAr && this.state.dateAr == "")) {
+      if (this.state.claimCode != null) {
+        this.validateClaimCode(this.state.codeAr)
+      }
+      console.log('afficher entre', this.state.claimCode !== null)
+      this.setState({
+        claimCode: this.state.claimCode
+      })
+    }
+    else {
+      this.setState({
+        claimLabel: label,
+        claimCode: label
+      },
+        (e) => { this.props.validateClaimCode(this.state.claimLabel) }
+      )
+    }
+
+
+  }
+  onChangeValue = (name, value) => {
+    this.updateAttribute(name, value)
+    this.debounceChangeValue()
+  }
   validateClaimCode = (v) => {
+    this.setState({
+      codeAr: v,
+    })
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
@@ -93,6 +132,12 @@ class ClaimMasterPanel extends FormPanel {
         v = policyNumber + v
       }
     }
+    else if (this.props?.edited?.program !== undefined) {
+      this.debounceChangeValue()
+      v = this.state.claimLabel
+    }
+
+
 
     this.setState(
       {
@@ -107,6 +152,11 @@ class ClaimMasterPanel extends FormPanel {
     this.validateClaimCode,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
   );
+  debounceChangeValue = _debounce(
+    this.formatClaimCode,
+    this.validateClaimCode,
+    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
+  )
 
   render() {
     const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props;
@@ -136,11 +186,26 @@ class ClaimMasterPanel extends FormPanel {
       }
     })
 
+
     if (CLAIMPROGRAM == "Chèque Santé") {
-      if (edited.code && policyNumber != undefined) {
-        claimCode = edited.code.replace(policyNumber, '');
+
+      if (edited.code && edited.code.includes('.')) {
+        let elements = edited.code.split(".")
+        claimCode = elements[3]
+      } else
+        if (edited.code && policyNumber != undefined) {
+          claimCode = edited.code.replace(policyNumber, '');
+        }
+    }
+    else {
+      if (!CLAIMPROGRAM || CLAIMPROGRAM == "") {
+        claimCode = edited.code
+      }
+      if (edited.code && this.state.claimLabel && edited.healthFacility && this.state.dateAr && this.state.dateAr) {
+        claimCode = edited.code.replace(edited.healthFacility.location.parent.name.substring(0, 2), '').replace(this.state.programCode.substring(0, 3), '').replace(this.state.dateAr.substring(0, 4), '').replace('...', '')
       }
     }
+
 
     return (
       <Grid container>
@@ -168,7 +233,11 @@ class ClaimMasterPanel extends FormPanel {
                 pubRef={this.insureePicker}
                 value={edited.insuree}
                 reset={reset}
-                onChange={(v, s) => this.updateAttribute("insuree", v)}
+                onChange={(v, s) => {
+
+                  this.updateAttribute("insuree", v)
+
+                }}
                 readOnly={ro}
                 required={true}
               />
@@ -205,7 +274,11 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="visitDateTo"
                 reset={reset}
-                onChange={(d) => this.updateAttribute("dateTo", d)}
+                onChange={(d) => {
+                  this.debounceChangeValue()
+                  this.onChangeValue("dateTo", d)
+                    ;
+                }}
                 readOnly={ro}
                 required={true}
                 minDate={edited.dateFrom}
@@ -271,7 +344,7 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {!!this.claimPrefix && CLAIMPROGRAM == "Chèque Santé" && (<ControlledField
+        {!!this.claimPrefix && !edited.uuid && CLAIMPROGRAM == "Chèque Santé" && (<ControlledField
           module="claim"
           id="Claim.codechfId"
           field={
@@ -291,7 +364,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.code"
           field={
-            <Grid item xs={this.claimPrefix ? 1 : 2} className={classes.item}>
+            <Grid item xs={2} className={classes.item}>
               <TextInput
                 module="claim"
                 label="code"
@@ -474,8 +547,9 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.program}
                 reset={reset}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
-                onChange={(v, s) => {
-                  this.updateAttribute("program", v);
+                onChange={(v) => {
+                  this.debounceChangeValue()
+                  this.onChangeValue("program", v);
                   changeProgram();
                 }}
                 required={true}
