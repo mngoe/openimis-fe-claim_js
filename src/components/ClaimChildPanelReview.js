@@ -43,7 +43,7 @@ class ClaimChildPanel extends Component {
   initData = () => {
     let data = [];
     if (!!this.props.edited[`${this.props.type}s`]) {
-      this.props.edited[`${this.props.type}s`].forEach(elmt =>{
+      this.props.edited[`${this.props.type}s`].forEach(elmt => {
         //elmt.subItems = elmt.claimlinkedItem;
         //elmt.service.servicesLinked = elmt.claimlinkedItem;
         //elmt.subServices = elmt.claimlinkedService;
@@ -150,12 +150,12 @@ class ClaimChildPanel extends Component {
       data[idx].qtyAppr = null;
     } else {
       data[idx].priceAsked = this._price(v);
-      if (!('item' in data[idx])){
+      if (!('item' in data[idx])) {
         data[idx].subItems = this._serviceLinked(v);
         data[idx].subServices = this._serviceSet(v);
       }
       data[idx].code = this._code(v);
-      
+
       if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
         data[idx].qtyProvided = 1;
         data[idx].qtyAppr = "0";
@@ -169,7 +169,7 @@ class ClaimChildPanel extends Component {
     let data = [...this.state.data];
     this._onEditedChanged(data);
   };
-  
+
   _onDelete = (idx) => {
     const data = [...this.state.data];
     data.splice(idx, 1);
@@ -199,7 +199,7 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;    
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
@@ -234,6 +234,7 @@ class ClaimChildPanel extends Component {
       `medical.service.code`,
       `medical.service.name`,
       `edit.${type}s.quantity`,
+      `edit.${type}s.qtyAdjusted`,
       `claim.edit.items.appPrice`,
     ];
 
@@ -294,28 +295,42 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={readOnly}
+              readOnly={!!forReview}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (i.service.packagetype == "F") {
-                  if (u.qtyProvided < v) {
-                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                      totalApproved: u.qtyProvided,
-                    }));
-                  }
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
-                } else if (i.service.packagetype == "P") {
-                  if (v == u.qtyProvided) {
-                    u.qtyDisplayed = u.qtyProvided;
-                    u.qtyAsked = u.qtyProvided;
-                  } else {
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = 0;
-                  }
-                }
+                u.qtyDisplayed = v;
+                u.qtyAsked = v;
+                // if (i.service.packagetype == "F") {
+                //   if (u.qtyProvided < v) {
+                //     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                //       totalApproved: u.qtyProvided,
+                //     }));
+                //   }
+                //   u.qtyDisplayed = v;
+                //   u.qtyAsked = v;
+                // } else if (i.service.packagetype == "P") {
+                //   if (v == u.qtyProvided) {
+                //     u.qtyDisplayed = u.qtyProvided;
+                //     u.qtyAsked = u.qtyProvided;
+                //   } else {
+                //     u.qtyDisplayed = v;
+                //     u.qtyAsked = 0;
+                //   }
+                // }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
                 console.log(totalClaimed);
+              }
+              }
+            />
+          </TableCell>
+          <TableCell>
+            <NumberInput
+              readOnly={readOnly}
+              value={u.qtyAdjusted ? u.qtyAdjusted : "0"}
+              onChange={(v) => {
+                u.qtyAdjusted = v;
+                u.qtyAsked = v;
+                this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
               }
               }
             />
@@ -347,28 +362,42 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
-                readOnly={readOnly}
+                readOnly={!!forReview}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (i.service.packagetype == "F") {
-                    if (u.qtyProvided < v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                    u.qtyDisplayed = v
-                    u.qtyAsked = v;
-                  } else if (i.service.packagetype == "P") {
-                    if (v == u.qtyProvided) {
-                      u.qtyAsked = u.qtyProvided;
-                      u.qtyDisplayed = u.qtyProvided;
-                    } else {
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = 0;
-                    }
-                  }
+                  u.qtyDisplayed = v
+                  u.qtyAsked = v;
+                  // if (i.service.packagetype == "F") {
+                  //   if (u.qtyProvided < v) {
+                  //     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                  //       totalApproved: u.qtyProvided,
+                  //     }));
+                  //   }
+                  //   u.qtyDisplayed = v
+                  //   u.qtyAsked = v;
+                  // } else if (i.service.packagetype == "P") {
+                  //   if (v == u.qtyProvided) {
+                  //     u.qtyAsked = u.qtyProvided;
+                  //     u.qtyDisplayed = u.qtyProvided;
+                  //   } else {
+                  //     u.qtyDisplayed = v;
+                  //     u.qtyAsked = 0;
+                  //   }
+                  // }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
                   console.log(totalClaimed);
+                }
+                }
+              />
+            </TableCell>
+            <TableCell>
+              <NumberInput
+                readOnly={readOnly}
+                value={u.qtyAdjusted ? u.qtyAdjusted : "0"}
+                onChange={(v) => {
+                  u.qtyAdjusted = v;
+                  u.qtyAsked = v;
+                  this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
                 }
                 }
               />
