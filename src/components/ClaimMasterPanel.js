@@ -37,10 +37,6 @@ class ClaimMasterPanel extends FormPanel {
   state = {
     claimCode: null,
     claimCodeError: null,
-    dateAr: "",
-    programAr: "",
-    codeAr: "",
-    claimLabel: null
   };
 
   constructor(props) {
@@ -82,44 +78,14 @@ class ClaimMasterPanel extends FormPanel {
     }
   }
 
-  formatClaimCode = () => {
-    this.setState({
-      dateAr: this.props.edited.dateTo ? this.props.edited.dateTo : "",
-      programAr: this.props.edited.program ? this.props.edited.program.nameProgram : "",
-      programCode: this.props.edited.program ? this.props.edited.program.code : ""
-    })
-
-    let label = `${this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : ""}.${this.state.dateAr ? this.state.dateAr.substring(0, 4) : ""}.${this.state.programCode ? this.state.programCode.substring(0, 3) : ""}.` + this.state.codeAr
-    if (this.state.programAr == "Chèque Santé" || (this.state.programAr == "Chèque Santé" && (this.state.dateAr || this.state.programAr)) || (this.state.programAr == "" && this.state.dateAr) || (this.state.programAr && this.state.dateAr == "")) {
-      if (this.state.claimCode != null) {
-        this.validateClaimCode(this.state.codeAr)
-      }
-      console.log('afficher entre', this.state.claimCode !== null)
-      this.setState({
-        claimCode: this.state.claimCode
-      })
-    }
-    else {
-      this.setState({
-        claimLabel: label,
-        claimCode: label
-      },
-        (e) => { this.props.validateClaimCode(this.state.claimLabel) }
-      )
-    }
-
-
-  }
   onChangeValue = (name, value) => {
     this.updateAttribute(name, value)
-    this.debounceChangeValue()
   }
+
   validateClaimCode = (v) => {
-    this.setState({
-      codeAr: v,
-    })
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
+    var csuNumber;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
     if (programName == "Chèque Santé") {
@@ -131,13 +97,19 @@ class ClaimMasterPanel extends FormPanel {
       if (policyNumber != undefined) {
         v = policyNumber + v
       }
+    } else {
+      if (programName == "") {
+        v = ""
+      } else {
+        var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
+        var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
+        var codeReg = this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : "";
+        csuNumber = `${codeReg}.${dateTo}.${programCode}.`;
+        if (csuNumber != undefined) {
+          v = csuNumber + v
+        }
+      }
     }
-    else if (this.props?.edited?.program !== undefined) {
-      this.debounceChangeValue()
-      v = this.state.claimLabel
-    }
-
-
 
     this.setState(
       {
@@ -152,11 +124,6 @@ class ClaimMasterPanel extends FormPanel {
     this.validateClaimCode,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
   );
-  debounceChangeValue = _debounce(
-    this.formatClaimCode,
-    this.validateClaimCode,
-    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
-  )
 
   render() {
     const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props;
@@ -164,6 +131,7 @@ class ClaimMasterPanel extends FormPanel {
     let totalClaimed = 0;
     let totalApproved = 0;
     let policyNumber;
+    let csuNumber;
     let claimCode = edited.code;
     var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
     if (edited.items) {
@@ -188,21 +156,20 @@ class ClaimMasterPanel extends FormPanel {
 
 
     if (CLAIMPROGRAM == "Chèque Santé") {
-
-      if (edited.code && edited.code.includes('.')) {
-        let elements = edited.code.split(".")
-        claimCode = elements[3]
-      } else
-        if (edited.code && policyNumber != undefined) {
-          claimCode = edited.code.replace(policyNumber, '');
-        }
-    }
-    else {
-      if (!CLAIMPROGRAM || CLAIMPROGRAM == "") {
-        claimCode = edited.code
+      if (edited.code && policyNumber != undefined && policyNumber != "") {
+        claimCode = edited.code.replace(policyNumber, '');
       }
-      if (edited.code && this.state.claimLabel && edited.healthFacility && this.state.dateAr && this.state.dateAr) {
-        claimCode = edited.code.replace(edited.healthFacility.location.parent.name.substring(0, 2), '').replace(this.state.programCode.substring(0, 3), '').replace(this.state.dateAr.substring(0, 4), '').replace('...', '')
+    } else {
+      if (CLAIMPROGRAM == "") {
+        claimCode = "";
+      } else {
+        var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
+        var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
+        var codeReg = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.location.parent.name.substring(0, 2) : "";
+        csuNumber = `${codeReg}.${dateTo}.${programCode}.`;
+        if (edited.code && csuNumber != undefined && csuNumber != "") {
+          claimCode = edited.code.replace(csuNumber, '');
+        }
       }
     }
 
@@ -275,9 +242,7 @@ class ClaimMasterPanel extends FormPanel {
                 label="visitDateTo"
                 reset={reset}
                 onChange={(d) => {
-                  this.debounceChangeValue()
-                  this.onChangeValue("dateTo", d)
-                    ;
+                  this.onChangeValue("dateTo", d);
                 }}
                 readOnly={ro}
                 required={true}
@@ -344,16 +309,16 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {!!this.claimPrefix && !edited.uuid && CLAIMPROGRAM == "Chèque Santé" && (<ControlledField
+        {!!this.claimPrefix && !edited.uuid && (<ControlledField
           module="claim"
           id="Claim.codechfId"
           field={
-            <Grid item xs={1} className={classes.item}>
+            <Grid item xs={2} className={classes.item}>
               <TextInput
                 module="claim"
                 label="codechfId"
                 required
-                value={policyNumber}
+                value={CLAIMPROGRAM == "Chèque Santé" ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
@@ -369,7 +334,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="code"
                 required
-                value={claimCode}
+                value={!!edited.uuid ? edited.code : claimCode}
                 error={this.state.claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
@@ -548,7 +513,6 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 onChange={(v) => {
-                  this.debounceChangeValue()
                   this.onChangeValue("program", v);
                   changeProgram();
                 }}
