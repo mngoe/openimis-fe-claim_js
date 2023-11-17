@@ -128,7 +128,7 @@ class ClaimMasterPanel extends FormPanel {
     let totalApproved = 0;
     let policyNumber;
     let csuNumber;
-    let claimCode = edited.code;
+    var claimCode = this.state.code != null ? this.state.code : "";
     var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
@@ -234,6 +234,7 @@ class ClaimMasterPanel extends FormPanel {
                 label="visitDateTo"
                 reset={reset}
                 onChange={(d) => {
+                  this.debounceUpdateCode(claimCode)
                   this.onChangeValue("dateTo", d);
                 }}
                 readOnly={ro}
@@ -326,7 +327,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="code"
                 required
-                value={!!edited.uuid ? edited.code : claimCode}
+                value={!!edited.uuid ? edited.code : this.state.code}
                 error={this.state.claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
@@ -505,6 +506,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 onChange={(v) => {
+                  this.debounceUpdateCode(claimCode)
                   this.onChangeValue("program", v);
                   changeProgram();
                 }}
