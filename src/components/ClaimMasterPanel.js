@@ -98,16 +98,12 @@ class ClaimMasterPanel extends FormPanel {
         v = policyNumber + v
       }
     } else {
-      if (programName == "") {
-        v = ""
-      } else {
-        var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
-        var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
-        var codeReg = this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : "";
-        csuNumber = `${codeReg}.${dateTo}.${programCode}.`;
-        if (csuNumber != undefined) {
-          v = csuNumber + v
-        }
+      var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
+      var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
+      var codeReg = this.props.edited.healthFacility ? this.props.edited.healthFacility.location.parent.name.substring(0, 2) : "";
+      csuNumber = `${codeReg}.${dateTo}.${programCode}.`;
+      if (csuNumber != undefined) {
+        v = csuNumber + v
       }
     }
 
@@ -160,16 +156,12 @@ class ClaimMasterPanel extends FormPanel {
         claimCode = edited.code.replace(policyNumber, '');
       }
     } else {
-      if (CLAIMPROGRAM == "") {
-        claimCode = "";
-      } else {
-        var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
-        var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
-        var codeReg = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.location.parent.name.substring(0, 2) : "";
-        csuNumber = `${codeReg}.${dateTo}.${programCode}.`;
-        if (edited.code && csuNumber != undefined && csuNumber != "") {
-          claimCode = edited.code.replace(csuNumber, '');
-        }
+      var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
+      var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
+      var codeReg = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.location.parent.name.substring(0, 2) : "";
+      csuNumber = `${codeReg}.${dateTo}.${programCode}.`;
+      if (edited.code && csuNumber != undefined && csuNumber != "") {
+        claimCode = edited.code.replace(csuNumber, '');
       }
     }
 
@@ -507,7 +499,7 @@ class ClaimMasterPanel extends FormPanel {
                 name="program"
                 hfId={edited?.healthFacility ? decodeId(edited.healthFacility.id) : 0}
                 insureeId={edited?.insuree ? decodeId(edited.insuree.id) : 0}
-                visitDateFrom={edited?.dateFrom ? edited.dateFrom : ""}
+                visitDateFrom={edited.dateFrom}
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
