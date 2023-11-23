@@ -37,6 +37,7 @@ class ClaimMasterPanel extends FormPanel {
   state = {
     claimCode: null,
     claimCodeError: null,
+    codeClaim: null,
   };
 
   constructor(props) {
@@ -87,6 +88,7 @@ class ClaimMasterPanel extends FormPanel {
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
     var csuNumber;
+    let c = v;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
     if (programName == "Chèque Santé") {
@@ -112,6 +114,7 @@ class ClaimMasterPanel extends FormPanel {
       {
         claimCodeError: null,
         claimCode: v,
+        codeClaim: c,
       },
       (e) => this.props.validateClaimCode(v),
     );
@@ -328,7 +331,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="code"
                 required
-                value={!!edited.uuid ? edited.code : claimCode}
+                value={!!edited.uuid ? edited.code : this.state.codeClaim}
                 error={this.state.claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
@@ -507,8 +510,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 onChange={(v) => {
-                  claimCode = "";
-                  this.debounceUpdateCode(claimCode);
+                  this.debounceUpdateCode("");
                   this.onChangeValue("program", v);
                   changeProgram();
                 }}
