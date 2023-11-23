@@ -83,6 +83,7 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
+    this.updateAttribute("numCode", v)
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
     var csuNumber;
