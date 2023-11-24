@@ -212,7 +212,7 @@ class ClaimMasterPanel extends FormPanel {
                 label="claimedDate"
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={ro}
+                readOnly={true}
                 required={true}
                 minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
               />
