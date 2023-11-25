@@ -84,6 +84,7 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
+    this.updateAttribute("numCode", v)
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
     var csuNumber;
@@ -269,37 +270,42 @@ class ClaimMasterPanel extends FormPanel {
         />
         <ControlledField
           module="claim"
-          id="Claim.visitType"
+          id="Claim.program"
           field={
-            <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
+            <Grid item xs={4} className={classes.item}>
               <PublishedComponent
-                pubRef="medical.VisitTypePicker"
-                name="visitType"
-                withNull={false}
-                value={edited.visitType}
+                pubRef="claim.ClaimProgramPicker"
+                name="program"
+                hfId={edited?.healthFacility ? decodeId(edited.healthFacility.id) : 0}
+                insureeId={edited?.insuree ? decodeId(edited.insuree.id) : 0}
+                visitDateFrom={edited.dateFrom}
+                label={formatMessage(intl, "claim", "programPicker.label")}
+                value={edited.program}
                 reset={reset}
-                onChange={(v, s) => this.updateAttribute("visitType", v)}
-                readOnly={ro}
+                readOnly={!!edited && edited[`uuid`] ? true : false}
+                onChange={(v) => {
+                  this.debounceUpdateCode("");
+                  this.onChangeValue("program", v);
+                  changeProgram();
+                }}
                 required={true}
               />
             </Grid>
           }
         />
-        {!forFeedback && (
+        {policyNumber != undefined && policyNumber != null && (
           <ControlledField
-            module="claim"
-            id="Claim.mainDiagnosis"
+            module="policy"
+            id="Claim.policyNumber"
             field={
-              <Grid item xs={3} className={classes.item}>
-                <PublishedComponent
-                  pubRef="medical.DiagnosisPicker"
-                  name="mainDiagnosis"
-                  label={formatMessage(intl, "claim", "mainDiagnosis")}
-                  value={edited.icd}
+              <Grid item xs={2} className={classes.item}>
+                <TextInput
+                  module="policy"
+                  label="policy.PolicyNumber"
+                  name="policyNumber"
+                  value={policyNumber}
+                  readOnly={true}
                   reset={reset}
-                  onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro}
-                  required
                 />
               </Grid>
             }
@@ -481,6 +487,44 @@ class ClaimMasterPanel extends FormPanel {
         )}
         <ControlledField
           module="claim"
+          id="Claim.visitType"
+          field={
+            <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
+              <PublishedComponent
+                pubRef="medical.VisitTypePicker"
+                name="visitType"
+                withNull={false}
+                value={edited.visitType}
+                reset={reset}
+                onChange={(v, s) => this.updateAttribute("visitType", v)}
+                readOnly={ro}
+                required={true}
+              />
+            </Grid>
+          }
+        />
+        {!forFeedback && (
+          <ControlledField
+            module="claim"
+            id="Claim.mainDiagnosis"
+            field={
+              <Grid item xs={3} className={classes.item}>
+                <PublishedComponent
+                  pubRef="medical.DiagnosisPicker"
+                  name="mainDiagnosis"
+                  label={formatMessage(intl, "claim", "mainDiagnosis")}
+                  value={edited.icd}
+                  reset={reset}
+                  onChange={(v, s) => this.updateAttribute("icd", v)}
+                  readOnly={ro}
+                  required
+                />
+              </Grid>
+            }
+          />
+        )}
+        <ControlledField
+          module="claim"
           id="Claim.admin"
           field={
             <Grid item xs={4} className={classes.item}>
@@ -493,50 +537,6 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
-          module="claim"
-          id="Claim.program"
-          field={
-            <Grid item xs={4} className={classes.item}>
-              <PublishedComponent
-                pubRef="claim.ClaimProgramPicker"
-                name="program"
-                hfId={edited?.healthFacility ? decodeId(edited.healthFacility.id) : 0}
-                insureeId={edited?.insuree ? decodeId(edited.insuree.id) : 0}
-                visitDateFrom={edited.dateFrom}
-                label={formatMessage(intl, "claim", "programPicker.label")}
-                value={edited.program}
-                reset={reset}
-                readOnly={!!edited && edited[`uuid`] ? true : false}
-                onChange={(v) => {
-                  this.debounceUpdateCode("");
-                  this.onChangeValue("program", v);
-                  changeProgram();
-                }}
-                required={true}
-              />
-            </Grid>
-          }
-        />
-        {policyNumber != undefined && policyNumber != null && (
-          <ControlledField
-            module="policy"
-            id="Claim.policyNumber"
-            field={
-              <Grid item xs={2} className={classes.item}>
-                <TextInput
-                  module="policy"
-                  label="policy.PolicyNumber"
-                  name="policyNumber"
-                  value={policyNumber}
-                  readOnly={true}
-                  reset={reset}
-                />
-              </Grid>
-            }
-          />
-        )
-        }
         {!forFeedback && (
           <Fragment>
             <ControlledField
