@@ -148,6 +148,7 @@ class ClaimForm extends Component {
 
   canSaveDetail = (d, type) => {
     if (!d[type]) return false;
+    if (d[type].packagetype === 'S') return true;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
@@ -171,6 +172,7 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
+    if (!this.state.claim.numCode ) return false;
 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
@@ -206,6 +208,11 @@ class ClaimForm extends Component {
     //console.log(this.state.claim);
     return true;
   };
+
+  NAME_PROGRAM = {
+    Cheque_Sante : "Chèque Santé",
+    Vih : "VIH",
+  }
 
   reload = () => {
     this.props.fetchClaim(
@@ -259,6 +266,7 @@ class ClaimForm extends Component {
       forFeedback = false,
     } = this.props;
     const { claim, claim_uuid, lockNew } = this.state;
+    const nameProgram = claim?.program?.nameProgram
     let readOnly =
       lockNew ||
       (!forReview && !forFeedback && claim.status !== 2) ||
@@ -326,7 +334,7 @@ class ClaimForm extends Component {
               HeadPanel={ClaimMasterPanel}
               changeProgram={this.changeProgram}
               resetServices={this.state.resetServices}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : nameProgram == this.NAME_PROGRAM.Cheque_Sante ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               onEditedChanged={this.onEditedChanged}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} />
