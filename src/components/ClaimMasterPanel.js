@@ -37,11 +37,12 @@ class ClaimMasterPanel extends FormPanel {
   state = {
     claimCode: null,
     claimCodeError: null,
+    codeClaim: null,
   };
 
   constructor(props) {
     super(props);
-    this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 8);
+    this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 6);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
     this.insureePicker = props.modulesManager.getConf(
@@ -52,12 +53,12 @@ class ClaimMasterPanel extends FormPanel {
     this.claimPrefix = props.modulesManager.getConf(
       "fe-claim",
       "claimPrex",
-      0,
+      1,
     );
     this.hideSecDiagnos = props.modulesManager.getConf(
       "fe-claim",
       "hideSecDiagnos",
-      0,
+      1,
     );
   }
 
@@ -78,16 +79,46 @@ class ClaimMasterPanel extends FormPanel {
     }
   }
 
+  onChangeValue = (name, value) => {
+    this.updateAttribute(name, value)
+  }
+
   validateClaimCode = (v) => {
-    if (this.claimPrefix == 1) {
-      if (this.state.data?.insuree?.chfId != undefined) {
-        v = this.state.data?.insuree?.chfId + v
+    // if (this.claimPrefix == 1) {
+    //   if (this.state.data?.insuree?.chfId != undefined) {
+    //     v = this.state.data?.insuree?.chfId + v
+    //   }
+    // }
+    this.updateAttribute("numCode", v)
+    let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
+    let policyNumber;
+    var csuNumber;
+    let c = v;
+    var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
+
+    if (programName == "Chèque Santé") {
+      insureePolicies.forEach(function (policy) {
+        if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
+          policyNumber = policy.policy.policyNumber;
+        }
+      })
+      if (policyNumber != undefined) {
+        v = policyNumber + v
+      }
+    } else {
+      var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
+      var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
+      var codeFosa = this.props.edited.healthFacility ? this.props.edited.healthFacility.code : "";
+      csuNumber = `${codeFosa}.${dateTo}.${programCode}.`;
+      if (csuNumber != undefined) {
+        v = csuNumber + v
       }
     }
     this.setState(
       {
         claimCodeError: null,
         claimCode: v,
+        codeClaim: c,
       },
       (e) => this.props.validateClaimCode(v),
     );
@@ -103,6 +134,10 @@ class ClaimMasterPanel extends FormPanel {
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
+    let policyNumber;
+    let csuNumber;
+    var claimCode = this.state.claimCode != null ? this.state.claimCode : "";
+    var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
@@ -113,20 +148,32 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    if (edited.code && this.claimPrefix) {
-      edited.code = edited.code.replace(edited.insuree?.chfId, '');
-    }
+    // if (edited.code && this.claimPrefix) {
+    //   edited.code = edited.code.replace(edited.insuree?.chfId, '');
+    // }
 
     let ro = readOnly || !!forReview || !!forFeedback;
 
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
-    let policyNumber;
     
     insureePolicies.forEach(function (policy) {
       if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
         policyNumber = policy.policy.policyNumber;
       }
     })
+    if (CLAIMPROGRAM == "Chèque Santé") {
+      if (edited.code && policyNumber != undefined && policyNumber != "") {
+        claimCode = edited.code.replace(policyNumber, '');
+      }
+    } else {
+      var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
+      var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
+      var codeFosa = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.code : "";
+      csuNumber = `${codeFosa}.${dateTo}.${programCode}.`;
+      if (edited.code && csuNumber != undefined && csuNumber != "") {
+        claimCode = edited.code.replace(csuNumber, '');
+      }
+    }
 
     return (
       <Grid container>
@@ -191,7 +238,10 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="visitDateTo"
                 reset={reset}
-                onChange={(d) => this.updateAttribute("dateTo", d)}
+                onChange={(d) => {
+                  this.debounceUpdateCode(claimCode)
+                  this.onChangeValue("dateTo", d);
+                }}
                 readOnly={ro}
                 required={true}
                 minDate={edited.dateFrom}
@@ -221,52 +271,57 @@ class ClaimMasterPanel extends FormPanel {
         />
         <ControlledField
           module="claim"
-          id="Claim.visitType"
+          id="Claim.program"
           field={
-            <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
+            <Grid item xs={4} className={classes.item}>
               <PublishedComponent
-                pubRef="medical.VisitTypePicker"
-                name="visitType"
-                withNull={false}
-                value={edited.visitType}
+                pubRef="claim.ClaimProgramPicker"
+                name="program"
+                hfId={edited?.healthFacility ? decodeId(edited.healthFacility.id) : 0}
+                insureeId={edited?.insuree ? decodeId(edited.insuree.id) : 0}
+                visitDateFrom={edited?.dateFrom ? edited.dateFrom : ""}
+                label={formatMessage(intl, "claim", "programPicker.label")}
+                value={edited.program}
                 reset={reset}
-                onChange={(v, s) => this.updateAttribute("visitType", v)}
-                readOnly={ro}
+                readOnly={!!edited && edited[`uuid`] ? true : false}
+                onChange={(v) => {
+                  this.debounceUpdateCode("");
+                  this.onChangeValue("program", v);
+                  changeProgram();
+                }}
                 required={true}
               />
             </Grid>
           }
         />
-        {!forFeedback && (
+        {policyNumber != undefined && policyNumber != null && (
           <ControlledField
-            module="claim"
-            id="Claim.mainDiagnosis"
+            module="policy"
+            id="Claim.policyNumber"
             field={
-              <Grid item xs={3} className={classes.item}>
-                <PublishedComponent
-                  pubRef="medical.DiagnosisPicker"
-                  name="mainDiagnosis"
-                  label={formatMessage(intl, "claim", "mainDiagnosis")}
-                  value={edited.icd}
+              <Grid item xs={2} className={classes.item}>
+                <TextInput
+                  module="policy"
+                  label="policy.PolicyNumber"
+                  name="policyNumber"
+                  value={policyNumber}
+                  readOnly={true}
                   reset={reset}
-                  onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro}
-                  required
                 />
               </Grid>
             }
           />
         )}
-        {!!this.claimPrefix && (<ControlledField
+        {!!this.claimPrefix && !edited.uuid && (<ControlledField
           module="claim"
           id="Claim.codechfId"
           field={
-            <Grid item xs={1} className={classes.item}>
+            <Grid item xs={2} className={classes.item}>
               <TextInput
                 module="claim"
                 label="codechfId"
                 required
-                value={edited.insuree?.chfId}
+                value={CLAIMPROGRAM == "Chèque Santé" ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
@@ -277,16 +332,16 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.code"
           field={
-            <Grid item xs={this.claimPrefix ? 1 : 2} className={classes.item}>
+            <Grid item xs={2} className={classes.item}>
               <TextInput
                 module="claim"
                 label="code"
                 required
-                value={edited.code}
+                value={!!edited.uuid ? edited.code : this.state.codeClaim}
                 error={this.state.claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
-                readOnly={ro}
+                readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
                   "maxLength": this.codeMaxLength,
                 }}
@@ -433,6 +488,44 @@ class ClaimMasterPanel extends FormPanel {
         )}
         <ControlledField
           module="claim"
+          id="Claim.visitType"
+          field={
+            <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
+              <PublishedComponent
+                pubRef="medical.VisitTypePicker"
+                name="visitType"
+                withNull={false}
+                value={edited.visitType}
+                reset={reset}
+                onChange={(v, s) => this.updateAttribute("visitType", v)}
+                readOnly={ro}
+                required={true}
+              />
+            </Grid>
+          }
+        />
+        {!forFeedback && (
+          <ControlledField
+            module="claim"
+            id="Claim.mainDiagnosis"
+            field={
+              <Grid item xs={3} className={classes.item}>
+                <PublishedComponent
+                  pubRef="medical.DiagnosisPicker"
+                  name="mainDiagnosis"
+                  label={formatMessage(intl, "claim", "mainDiagnosis")}
+                  value={edited.icd}
+                  reset={reset}
+                  onChange={(v, s) => this.updateAttribute("icd", v)}
+                  readOnly={ro}
+                  required
+                />
+              </Grid>
+            }
+          />
+        )}
+        <ControlledField
+          module="claim"
           id="Claim.admin"
           field={
             <Grid item xs={4} className={classes.item}>
@@ -445,49 +538,6 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
-          module="claim"
-          id="Claim.program"
-          field={
-            <Grid item xs={4} className={classes.item}>
-              <PublishedComponent
-                pubRef="claim.ClaimProgramPicker"
-                name="program"
-                hfId={edited?.healthFacility ? decodeId(edited.healthFacility.id) : 0}
-                insureeId={edited?.insuree ? decodeId(edited.insuree.id) : 0}
-                visitDateFrom={edited?.dateFrom ? edited.dateFrom : ""}
-                label={formatMessage(intl, "claim", "programPicker.label")}
-                value={edited.program}
-                reset={reset}
-                readOnly={ro}
-                onChange={(v, s) => {
-                  this.updateAttribute("program", v);
-                  changeProgram();
-                }}
-                required={true}
-              />
-            </Grid>
-          }
-        />
-        {policyNumber != undefined && policyNumber != null && (
-          <ControlledField
-            module="policy"
-            id="Claim.policyNumber"
-            field={
-              <Grid item xs={2} className={classes.item}>
-                <TextInput
-                  module="policy"
-                  label="policy.PolicyNumber"
-                  name="policyNumber"
-                  value={policyNumber}
-                  readOnly={true}
-                  reset={reset}
-                />
-              </Grid>
-            }
-          />
-        )
-        }
         {!forFeedback && (
           <Fragment>
             <ControlledField
