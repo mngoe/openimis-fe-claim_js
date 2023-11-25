@@ -316,7 +316,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.codechfId"
           field={
-            <Grid item xs={1} className={classes.item}>
+            <Grid item xs={2} className={classes.item}>
               <TextInput
                 module="claim"
                 label="codechfId"
