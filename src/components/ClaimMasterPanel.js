@@ -283,7 +283,7 @@ class ClaimMasterPanel extends FormPanel {
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
-                readOnly={ro}
+                readOnly={!!edited && edited[`uuid`] ? true : false}
                 onChange={(v) => {
                   this.debounceUpdateCode("");
                   this.onChangeValue("program", v);
