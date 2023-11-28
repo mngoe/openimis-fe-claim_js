@@ -60,13 +60,10 @@ export function claimedAmount(r) {
             if (r?.claimlinkedService) {
               r.claimlinkedService.forEach(subItem => {
                 let qtyAsked = 0;
-                if (subItem.qtyAdjusted) {
-                  qtyAsked = subItem.qtyAdjusted;
-                  totalPrice += qtyAsked * subItem.priceAsked;
-                } else {
+            
                   if (subItem.qtyDisplayed) {
                     qtyAsked = subItem.qtyDisplayed;
-                  }
+                  
                   totalPrice += qtyAsked * subItem.priceAsked;
                 }
                 // if(currentPackageType=="P"){
@@ -127,8 +124,17 @@ export function claimedAmount(r) {
 }
 export function approvedAmount(r) {
   if (r.status === 2) return 0;
+  let totalPrice = 0
+  r.claimlinkedService.forEach(subItem => {
+    let qtyAsked = 0;
+    if (subItem.qtyAdjusted) {
+      qtyAsked = subItem.qtyAdjusted;
+      totalPrice += qtyAsked * subItem.priceAsked;
+    }
+  });
+ 
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
-  let price = r.priceApproved !== null && r.priceApproved !== "" ? r.priceApproved : r.priceAsked;
+  let price = r.priceApproved !== null || r.priceApproved !== "" ? totalPrice : r.priceAsked;
   if (r.claimlinkedService.length > 1){
     return parseFloat(price)
   }
