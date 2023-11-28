@@ -123,7 +123,6 @@ class ClaimMasterPanel extends FormPanel {
 
   render() {
     const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props;
-    console.log('edited ', edited)
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;

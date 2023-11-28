@@ -134,7 +134,8 @@ export function approvedAmount(r) {
   });
  
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
-  let price = r.priceApproved !== null || r.priceApproved !== "" ? totalPrice : r.priceAsked;
+  // let price = r.priceApproved !== null || r.priceApproved !== "" ? totalPrice : r.priceAsked;
+  let price = totalPrice == 0 ? r.priceAsked : totalPrice
   if (r.claimlinkedService.length > 1){
     return parseFloat(price)
   }
