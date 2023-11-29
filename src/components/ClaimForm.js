@@ -172,7 +172,7 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (!this.state.claim.numCode ) return false;
+    if (this.state.claim.program.nameProgram == this.NAME_PROGRAM && !this.state.claim.numCode ) return false;
 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
@@ -205,7 +205,6 @@ class ClaimForm extends Component {
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
-    //console.log(this.state.claim);
     return true;
   };
   NAME_PROGRAM = {
