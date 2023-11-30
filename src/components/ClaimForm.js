@@ -176,11 +176,11 @@ class ClaimForm extends Component {
 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+        if (this.state.claim.services.length <=1 && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
       } else {
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
+        if (this.state.claim.services.length <=1 && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
       }
