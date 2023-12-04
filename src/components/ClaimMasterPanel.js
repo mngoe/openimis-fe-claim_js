@@ -91,7 +91,7 @@ class ClaimMasterPanel extends FormPanel {
     let c = v;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
-    if (programName == "Chèque Santé") {
+    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
       insureePolicies.forEach(function (policy) {
         if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
           policyNumber = policy.policy.policyNumber;
@@ -126,7 +126,7 @@ class ClaimMasterPanel extends FormPanel {
   );
 
   render() {
-    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props;
+    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props; 
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -155,7 +155,7 @@ class ClaimMasterPanel extends FormPanel {
     })
 
 
-    if (CLAIMPROGRAM == "Chèque Santé") {
+    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") {
       if (edited.code && policyNumber != undefined && policyNumber != "") {
         claimCode = edited.code.replace(policyNumber, '');
       }
@@ -320,7 +320,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={CLAIMPROGRAM == "Chèque Santé" ? policyNumber : csuNumber}
+                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" ) ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
