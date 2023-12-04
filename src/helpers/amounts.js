@@ -85,13 +85,9 @@ export function claimedAmount(r) {
             if (r?.claimlinkedItem) {
               r.claimlinkedItem.forEach(subItem => {
                 let qtyAsked = 0;
-                if (subItem.qtyAdjusted) {
-                  qtyAsked = subItem.qtyAdjusted;
-                  totalPrice += qtyAsked * subItem.priceAsked;
-                } else {
-                  if (subItem.qtyDisplayed) {
-                    qtyAsked = subItem.qtyDisplayed;
-                  }
+                if (subItem.qtyDisplayed) {
+                  qtyAsked = subItem.qtyDisplayed;
+
                   totalPrice += qtyAsked * subItem.priceAsked;
                 }
                 // if (currentPackageType == "P") {
@@ -123,18 +119,30 @@ export function claimedAmount(r) {
   //
 }
 export function approvedAmount(r) {
+  console.log('r ', r)
   if (r.status === 2) return 0;
   let totalPrice = 0
+  let itemPrice = 0
+  let servicePrice = 0
   if(r.claimlinkedService){
     r.claimlinkedService.forEach(subItem => {
       let qtyAsked = 0;
       if (subItem.qtyAdjusted) {
         qtyAsked = subItem.qtyAdjusted;
-        totalPrice += qtyAsked * subItem.priceAsked;
+        servicePrice += qtyAsked * subItem.priceAsked;
       }
     });
   }
-
+  if(r.claimlinkedItem ){
+    r.claimlinkedItem.forEach(subItem => {
+      let qtyAsked = 0;
+      if (subItem.qtyAdjusted) {
+        qtyAsked = subItem.qtyAdjusted;
+        itemPrice += qtyAsked * subItem.priceAsked;
+      }
+    });
+  }
+  totalPrice = itemPrice + servicePrice
 
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
   // let price = r.priceApproved !== null || r.priceApproved !== "" ? totalPrice : r.priceAsked;
