@@ -210,7 +210,8 @@ class ClaimForm extends Component {
   };
 
   NAME_PROGRAM = {
-    Cheque_Sante : "Chèque Santé",
+    Chèque_Sante : "Chèque Santé",
+    Cheque_Sante : "Cheque Santé",
     Vih : "VIH",
   }
 
@@ -334,7 +335,7 @@ class ClaimForm extends Component {
               HeadPanel={ClaimMasterPanel}
               changeProgram={this.changeProgram}
               resetServices={this.state.resetServices}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : nameProgram == this.NAME_PROGRAM.Cheque_Sante ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram ==  this.NAME_PROGRAM.Chèque_Sante ) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               onEditedChanged={this.onEditedChanged}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} />
