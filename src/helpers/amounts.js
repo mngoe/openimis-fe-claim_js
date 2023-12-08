@@ -144,6 +144,7 @@ export function approvedAmount(r) {
     });
   }
   totalPrice = itemPrice + servicePrice
+  console.log('total price ', totalPrice)
 
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
   let price = totalPrice == 0 ? r.priceAsked : totalPrice;
