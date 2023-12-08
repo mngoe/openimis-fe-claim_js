@@ -120,6 +120,7 @@ export function claimedAmount(r) {
 }
 export function approvedAmount(r) {
 
+  console.log('r', r)
   if (r.status === 2) return 0;
   let totalPrice = 0
   let itemPrice = 0
@@ -153,5 +154,10 @@ export function approvedAmount(r) {
   else{
     return qty * parseFloat(price);
   }
+
+  //  if (r.status === 2) return 0;
+  // let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
+  // let price = r.priceApproved !== null && r.priceApproved !== "" ? r.priceApproved : r.priceAsked;
+  // return qty * parseFloat(price);
 
 }

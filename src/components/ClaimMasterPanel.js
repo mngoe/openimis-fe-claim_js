@@ -144,7 +144,6 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-
     let ro = readOnly || !!forReview || !!forFeedback;
 
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
@@ -169,7 +168,7 @@ class ClaimMasterPanel extends FormPanel {
       }
     }
 
-
+    console.log('edited ', edited)
     return (
       <Grid container>
         <ControlledField
@@ -398,7 +397,7 @@ class ClaimMasterPanel extends FormPanel {
               id="Claim.approved"
               field={
                 <Grid item xs={1} className={classes.item}>
-                  <AmountInput value={edited.approved || null} module="claim" label="approved" readOnly={true} />
+                  <AmountInput value={1} module="claim" label="approved" readOnly={true} />
                 </Grid>
               }
             />
