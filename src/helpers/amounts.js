@@ -122,7 +122,7 @@ export function claimedAmount(r) {
 export function approvedAmount(r) {
 
   console.log('r', r)
-  if (r.status === 2) return 0;
+  // if (r.status === 2) return 0;
   let totalPrice = 0
   let itemPrice = 0
   let servicePrice = 0
