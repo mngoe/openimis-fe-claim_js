@@ -137,13 +137,16 @@ class ClaimMasterPanel extends FormPanel {
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
+      console.log('total claimed / approved phase 1', totalApproved)
     }
     if (edited.services) {
       totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
+      console.log('total claimed / approved phase 2', approvedAmount(edited.services[0]), totalApproved)
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
+    console.log('total claimed / approved final', totalClaimed, totalApproved)
     let ro = readOnly || !!forReview || !!forFeedback;
 
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];

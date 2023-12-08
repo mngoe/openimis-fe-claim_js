@@ -12,6 +12,7 @@ export function claimedAmount(r) {
           } else {
             // if this product has subItems we add everything
             if (r.service?.serviceserviceSet) {
+              console.log('entrer ici ')
               r.service.serviceserviceSet.forEach(subItem => {
                 let qtyAsked = 0;
                 if (subItem.qtyAsked) {
@@ -125,7 +126,8 @@ export function approvedAmount(r) {
   let totalPrice = 0
   let itemPrice = 0
   let servicePrice = 0
-  if(r.claimlinkedService){
+  if(r.claimlinkedService && r.claimlinkedService.length >=1){
+    console.log('enter theen')
     r.claimlinkedService.forEach(subItem => {
       let qtyAsked = 0;
       if (subItem.qtyAdjusted) {
@@ -134,7 +136,8 @@ export function approvedAmount(r) {
       }
     });
   }
-  if(r.claimlinkedItem ){
+  if(r.claimlinkedItem && r.claimlinkedItem.length >=1 ){
+    console.log("enter then ")
     r.claimlinkedItem.forEach(subItem => {
       let qtyAsked = 0;
       if (subItem.qtyAdjusted) {
@@ -143,13 +146,14 @@ export function approvedAmount(r) {
       }
     });
   }
+  console.log('go out')
   totalPrice = itemPrice + servicePrice
   console.log('total price ', totalPrice)
-
+  r.priceApproved = totalPrice
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
-  let price = totalPrice == 0 ? r.priceAsked : totalPrice;
+  let price = r.priceApproved == 0 ? r.priceAsked : r.priceApproved;
 
-  if (r.claimlinkedService && r.claimlinkedService.length > 1){
+  if (r.claimlinkedService && r.claimlinkedService.length > 1 || r.claimlinkedItem && r.claimlinkedItem.length > 1){
     return parseFloat(price)
   }
   else{
