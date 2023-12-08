@@ -397,7 +397,7 @@ class ClaimMasterPanel extends FormPanel {
               id="Claim.approved"
               field={
                 <Grid item xs={1} className={classes.item}>
-                  <AmountInput value={1} module="claim" label="approved" readOnly={true} />
+                  <AmountInput value={edited.approved} module="claim" label="approved" readOnly={true} />
                 </Grid>
               }
             />
