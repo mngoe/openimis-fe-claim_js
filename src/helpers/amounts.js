@@ -126,6 +126,7 @@ export function approvedAmount(r) {
   let totalPrice = 0
   let itemPrice = 0
   let servicePrice = 0
+  console.log('here')
   if(r.claimlinkedService && r.claimlinkedService.length >=1){
     console.log('enter theen')
     r.claimlinkedService.forEach(subItem => {
