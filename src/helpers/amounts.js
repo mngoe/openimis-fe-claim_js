@@ -60,13 +60,10 @@ export function claimedAmount(r) {
             if (r?.claimlinkedService) {
               r.claimlinkedService.forEach(subItem => {
                 let qtyAsked = 0;
-                if (subItem.qtyAdjusted) {
-                  qtyAsked = subItem.qtyAdjusted;
-                  totalPrice += qtyAsked * subItem.priceAsked;
-                } else {
+
                   if (subItem.qtyDisplayed) {
                     qtyAsked = subItem.qtyDisplayed;
-                  }
+
                   totalPrice += qtyAsked * subItem.priceAsked;
                 }
                 // if(currentPackageType=="P"){
@@ -88,13 +85,9 @@ export function claimedAmount(r) {
             if (r?.claimlinkedItem) {
               r.claimlinkedItem.forEach(subItem => {
                 let qtyAsked = 0;
-                if (subItem.qtyAdjusted) {
-                  qtyAsked = subItem.qtyAdjusted;
-                  totalPrice += qtyAsked * subItem.priceAsked;
-                } else {
-                  if (subItem.qtyDisplayed) {
-                    qtyAsked = subItem.qtyDisplayed;
-                  }
+                if (subItem.qtyDisplayed) {
+                  qtyAsked = subItem.qtyDisplayed;
+
                   totalPrice += qtyAsked * subItem.priceAsked;
                 }
                 // if (currentPackageType == "P") {
@@ -126,8 +119,42 @@ export function claimedAmount(r) {
   //
 }
 export function approvedAmount(r) {
-  if (r.status === 2) return 0;
+
+  let totalPrice = 0
+  let itemPrice = 0
+  let servicePrice = 0
+  if(r.claimlinkedService && r.claimlinkedService.length >=1){
+    r.claimlinkedService.forEach(subItem => {
+      let qtyAsked = 0;
+      if (subItem.qtyAdjusted) {
+        qtyAsked = subItem.qtyAdjusted;
+        servicePrice += qtyAsked * subItem.priceAsked;
+      }
+    });
+  }
+  if(r.claimlinkedItem && r.claimlinkedItem.length >=1 ){
+    r.claimlinkedItem.forEach(subItem => {
+      let qtyAsked = 0;
+      if (subItem.qtyAdjusted) {
+        qtyAsked = subItem.qtyAdjusted;
+        itemPrice += qtyAsked * subItem.priceAsked;
+      }
+    });
+  }
+  totalPrice = itemPrice + servicePrice
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
-  let price = r.priceApproved !== null && r.priceApproved !== "" ? r.priceApproved : r.priceAsked;
-  return qty * parseFloat(price);
+  let price = totalPrice == 0 ? r.priceAsked : totalPrice;
+
+  if (r.claimlinkedService && r.claimlinkedService.length > 1 || r.claimlinkedItem && r.claimlinkedItem.length > 1){
+    return parseFloat(price)
+  }
+  else{
+    return qty * parseFloat(price);
+  }
+
+  //  if (r.status === 2) return 0;
+  // let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
+  // let price = r.priceApproved !== null && r.priceApproved !== "" ? r.priceApproved : r.priceAsked;
+  // return qty * parseFloat(price);
+
 }

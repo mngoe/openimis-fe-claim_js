@@ -91,7 +91,7 @@ class ClaimMasterPanel extends FormPanel {
     let c = v;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
-    if (programName == "Chèque Santé") {
+    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
       insureePolicies.forEach(function (policy) {
         if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
           policyNumber = policy.policy.policyNumber;
@@ -126,7 +126,7 @@ class ClaimMasterPanel extends FormPanel {
   );
 
   render() {
-    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props;
+    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props; 
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -144,7 +144,6 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-
     let ro = readOnly || !!forReview || !!forFeedback;
 
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
@@ -155,7 +154,7 @@ class ClaimMasterPanel extends FormPanel {
     })
 
 
-    if (CLAIMPROGRAM == "Chèque Santé") {
+    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") {
       if (edited.code && policyNumber != undefined && policyNumber != "") {
         claimCode = edited.code.replace(policyNumber, '');
       }
@@ -168,8 +167,6 @@ class ClaimMasterPanel extends FormPanel {
         claimCode = edited.code.replace(csuNumber, '');
       }
     }
-
-
     return (
       <Grid container>
         <ControlledField
@@ -320,7 +317,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={CLAIMPROGRAM == "Chèque Santé" ? policyNumber : csuNumber}
+                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" ) ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
@@ -398,7 +395,7 @@ class ClaimMasterPanel extends FormPanel {
               id="Claim.approved"
               field={
                 <Grid item xs={1} className={classes.item}>
-                  <AmountInput value={edited.approved || null} module="claim" label="approved" readOnly={true} />
+                  <AmountInput value={edited.approved} module="claim" label="approved" readOnly={true} />
                 </Grid>
               }
             />

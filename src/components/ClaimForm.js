@@ -172,15 +172,19 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (!this.state.claim.numCode ) return false;
+    if (!this.state.claim_uuid) {
+      if (!this.state.claim.numCode) return false;
+    }
 
     if (this.state.claim.services !== undefined) {
+      if(this.state.claim.services.length <= 1) return false ;
       if (this.props.forReview) {
-        if (this.state.claim.services.length <=1 && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+
+        if (this.state.claim.services.length  && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
       } else {
-        if (this.state.claim.services.length <=1 && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
+        if (this.state.claim.services.length  && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
       }
@@ -205,12 +209,12 @@ class ClaimForm extends Component {
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
-    //console.log(this.state.claim);
     return true;
   };
   NAME_PROGRAM = {
-    Cheque_Sante : "Chèque Santé",
-    Vih : "VIH",
+    Chèque_Sante: "Chèque Santé",
+    Cheque_Sante: "Cheque Santé",
+    Vih: "VIH",
   }
   reload = () => {
     this.props.fetchClaim(
@@ -330,7 +334,7 @@ class ClaimForm extends Component {
               forReview={forReview}
               forFeedback={forFeedback}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : nameProgram == this.NAME_PROGRAM.Cheque_Sante ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram == this.NAME_PROGRAM.Chèque_Sante) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               changeProgram={this.changeProgram}
               resetServices={this.state.resetServices}
               onEditedChanged={this.onEditedChanged}
