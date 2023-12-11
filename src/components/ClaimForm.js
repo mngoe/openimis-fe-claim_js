@@ -177,13 +177,12 @@ class ClaimForm extends Component {
     }
 
     if (this.state.claim.services !== undefined) {
-      if(this.state.claim.services.length <= 1) return false ;
       if (this.props.forReview) {
-
         if (this.state.claim.services.length  && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
       } else {
+        if(this.state.claim.services.length <= 1) return false ;
         if (this.state.claim.services.length  && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
@@ -267,6 +266,7 @@ class ClaimForm extends Component {
       forReview = false,
       forFeedback = false,
     } = this.props;
+    console.log("state", this.state)
     const { claim, claim_uuid, lockNew } = this.state;
     const nameProgram = claim?.program?.nameProgram
     let readOnly =
