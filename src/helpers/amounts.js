@@ -119,7 +119,6 @@ export function claimedAmount(r) {
   //
 }
 export function approvedAmount(r) {
-
   let totalPrice = 0
   let itemPrice = 0
   let servicePrice = 0
