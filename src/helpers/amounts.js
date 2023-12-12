@@ -145,7 +145,7 @@ export function approvedAmount(r) {
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
   let price = totalPrice == 0 ? r.priceAsked : totalPrice;
 
-  if (r.claimlinkedService && r.claimlinkedService.length > 1 || r.claimlinkedItem && r.claimlinkedItem.length > 1){
+  if (r.claimlinkedService && r.claimlinkedService.length >=1 || r.claimlinkedItem && r.claimlinkedItem.length >=1){
     return parseFloat(price)
   }
   else{
