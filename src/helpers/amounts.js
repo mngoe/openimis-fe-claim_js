@@ -120,7 +120,6 @@ export function claimedAmount(r) {
 }
 export function approvedAmount(r) {
 
-  // if (r.status === 2) return 0;
   let totalPrice = 0
   let itemPrice = 0
   let servicePrice = 0
@@ -143,11 +142,10 @@ export function approvedAmount(r) {
     });
   }
   totalPrice = itemPrice + servicePrice
-  r.priceApproved = totalPrice
   let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
-  let price = r.priceApproved == 0 ? r.priceAsked : r.priceApproved;
+  let price = totalPrice == 0 ? r.priceAsked : totalPrice;
 
-  if (r.claimlinkedService && r.claimlinkedService.length >=1 || r.claimlinkedItem && r.claimlinkedItem.length >= 1){
+  if (r.claimlinkedService && r.claimlinkedService.length > 1 || r.claimlinkedItem && r.claimlinkedItem.length > 1){
     return parseFloat(price)
   }
   else{
