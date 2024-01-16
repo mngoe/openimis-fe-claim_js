@@ -5,6 +5,10 @@ export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_SEX = ["Masculin", "Feminin"];
 export const APPROVAL_STATUS = [1, 2];
+
+export const CLAIM_DETAIL_REJECTED_STATUS = 2;
+export const STATUS_REJECTED = 1;
+export const STATUS_ENTERED = 2;
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 
@@ -20,3 +24,4 @@ export const RIGHT_CLAIMREVIEW = 111008;
 export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
+export const RIGHT_RESTORE = 111012;
