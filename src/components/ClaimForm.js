@@ -32,12 +32,12 @@ import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimChildPanelReview from "./ClaimChildPanelReview";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 
-import { 
-  RIGHT_ADD, 
-  RIGHT_LOAD, 
-  RIGHT_PRINT, 
-  RIGHT_RESTORE, 
-  STATUS_REJECTED, 
+import {
+  RIGHT_ADD,
+  RIGHT_LOAD,
+  RIGHT_PRINT,
+  RIGHT_RESTORE,
+  STATUS_REJECTED,
 } from "../constants";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
@@ -107,7 +107,6 @@ class ClaimForm extends Component {
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
-    claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.jsonExt = {};
     return claim;
   }
@@ -116,7 +115,7 @@ class ClaimForm extends Component {
     if (!itemsOrServices) return null;
     return itemsOrServices.map((itemOrService) => {
       Object.keys(itemOrService).forEach((key) => {
-        if (!["item", "service", "priceAsked", "qtyProvided"].includes(key)) {
+        if (!["item", "service", "priceAsked", "qtyProvided", "claimlinkedService", "claimlinkedItem"].includes(key)) {
           delete itemOrService[key];
         }
       });
@@ -229,12 +228,12 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (!this.state.claim_uuid) {
+    if (!this.state.claim_uuid && !this.state.isRestored) {
       if (!this.state.claim.numCode) return false;
     }
 
-    if (this.state.claim.services !== undefined) {
-      if (this.props.forReview) {
+    if (!!this.state.claim.services) {
+      if (this.props.forReview || this.state.isRestored) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
@@ -283,11 +282,9 @@ class ClaimForm extends Component {
 
   onEditedChanged = (claim) => {
     this.setState({ claim, newClaim: false });
-    //console.log(claim);
   };
 
   changeProgram = () => {
-    //console.log(this.state.claim);
     if (!!this.state.claim.services || !!this.state.claim.items) {
       this.setState({ resetServices: this.state.reset + 1 });
     }
@@ -345,7 +342,7 @@ class ClaimForm extends Component {
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_LOAD).length;
     var actions = [];
-    console.log(isHealthFacilityPage);
+
     if (!!claim_uuid) {
       actions.push({
         doIt: (e) => this.reload(claim_uuid),

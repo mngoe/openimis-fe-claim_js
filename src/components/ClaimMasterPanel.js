@@ -126,7 +126,20 @@ class ClaimMasterPanel extends FormPanel {
   );
 
   render() {
-    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos, changeProgram } = this.props; 
+    const { 
+      intl, 
+      classes, 
+      edited, 
+      reset, 
+      readOnly = false, 
+      forReview, 
+      forFeedback, 
+      hideSecDiagnos, 
+      changeProgram,
+      restore,
+      isRestored,
+      isDuplicate,
+    } = this.props; 
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -152,7 +165,6 @@ class ClaimMasterPanel extends FormPanel {
         policyNumber = policy.policy.policyNumber;
       }
     })
-
 
     if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") {
       if (edited.code && policyNumber != undefined && policyNumber != "") {
@@ -192,7 +204,7 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef={this.insureePicker}
                 value={edited.insuree}
-                reset={reset}
+                reset={reset || isDuplicate}
                 onChange={(v, s) => {
 
                   this.updateAttribute("insuree", v)
@@ -333,7 +345,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="code"
                 required
-                value={!!edited.uuid ? edited.code : this.state.codeClaim}
+                value={!!edited.uuid ? edited.code : isRestored ? claimCode : this.state.codeClaim}
                 error={this.state.claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
@@ -579,6 +591,8 @@ class ClaimMasterPanel extends FormPanel {
           updateAttributes={this.updateAttributes}
           updateExts={this.updateExts}
           updateExt={this.updateExt}
+          restore={restore}
+          isRestored={isRestored}
           contributionKey={CLAIM_MASTER_PANEL_CONTRIBUTION_KEY}
         />
       </Grid>
