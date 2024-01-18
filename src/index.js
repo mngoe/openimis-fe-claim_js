@@ -21,7 +21,7 @@ import messages_fr from "./translations/fr.json";
 import reducer from "./reducer";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
-const ROUTE_CLAIM_EDIT = "claim/claim";
+const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
 const ROUTE_CLAIM_REVIEW = "claim/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";

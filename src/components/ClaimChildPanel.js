@@ -75,7 +75,7 @@ class ClaimChildPanel extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.edited_id && !this.props.edited_id) {
+    if (prevProps.edited_id && !this.props.edited_id && !(this.props.isDuplicate || this.props.isRestored)) {
       let data = [];
       if (!this.props.forReview) {
         data.push({});
@@ -217,7 +217,18 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false, resetServices } = this.props;
+    const { 
+      intl, 
+      classes, 
+      edited, 
+      type, 
+      picker, 
+      forReview, 
+      fetchingPricelist, 
+      readOnly = false, 
+      resetServices,
+      isRestored
+    } = this.props;
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (

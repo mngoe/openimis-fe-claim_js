@@ -11,5 +11,7 @@
     "claim.feedbackSex.null": " ",
     "claim.feedbackSex.Masculin": "Masculin",
     "claim.feedbackSex.Feminin": "Feminin",
-    "claim.edit.services.qtyAdjusted": "Quantité ajusté"
+    "claim.edit.services.qtyAdjusted": "Quantité ajusté",
+    "claim.edit.duplicate": "Dupliquer la prestation",
+    "claim.edit.restore": "Restaurer la prestation"
 }
