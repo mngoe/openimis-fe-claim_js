@@ -265,5 +265,10 @@
   "claim.Feedback.OverallAssesment.5": "Very Good",
   "claim.Feedback.Tristate.-1": "Unknown",
   "claim.Feedback.Tristate.0": "No",
-  "claim.Feedback.Tristate.1": "Yes"
+  "claim.Feedback.Tristate.1": "Yes",
+  "claim.Claim.testNumber": "Test Number",
+  "claim.claimTdrNumber.null": "Aucun",
+  "claim.claimTdrNumber.1": "Positive",
+  "claim.claimTdrNumber.2": "Negative",
+  "claim.claimTdrNumber": "TDR"
 }

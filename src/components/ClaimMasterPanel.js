@@ -23,6 +23,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
+import TdrNumberPicker from "../pickers/TdrNumberPicker";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -91,7 +92,7 @@ class ClaimMasterPanel extends FormPanel {
     let c = v;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
-    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
+    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
       insureePolicies.forEach(function (policy) {
         if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
           policyNumber = policy.policy.policyNumber;
@@ -126,20 +127,20 @@ class ClaimMasterPanel extends FormPanel {
   );
 
   render() {
-    const { 
-      intl, 
-      classes, 
-      edited, 
-      reset, 
-      readOnly = false, 
-      forReview, 
-      forFeedback, 
-      hideSecDiagnos, 
+    const {
+      intl,
+      classes,
+      edited,
+      reset,
+      readOnly = false,
+      forReview,
+      forFeedback,
+      hideSecDiagnos,
       changeProgram,
       restore,
       isRestored,
       isDuplicate,
-    } = this.props; 
+    } = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -302,6 +303,47 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
+        {
+          CLAIMPROGRAM == "FAGEP" && (
+            <ControlledField
+              module="claim"
+              id="Claim.testNumber"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <TextInput
+                    module="claim"
+                    label="Claim.testNumber"
+                    name="testNumber"
+                    value={edited.testNumber}
+                    readOnly={!!edited && edited[`uuid`] ? true : false}
+                    reset={reset}
+                    required
+                    onChange={(v) => this.updateAttribute("testNumber", v)}
+                  />
+                </Grid>
+              }
+            />
+          )
+        }
+        {
+          CLAIMPROGRAM == "FAGEP" && (
+            <ControlledField
+              module="claim"
+              id="Claim.tdr"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <TdrNumberPicker
+                    readOnly={!!edited && edited[`uuid`] ? true : false}
+                    value={edited.tdr}
+                    reset={reset}
+                    required
+                    onChange={(v) => this.updateAttribute("tdr", v)}
+                  />
+                </Grid>
+              }
+            />
+          )
+        }
         {policyNumber != undefined && policyNumber != null && (
           <ControlledField
             module="policy"
@@ -329,7 +371,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" ) ? policyNumber : csuNumber}
+                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
