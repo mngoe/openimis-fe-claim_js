@@ -234,6 +234,8 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.explanation ? `explanation: "${formatGQLString(claim.explanation)}"` : ""}
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
     ${!!claim?.restore?.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
+    ${!!claim.testNumber ? `testNumber: "${formatGQLString(claim.testNumber)}"` : ""}
+    ${!!claim.tdr ? `tdr: ${claim.tdr == "T" ? true : false}` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
     ${!!claim.attachments && !!claim.attachments.length
@@ -292,6 +294,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "program {id code idProgram nameProgram validityDateFrom}",
+    "testNumber",
+    "tdr",
     "jsonExt",
   ];
   if (!!forFeedback) {
@@ -434,16 +438,16 @@ export function deliverFeedback(claim, clientMutationLabel) {
       : ""
     }
       ${feedback.asessment !== undefined && feedback.asessment !== null ? `asessment: ${feedback.asessment}` : ""}
-      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : "" }
+      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : ""}
       ${!!feedback.age ? `age: ${feedback.age}` : ""}
       ${feedback.policyNational !== undefined && feedback.policyNational !== null
-        ? `policyNational: ${feedback.policyNational}`
-        : ""
-      }
+      ? `policyNational: ${feedback.policyNational}`
+      : ""
+    }
       ${feedback.pregnant !== undefined && feedback.pregnant !== null
-        ? `pregnant: ${feedback.pregnant}`
-        : ""
-      }
+      ? `pregnant: ${feedback.pregnant}`
+      : ""
+    }
       ${!!feedback.meansInformation ? `meansInformation: "${feedback.meansInformation}"` : ""}
     }
   `;

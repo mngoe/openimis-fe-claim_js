@@ -360,5 +360,10 @@
     "claim.calculateAge.util.days": "",
     "claim.calculateAge.util.weeks": "",
     "claim.calculateAge.util.months": "",
-    "claim.calculateAge.util.years": ""
+    "claim.calculateAge.util.years": "",
+    "claim.Claim.testNumber": "Numéro de test",
+    "claim.claimTdrNumber": "TDR",
+    "claim.claimTdrNumber.null": "Aucun",
+    "claim.claimTdrNumber.T": "Positif",
+    "claim.claimTdrNumber.F": "Negatif"
 }
