@@ -268,7 +268,7 @@
   "claim.Feedback.Tristate.1": "Yes",
   "claim.Claim.testNumber": "Test Number",
   "claim.claimTdrNumber.null": "Aucun",
-  "claim.claimTdrNumber.1": "Positive",
-  "claim.claimTdrNumber.2": "Negative",
+  "claim.claimTdrNumber.T": "Positive",
+  "claim.claimTdrNumber.F": "Negative",
   "claim.claimTdrNumber": "TDR"
 }

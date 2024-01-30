@@ -364,6 +364,6 @@
     "claim.Claim.testNumber": "Numéro de test",
     "claim.claimTdrNumber": "TDR",
     "claim.claimTdrNumber.null": "Aucun",
-    "claim.claimTdrNumber.1": "Positif",
-    "claim.claimTdrNumber.2": "Negatif"
+    "claim.claimTdrNumber.T": "Positif",
+    "claim.claimTdrNumber.F": "Negatif"
 }

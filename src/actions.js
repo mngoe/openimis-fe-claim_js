@@ -235,7 +235,7 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
     ${!!claim?.restore?.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
     ${!!claim.testNumber ? `testNumber: "${formatGQLString(claim.testNumber)}"` : ""}
-    ${!!claim.tdr ? `tdr: "${claim.tdr == 2 ? 0 : 1}"` : ""}
+    ${!!claim.tdr ? `tdr: ${claim.tdr == "T" ? true : false}` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
     ${!!claim.attachments && !!claim.attachments.length
@@ -294,6 +294,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "program {id code idProgram nameProgram validityDateFrom}",
+    "testNumber",
+    "tdr",
     "jsonExt",
   ];
   if (!!forFeedback) {

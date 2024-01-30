@@ -5,7 +5,7 @@ export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_SEX = ["Masculin", "Feminin"];
 export const APPROVAL_STATUS = [1, 2];
-export const CLAIM_TDR = [1,2];
+export const CLAIM_TDR = ["T","F"];
 
 export const CLAIM_DETAIL_REJECTED_STATUS = 2;
 export const STATUS_REJECTED = 1;
