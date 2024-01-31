@@ -313,7 +313,7 @@ class ClaimMasterPanel extends FormPanel {
           }
         />
         {
-          CLAIMPROGRAM == "FAGEP" && (
+          !!edited && edited.program?.code == "PAL" && (
             <ControlledField
               module="claim"
               id="Claim.testNumber"
@@ -335,7 +335,7 @@ class ClaimMasterPanel extends FormPanel {
           )
         }
         {
-          CLAIMPROGRAM == "FAGEP" && (
+          !!edited && edited.program?.code == "PAL" && (
             <ControlledField
               module="claim"
               id="Claim.tdr"
