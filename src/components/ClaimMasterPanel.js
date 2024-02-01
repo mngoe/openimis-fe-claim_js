@@ -23,6 +23,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
+import TdrNumberPicker from "./pickers/TdrNumberPicker";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -136,6 +137,7 @@ class ClaimMasterPanel extends FormPanel {
     let totalApproved = 0;
     let policyNumber;
     let csuNumber;
+    let tdr;
     var claimCode = this.state.claimCode != null ? this.state.claimCode : "";
     var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
     if (edited.items) {
@@ -173,6 +175,11 @@ class ClaimMasterPanel extends FormPanel {
       if (edited.code && csuNumber != undefined && csuNumber != "") {
         claimCode = edited.code.replace(csuNumber, '');
       }
+    }
+    if (edited.tdr === true) {
+      tdr = "T";
+    } else if (edited.tdr === false) {
+      tdr = "F";
     }
 
     return (
@@ -283,7 +290,7 @@ class ClaimMasterPanel extends FormPanel {
                 label={formatMessage(intl, "claim", "programPicker.label")}
                 value={edited.program}
                 reset={reset}
-                readOnly={!!edited && edited[`uuid`] ? true : false}
+                readOnly={!!edited && edited[`uuid`] ? true : ro}
                 onChange={(v) => {
                   this.debounceUpdateCode("");
                   this.onChangeValue("program", v);
@@ -294,6 +301,47 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
+        {
+          !!edited && edited.program?.code == "PAL" && (
+            <ControlledField
+              module="claim"
+              id="Claim.testNumber"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <TextInput
+                    module="claim"
+                    label="Claim.testNumber"
+                    name="testNumber"
+                    value={edited.testNumber}
+                    readOnly={!!edited && edited[`uuid`] ? true : ro}
+                    reset={reset}
+                    required
+                    onChange={(v) => this.updateAttribute("testNumber", v)}
+                  />
+                </Grid>
+              }
+            />
+          )
+        }
+        {
+          !!edited && edited.program?.code == "PAL" && (
+            <ControlledField
+              module="claim"
+              id="Claim.tdr"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <TdrNumberPicker
+                    readOnly={!!edited && edited[`uuid`] ? true : ro}
+                    value={tdr}
+                    reset={reset}
+                    required
+                    onChange={(v) => this.updateAttribute("tdr", v)}
+                  />
+                </Grid>
+              }
+            />
+          )
+        }
         {policyNumber != undefined && policyNumber != null && (
           <ControlledField
             module="policy"
