@@ -240,5 +240,10 @@
   "claim.ClaimFilter.processedDateFrom": "Processed From",
   "claim.ClaimFilter.processedDateTo": "Processed To",
   "claim.claimSummaries.processedDate": "Processed On",
-  "claim.codechfId": "Claim Prefix"
+  "claim.codechfId": "Claim Prefix",
+  "claim.Claim.testNumber": "Test Number",
+  "claim.claimTdrNumber.null": "Aucun",
+  "claim.claimTdrNumber.T": "Positive",
+  "claim.claimTdrNumber.F": "Negative",
+  "claim.claimTdrNumber": "TDR"
 }
