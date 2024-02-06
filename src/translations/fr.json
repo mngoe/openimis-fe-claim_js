@@ -59,8 +59,6 @@
     "claim.claimedDate": "Date de saisie",
     "claim.claimed": "Réclamé",
     "claim.approved": "Approuvé",
-    "claim.ClaimFilter.claimedDateFrom": "Prestation du",
-    "claim.ClaimFilter.claimedDateTo": "Prestation au",
     "claim.ClaimFilter.claimedAbove": "Réclamé plus que",
     "claim.ClaimFilter.claimedUnder": "Réclamé moins de",
     "claim.ClaimFilter.Reviews.random": "Filtre aléatoire",
