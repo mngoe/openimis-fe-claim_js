@@ -23,7 +23,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
-import TdrNumberPicker from "./pickers/TdrNumberPicker";
+import TdrNumberPicker from "../pickers/TdrNumberPicker";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
