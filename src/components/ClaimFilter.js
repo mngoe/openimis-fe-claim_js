@@ -36,6 +36,11 @@ class Head extends Component {
     reset: 0,
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    document.addEventListener('keydown', this.props.handleEnter)
+   
+  }
+
   _filterValue = (k) => {
     const { filters } = this.props;
     return !!filters[k] ? filters[k].value : null;
