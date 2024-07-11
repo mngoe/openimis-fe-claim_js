@@ -36,6 +36,17 @@ class Head extends Component {
     reset: 0,
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    document.addEventListener('keydown', this.props.handleEnter)
+    if (
+      prevProps.filters["showHistory"] !== this.props.filters["showHistory"] &&
+      !!this.props.filters["showHistory"] &&
+      this.state.showHistory !== this.props.filters["showHistory"]["value"]
+    ) {
+      this.setState((sate, props) => ({ showHistory: props.filters["showHistory"]["value"] }));
+    }
+  }
+
   _filterValue = (k) => {
     const { filters } = this.props;
     return !!filters[k] ? filters[k].value : null;

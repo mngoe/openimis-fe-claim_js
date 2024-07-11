@@ -326,6 +326,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
+          canFetch = {false}
         />
       </Fragment>
     );
