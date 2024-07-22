@@ -6,13 +6,22 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { formatMessageWithValues, withModulesManager, withHistory, historyPush } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { createClaim, updateClaim } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD } from "../constants";
+import { DEFAULT, RIGHT_ADD, RIGHT_LOAD } from "../constants";
 
 const styles = (theme) => ({
   page: theme.page,
 });
 
 class EditPage extends Component {
+  constructor(props) {
+    super(props);
+    this.autoGenerateClaimCode = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.autoGenerateClaimCode",
+      DEFAULT.AUTOGENERATE_CLAIM_CODE,
+    );
+  }
+
   add = () => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
@@ -31,7 +40,9 @@ class EditPage extends Component {
       this.props.createClaim(
         this.props.modulesManager,
         claim,
-        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", { code: claim.code }),
+        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", {
+          code: this.autoGenerateClaimCode && !claim?.restore?.uuid ? "Auto" : claim.code,
+        }),
       );
     } else {
       this.props.updateClaim(
