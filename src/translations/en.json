@@ -20,6 +20,8 @@
   "claim.claimStatus": "Claim Status",
   "claim.code": "Claim No.",
   "claim.guaranteeId": "Guarantee No.",
+  "claim.edit.duplicate": "Duplicate the claim",
+  "claim.edit.restore": "Restore the claim",
   "claim.claimStatus.null": "Any",
   "claim.claimStatus.1": "Rejected",
   "claim.claimStatus.2": "Entered",

@@ -118,6 +118,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "claimed",
     "approved",
     "status",
+    "restore {id}",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
   ];
@@ -232,6 +233,7 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
     ${!!claim.testNumber ? `testNumber: "${formatGQLString(claim.testNumber)}"` : ""}
     ${!!claim.tdr ? `tdr: ${claim.tdr == "T" ? true : false}` : ""}
+    ${!!claim?.restore?.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
     ${!!claim.attachments && !!claim.attachments.length
@@ -279,6 +281,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "explanation",
     "adjustment",
     "attachmentsCount",
+    "restore {uuid, code}",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "visitType" + mm.getProjection("medical.VisitTypePicker.projection"),

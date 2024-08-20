@@ -21,3 +21,9 @@ export const RIGHT_CLAIMREVIEW = 111008;
 export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
+
+export const CLAIM_DETAIL_REJECTED_STATUS = 2;
+export const STATUS_REJECTED = 1;
+export const STATUS_ENTERED = 2;
+export const RIGHT_RESTORE = 111012;
+
