@@ -254,6 +254,14 @@ class ClaimSearcher extends Component {
     selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
     !selection.includes(claim);
 
+  isRestoredClaim = (claim) => claim?.restore;
+
+  showRestored = (showRestored) => {
+    this.setState({ showRestored });
+  };
+
+  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
+
   render() {
     const {
       intl,
@@ -307,6 +315,7 @@ class ClaimSearcher extends Component {
           rowLocked={this.rowLocked}
           rowHighlighted={this.rowHighlighted}
           rowHighlightedAlt={this.rowHighlightedAlt}
+          rowSecondaryHighlighted={this.isRestoredClaim}
           withSelection="multiple"
           selectionMessage={"claimSummaries.selection.count"}
           preHeaders={this.preHeaders}

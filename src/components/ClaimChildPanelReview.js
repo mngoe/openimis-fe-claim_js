@@ -262,7 +262,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={i[`${this.props.type}`].priceAsked}
+          value={i.priceAsked}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -297,6 +297,23 @@ class ClaimChildPanel extends Component {
               readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
+                // if (i.service.packagetype == "F") {
+                //   if (u.qtyProvided < v) {
+                //     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                //       totalApproved: u.qtyProvided,
+                //     }));
+                //   }
+                //   u.qtyDisplayed = v;
+                //   u.qtyAsked = v;
+                // } else if (i.service.packagetype == "P") {
+                //   if (v == u.qtyProvided) {
+                //     u.qtyDisplayed = u.qtyProvided;
+                //     u.qtyAsked = u.qtyProvided;
+                //   } else {
+                //     u.qtyDisplayed = v;
+                //     u.qtyAsked = 0;
+                //   }
+                // }
                 if (i.service.packagetype == "F") {
                   if (u.qtyProvided < v) {
                     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -350,6 +367,23 @@ class ClaimChildPanel extends Component {
                 readOnly={readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
+                  // if (i.service.packagetype == "F") {
+                  //   if (u.qtyProvided < v) {
+                  //     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                  //       totalApproved: u.qtyProvided,
+                  //     }));
+                  //   }
+                  //   u.qtyDisplayed = v
+                  //   u.qtyAsked = v;
+                  // } else if (i.service.packagetype == "P") {
+                  //   if (v == u.qtyProvided) {
+                  //     u.qtyAsked = u.qtyProvided;
+                  //     u.qtyDisplayed = u.qtyProvided;
+                  //   } else {
+                  //     u.qtyDisplayed = v;
+                  //     u.qtyAsked = 0;
+                  //   }
+                  // }
                   if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
