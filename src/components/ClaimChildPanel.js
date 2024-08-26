@@ -264,6 +264,7 @@ class ClaimChildPanel extends Component {
             pubRef={picker}
             withLabel={false}
             value={i[type]}
+            healthFacility={edited?.healthFacility}
             claimProgram={edited.program?.idProgram}
             fullWidth
             pricelistUuid={edited.healthFacility[`${this.props.type}sPricelist`].uuid}
