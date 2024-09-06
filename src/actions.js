@@ -175,7 +175,6 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
 }
 
 export function formatDetail(type, detail) {
-  console.log(detail);
   let subServices = [];
   let subItems = [];
   if (type == 'service') {
@@ -206,8 +205,8 @@ export function formatDetail(type, detail) {
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
-    ${type == 'service' && subServices !== null ? `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${type == 'service' && subItems !== null ? `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${type == 'service' && subServices !== null ? `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${type == 'service' && subItems !== null ? `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: 1
     ${detail.explanation !== undefined && detail.explanation !== null
       ? `explanation: "${formatGQLString(detail.explanation)}"`
@@ -255,7 +254,6 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(modulesManager, claim) {
-  console.log('claim ', claim)
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -358,8 +356,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
       "services{" +
 
       "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
-      " claimlinkedItem{ item { id code name } qtyDisplayed priceAsked qtyProvided  qtyAdjusted }" +
-      " claimlinkedService{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted }" +
+      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided  qtyAdjusted }" +
+      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted }" +
       "}",
       "items{" +
       "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
@@ -645,7 +643,7 @@ export function formatReviewDetail(type, detail) {
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
     ${subServices !== null ? `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${subItems !== null ? `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${subItems !== null ? `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
   }`;

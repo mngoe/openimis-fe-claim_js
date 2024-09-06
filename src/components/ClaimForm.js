@@ -404,7 +404,6 @@ class ClaimForm extends Component {
       isRestored: false,
       isSaved: false,
     }));
-
   render() {
     const {
       rights,
