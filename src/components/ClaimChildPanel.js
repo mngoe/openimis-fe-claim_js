@@ -436,7 +436,7 @@ class ClaimChildPanel extends Component {
     ];
 
     let subServicesItemsFormatters = [
-      (i, idx) => (i.subServices.map((u, udx) => (
+      (i, idx) => (i.services.map((u, udx) => (
         <tr>
           <TableCell>
             <TextInput
@@ -455,7 +455,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
+              value={this.state.data[idx].services[udx]?.service?.qtyDisplayed ? this.state.data[idx].services[udx]?.service.qtyDisplayed: "0"}
               onChange={(v) => {
                 if (i.service.packagetype == "F") {
                   if (u.qtyProvided < v) {
@@ -487,7 +487,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.subItems.map((u, udx) => {
+      (i, idx) => (i.items.map((u, udx) => {
         return (
           <tr>
             <TableCell>
@@ -507,7 +507,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={!!forReview || readOnly}
-                value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
+                value={this.state.data[idx].services[udx]?.service?.qtyDisplayed ? this.state.data[idx].services[udx]?.service.qtyDisplayed: "0"}
                 onChange={(v) => {
                   if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
