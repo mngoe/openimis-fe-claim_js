@@ -393,11 +393,19 @@ export function clearLastClaimAt() {
 }
 
 export function fetchLastClaimWithSameDiagnosis(icd, chfid) {
-  const claimFilters = [`chfid: "${chfid}"`, `icd: "${icd.code}"`, CLAIMS_WITH_AT_LEAST_ENTERED_STATUS];
+  const claimFilters = [
+    `chfid: "${chfid}"`,
+    `icd: "${icd.code}"`,
+    CLAIMS_WITH_AT_LEAST_ENTERED_STATUS,
+  ];
 
   const projection = ["code", "dateFrom", "dateTo", "uuid", "status"];
 
-  const payload = formatPageQuery("claimWithSameDiagnosis", claimFilters, projection);
+  const payload = formatPageQuery(
+    "claimWithSameDiagnosis",
+    claimFilters,
+    projection,
+  );
   return graphql(payload, "CLAIM_SAME_DIAGNOSIS");
 }
 

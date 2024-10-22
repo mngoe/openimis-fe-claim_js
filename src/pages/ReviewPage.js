@@ -20,13 +20,7 @@ class ReviewPage extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.submittingMutation && !this.props.submittingMutation) {
       if (this.state.close) {
-        const { history, modulesManager  } = prevProps;
-        const { customBackUri, customBackUuid } = prevProps.match?.params
-        if (customBackUri) {
-          historyPush(modulesManager, history, customBackUri, customBackUuid ? [customBackUuid] : null);
-        } else {
-          historyPush(this.props.modulesManager, this.props.history, "claim.route.reviews");
-        }
+        historyPush(this.props.modulesManager, this.props.history, "claim.route.reviews");
       }
     }
   }
@@ -68,7 +62,6 @@ class ReviewPage extends Component {
     );
   }
 }
-
 
 const mapStateToProps = (state, props) => ({
   claim_uuid: props.match.params.claim_uuid,

@@ -7,7 +7,6 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
-import CheckIcon from "@material-ui/icons/Check";
 import { Searcher } from "@openimis/fe-core";
 import ClaimFilter from "./ClaimFilter";
 import {

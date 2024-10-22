@@ -345,28 +345,25 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        {this.fields.guaranteeNo !== "N" && (
-          <ControlledField
-            module="claim"
-            id="Claim.guarantee"
-            field={
-              <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
-                <TextInput
-                  module="claim"
-                  label="guaranteeId"
-                  value={edited.guaranteeId}
-                  reset={reset}
-                  onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                  readOnly={ro}
-                  inputProps={{
-                    "maxLength": this.guaranteeIdMaxLength,
-                  }}
-                  required={this.fields.guaranteeNo === "M"}
-                />
-              </Grid>
-            }
-          />
-        )}
+        <ControlledField
+          module="claim"
+          id="Claim.guarantee"
+          field={
+            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
+              <TextInput
+                module="claim"
+                label="guaranteeId"
+                value={edited.guaranteeId}
+                reset={reset}
+                onChange={(v) => this.updateAttribute("guaranteeId", v)}
+                readOnly={ro}
+                inputProps={{
+                  "maxLength": this.guaranteeIdMaxLength,
+                }}
+              />
+            </Grid>
+          }
+        />
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -431,7 +428,6 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Fragment>
         )}
-
         {!forFeedback && (
           <Fragment>
             {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
