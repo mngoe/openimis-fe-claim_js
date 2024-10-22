@@ -3,7 +3,6 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
-
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
@@ -13,7 +12,6 @@ import AttachIcon from "@material-ui/icons/AttachFile";
 import RestorePageIcon from "@material-ui/icons/RestorePage";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import CachedIcon from "@material-ui/icons/Cached";
-
 import {
   Contributions,
   Form,
@@ -28,6 +26,7 @@ import {
   withModulesManager,
   fetchMutation,
   parseData,
+  coreAlert,
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -45,6 +44,7 @@ import {
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
+import ClaimChildPanelReview from "./ClaimChildPanelReview";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
 
@@ -58,13 +58,21 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    if (!this.props.forReview) {
+      return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    } else {
+      return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
+    }
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    if (!this.props.forReview) {
+      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    } else {
+      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
+    }
   }
 }
 
@@ -119,6 +127,11 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.attachmentRequiredForReferral = props.modulesManager.getConf(
+      "fe-claim",
+      "attachmentRequiredForReferral",
+      false,
+    );
   }
 
   _newClaim() {
@@ -134,6 +147,7 @@ class ClaimForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
+    claim.preAuthorization = false;
     claim.jsonExt = {};
     return claim;
   }
@@ -280,17 +294,35 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (this.isCareTypeMandatory) {
+    if (this.state.claim.services !== undefined) {
+      if (this.props.forReview) {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+          return false;
+        }
+      } else {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
+          return false;
+        }
+      }
+
+    } else {
+      return false;
+    }
+
+
+    if (this.isCareTypeMandatory){
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
     if (this.isExplanationMandatoryForIPD) {
       if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
     }
+
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
       //if there are items or services, they have to be complete
+
       let items = [];
       if (!!this.state.claim.items) {
         items = [...this.state.claim.items];
@@ -333,7 +365,19 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+    }
+    if (forReview) {
+      if (d.qtyProvided < d.qtyApproved) {
+        return false;
+      }
+    }
+
+    if (
+      (this.state.claim.visitType == "R" || this.state.claim.patientCondition == "R") &&
+      !this.state.claim.referralCode
+    ) {
+      return false;
     }
     return true;
   };
@@ -350,6 +394,14 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
+    if (this.attachmentRequiredForReferral && claim.attachmentsCount == 0 && claim.visitType == "R") {
+      this.props.coreAlert(
+        formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
+        formatMessage(this.props.intl, "claim", "claim.attachFile"),
+      );
+      this.setState({ reset: this.state.reset + 1 });
+      return;
+    }
     this.setState({ lockNew: true, isSaved: true }, () => {
       this.props
         .save(claim)
@@ -580,7 +632,7 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
     dispatch,
   );
 };
