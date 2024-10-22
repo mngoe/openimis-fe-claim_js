@@ -26,7 +26,6 @@ import {
   withModulesManager,
   fetchMutation,
   parseData,
-  coreAlert,
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -127,11 +126,6 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
-    this.attachmentRequiredForReferral = props.modulesManager.getConf(
-      "fe-claim",
-      "attachmentRequiredForReferral",
-      false,
-    );
   }
 
   _newClaim() {
@@ -147,7 +141,6 @@ class ClaimForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
-    claim.preAuthorization = false;
     claim.jsonExt = {};
     return claim;
   }
@@ -394,14 +387,6 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-    if (this.attachmentRequiredForReferral && claim.attachmentsCount == 0 && claim.visitType == "R") {
-      this.props.coreAlert(
-        formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
-        formatMessage(this.props.intl, "claim", "claim.attachFile"),
-      );
-      this.setState({ reset: this.state.reset + 1 });
-      return;
-    }
     this.setState({ lockNew: true, isSaved: true }, () => {
       this.props
         .save(claim)
@@ -632,7 +617,7 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation },
     dispatch,
   );
 };

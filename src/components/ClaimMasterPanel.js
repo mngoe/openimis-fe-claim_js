@@ -14,7 +14,7 @@ import {
   TextInput,
   ValidatedTextInput,
 } from "@openimis/fe-core";
-import { Grid, Checkbox, FormControlLabel } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
@@ -28,12 +28,7 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import {
-  CLAIM_DETAIL_REJECTED_STATUS,
-  DEFAULT,
-  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
-  IN_PATIENT_STRING,
-} from "../constants";
+import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -80,9 +75,6 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
-    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
-    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
   }
 
   shouldValidate = (inputValue) => {
@@ -147,12 +139,7 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    if(edited.code && this.claimPrefix){
-      edited.code = edited.code.replace(edited.insuree?.chfId, '');
-    }
-
     let ro = readOnly || !!forReview || !!forFeedback;
-
     return (
       <Grid container>
         <ControlledField
@@ -520,41 +507,6 @@ class ClaimMasterPanel extends FormPanel {
               />
             )}
           </Fragment>
-        )}
-        {this.showPatientCondition && (
-          <Grid item xs={2} className={classes.item}>
-            <PublishedComponent
-              pubRef="claim.PatientConditionPicker"
-              name="patientCondition"
-              value={edited.patientCondition}
-              onChange={(v) => this.updateAttribute("patientCondition", v)}
-            />
-          </Grid>
-        )}
-        {(edited.visitType == "R" || edited.patientCondition == "R") && (
-          <Grid item xs={2} className={classes.item}>
-            <TextInput
-              id="claim.referralCode"
-              module="insuree"
-              label="claim.referralCode"
-              value={edited.referralCode}
-              required={edited.visitType == "R" || edited.patientCondition == "R"}
-              onChange={(v) => this.updateAttribute("referralCode", v)}
-            />
-          </Grid>
-        )}
-        {this.showPreAuthorization && (
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="Claim.preAuthorization"
-                color="primary"
-                checked={edited?.preAuthorization}
-                onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
-              />
-            }
-            label={formatMessage(intl, "claim", "pre-authorization")}
-          />
         )}
         <Contributions
           claim={edited}
