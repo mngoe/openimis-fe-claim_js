@@ -645,7 +645,7 @@ class Details extends Component {
           />
         </Grid>
 
-        
+
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}

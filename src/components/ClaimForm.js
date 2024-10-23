@@ -363,13 +363,6 @@ class ClaimForm extends Component {
         return false;
       }
     }
-
-    if (
-      (this.state.claim.visitType == "R" || this.state.claim.patientCondition == "R") &&
-      !this.state.claim.referralCode
-    ) {
-      return false;
-    }
     return true;
   };
 
