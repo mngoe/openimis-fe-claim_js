@@ -40,6 +40,7 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   RIGHT_CLAIMREVIEW,
+  REFERRAL,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -285,6 +286,12 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
+    if (
+      (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
+      (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
+    ){
+      return false
+    } 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
@@ -356,13 +363,6 @@ class ClaimForm extends Component {
       }
       if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
-
-    if (
-      (this.state.claim.visitType == "R" || this.state.claim.patientCondition == "R") &&
-      !this.state.claim.referralCode
-    ) {
-      return false;
-    }
     return true;
   };
 
@@ -378,7 +378,7 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&& claim.visitType == "R") {
+    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&& claim.visitType == REFERRAL) {
       this.props.coreAlert(
         formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
         formatMessage(this.props.intl, "claim", "claim.attachFile"),
