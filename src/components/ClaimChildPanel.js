@@ -22,7 +22,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { DEFAULT } from "../constants";
+import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
@@ -64,12 +64,13 @@ class ClaimChildPanel extends Component {
   initData = () => {
     let data = [];
     if (!!this.props.edited[`${this.props.type}s`]) {
-
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
-
-      //this.props.onEditedChanged(edited);
+    }
+    if(!!this.props.edited[`services`]){
+      data.forEach((d) => !!d.services && (d.subServices = d.services));
+      data.forEach((d) => !!d.items && (d.subItems = d.items));
     }
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
@@ -450,9 +451,9 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
+              value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (i.service.packagetype == "F") {
+                if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                   if (u.qtyProvided < v) {
                     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                       totalApproved: u.qtyProvided,
@@ -460,7 +461,7 @@ class ClaimChildPanel extends Component {
                   }
                   u.qtyDisplayed = v;
                   u.qtyAsked = v;
-                } else if (i.service.packagetype == "P") {
+                } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                   if (v == u.qtyProvided) {
                     u.qtyAsked = u.qtyProvided;
                     u.qtyDisplayed = u.qtyProvided;
@@ -502,9 +503,9 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={!!forReview || readOnly}
-                value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
+                value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (i.service.packagetype == "F") {
+                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -512,7 +513,7 @@ class ClaimChildPanel extends Component {
                     }
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
-                  } else if (i.service.packagetype == "P") {
+                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                     if (v == u.qtyProvided) {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
@@ -539,7 +540,7 @@ class ClaimChildPanel extends Component {
     ]
 
     let subServicesItemsFormattersReview = [
-      (i, idx) => (i.claimlinkedService.map((u, udx) => (
+      (i, idx) => (i.services.map((u, udx) => (
         <tr>
           <TableCell>
             <TextInput
@@ -560,7 +561,7 @@ class ClaimChildPanel extends Component {
               readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (i.service.packagetype == "F") {
+                if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                   if (u.qtyProvided < v) {
                     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                       totalApproved: u.qtyProvided,
@@ -568,7 +569,7 @@ class ClaimChildPanel extends Component {
                   }
                   u.qtyDisplayed = v;
                   u.qtyAsked = v;
-                } else if (i.service.packagetype == "P") {
+                } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                   if (v == u.qtyProvided) {
                     u.qtyDisplayed = u.qtyProvided;
                     u.qtyAsked = u.qtyProvided;
@@ -590,7 +591,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.claimlinkedItem.map((u, udx) => {
+      (i, idx) => (i.items.map((u, udx) => {
         return (
           <tr>
             <TableCell>
@@ -612,7 +613,7 @@ class ClaimChildPanel extends Component {
                 readOnly={readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (i.service.packagetype == "F") {
+                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -620,7 +621,7 @@ class ClaimChildPanel extends Component {
                     }
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
-                  } else if (i.service.packagetype == "P") {
+                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                     if (v == u.qtyProvided) {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
