@@ -254,8 +254,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
   const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    code: "${isAutogenerateEnabled ? claimCodePlaceholder : claim.code}"
-    autogenerate: ${!!isAutogenerateEnabled}
+    code: "${claim.code}"
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"
