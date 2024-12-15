@@ -63,6 +63,11 @@ export function claimCodeSetValid() {
   };
 }
 
+export function validateClaimCode(code) {
+  const payload = formatQuery("claims", [`code: "${code}"`], ["totalCount"]);
+  return graphql(payload, "CLAIM_CLAIM_CODE_COUNT");
+}
+
 export function clearClaim() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CLAIM_CLEAR` });
