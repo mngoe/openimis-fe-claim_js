@@ -25,6 +25,7 @@ import {
   claimCodeValidationClear,
   claimHealthFacilitySet,
   clearClaim,
+  validateClaimCode
 } from "../actions";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
@@ -110,7 +111,7 @@ class ClaimMasterPanel extends FormPanel {
     //     v = this.state.data?.insuree?.chfId + v
     //   }
     // }
-    this.updateAttribute("numCode", v)
+    this.updateAttribute("code", v)
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     let policyNumber;
     var csuNumber;
@@ -502,7 +503,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 setValidAction={claimCodeSetValid}
                 validationError={codeValidationError}
-                onChange={(code) => this.updateAttribute("code", code)}
+                onChange={this.validateClaimCode}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
                   "maxLength": this.codeMaxLength,
@@ -743,6 +744,7 @@ const mapDispatchToProps = (dispatch) => {
     {
       claimHealthFacilitySet,
       clearClaim,
+      validateClaimCode,
     },
     dispatch,
   );
