@@ -162,6 +162,7 @@ class ClaimMasterPanel extends FormPanel {
     return shouldValidate;
   };
 
+
   debounceUpdateCode = _debounce(
     this.validateClaimCode,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
@@ -499,7 +500,9 @@ class ClaimMasterPanel extends FormPanel {
                 value={!!edited.uuid ? edited.code : isRestored ? claimCode : this.state.codeClaim}
                 error={this.state.claimCodeError}
                 reset={reset}
-                onChange={this.debounceUpdateCode}
+                setValidAction={claimCodeSetValid}
+                validationError={codeValidationError}
+                onChange={(code) => this.updateAttribute("code", code)}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
                   "maxLength": this.codeMaxLength,
