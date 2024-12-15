@@ -162,6 +162,11 @@ class ClaimMasterPanel extends FormPanel {
     return shouldValidate;
   };
 
+  debounceUpdateCode = _debounce(
+    this.validateClaimCode,
+    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
+  );
+
   componentWillUnmount = () => {
     this.props?.clearClaim();
   };
