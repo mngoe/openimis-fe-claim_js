@@ -81,6 +81,14 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.numberOfAdditionalDiagnosis",
       DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
     );
+    this.isExplanationMandatoryForIPD = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.isExplanationMandatoryForIPD",
+      false,
+    );
+    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
+    this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
+    this.EMPTY_STRING = "";
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -104,7 +112,7 @@ class ClaimMasterPanel extends FormPanel {
     this.updateAttribute(name, value)
   }
 
-  validateClaimCode = (v) => {
+  claimCodeValidationCheck = (v) => {
     // if (this.claimPrefix == 1) {
     //   if (this.state.data?.insuree?.chfId != undefined) {
     //     v = this.state.data?.insuree?.chfId + v
@@ -135,22 +143,15 @@ class ClaimMasterPanel extends FormPanel {
         v = csuNumber + v
       }
     }
+    console.log(v);
     this.setState(
       {
         claimCodeError: null,
         claimCode: v,
         codeClaim: c,
       },
-      (e) => this.props.validateClaimCode(v),
+      (e) => this.props.claimCodeValidationCheck(v),
     );
-    this.isExplanationMandatoryForIPD = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.isExplanationMandatoryForIPD",
-      false,
-    );
-    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
-    this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
-    this.EMPTY_STRING = "";
   }
 
   shouldValidate = (inputValue) => {
@@ -164,7 +165,7 @@ class ClaimMasterPanel extends FormPanel {
 
 
   debounceUpdateCode = _debounce(
-    this.validateClaimCode,
+    this.claimCodeValidationCheck,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
   );
 
@@ -502,7 +503,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 setValidAction={claimCodeSetValid}
                 validationError={codeValidationError}
-                onChange={(code) => this.updateAttribute("code", code)}
+                onChange={this.debounceUpdateCode}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
                   "maxLength": this.codeMaxLength,
@@ -742,6 +743,7 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       claimHealthFacilitySet,
+      claimCodeValidationCheck,
       clearClaim,
     },
     dispatch,
