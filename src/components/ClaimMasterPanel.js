@@ -158,6 +158,7 @@ class ClaimMasterPanel extends FormPanel {
 
     const { savedClaimCode } = this.props;
     const shouldValidate = inputValue !== savedClaimCode;
+    console.log('Shouldvalidate result ', shouldValidate)
     return shouldValidate;
   };
 
@@ -203,6 +204,8 @@ class ClaimMasterPanel extends FormPanel {
       isDuplicate,
       changeProgram
     } = this.props;
+    console.log("claim props", this.props)
+    console.log("claim state ", this.state)
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -485,6 +488,7 @@ class ClaimMasterPanel extends FormPanel {
                 isValidating={isCodeValidating}
                 itemQueryIdentifier="claimCode"
                 label="claim.code"
+                shouldValidate={this.shouldValidate}
                 module="claim"
                 required
                 value={!!edited.uuid ? edited.code : isRestored ? claimCode : this.state.codeClaim}
