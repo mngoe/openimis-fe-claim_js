@@ -26,7 +26,7 @@ class EditPage extends Component {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
-  save = (claim) => {
+  save = async (claim) => {
 
     this.claimPrefix = this.props.modulesManager.getConf(
       "fe-claim",

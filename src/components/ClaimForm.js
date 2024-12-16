@@ -263,12 +263,12 @@ class ClaimForm extends Component {
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
-    if (
-      !!this.isReferHFMandatory &&
-      this.state.claim.visitType === this.claimTypeReferSymbol &&
-      !this.state.claim.referHF
-    )
-      return false;
+    // if (
+    //   !!this.isReferHFMandatory &&
+    //   this.state.claim.visitType === this.claimTypeReferSymbol &&
+    //   !this.state.claim.referHF
+    // )
+    //   return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -301,12 +301,12 @@ class ClaimForm extends Component {
       return false;
     }
 
-    if (this.isCareTypeMandatory) {
-      if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
-    }
-    if (this.isExplanationMandatoryForIPD) {
-      if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
-    }
+    // if (this.isCareTypeMandatory) {
+    //   if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
+    // }
+    // if (this.isExplanationMandatoryForIPD) {
+    //   if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
+    // }
     if (!forFeedback) {
       //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
