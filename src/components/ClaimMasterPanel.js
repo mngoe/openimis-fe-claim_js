@@ -113,7 +113,7 @@ class ClaimMasterPanel extends FormPanel {
     this.updateAttribute(name, value)
   }
 
-  claimCodeValidationCheck = (v) => {
+  validateClaimCode = (v) => {
     // if (this.claimPrefix == 1) {
     //   if (this.state.data?.insuree?.chfId != undefined) {
     //     v = this.state.data?.insuree?.chfId + v
@@ -144,14 +144,13 @@ class ClaimMasterPanel extends FormPanel {
         v = csuNumber + v
       }
     }
-    console.log(v);
     this.setState(
       {
         claimCodeError: null,
         claimCode: v,
         codeClaim: c,
       },
-      (e) => this.props.claimCodeValidationCheck(v),
+      (e) => this.props.validateClaimCode(v),
     );
   }
 
@@ -166,7 +165,7 @@ class ClaimMasterPanel extends FormPanel {
 
 
   debounceUpdateCode = _debounce(
-    this.claimCodeValidationCheck,
+    this.validateClaimCode,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
   );
 
@@ -487,23 +486,14 @@ class ClaimMasterPanel extends FormPanel {
           id="Claim.code"
           field={
             <Grid item xs={2} className={classes.item}>
-              <ValidatedTextInput
-                action={claimCodeValidationCheck}
-                autoFocus={true}
-                clearAction={claimCodeValidationClear}
-                codeTakenLabel="claim.codeTaken"
-                isValid={isCodeValid}
-                isValidating={isCodeValidating}
-                itemQueryIdentifier="claimCode"
-                label="claim.code"
-                shouldValidate={this.shouldValidate}
+              <TextInput
                 module="claim"
+                label="code"
                 required
                 value={!!edited.uuid ? edited.code : isRestored ? claimCode : this.state.codeClaim}
                 error={this.state.claimCodeError}
                 reset={reset}
-                setValidAction={claimCodeSetValid}
-                validationError={codeValidationError}
+                autoFocus={true}
                 onChange={this.debounceUpdateCode}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
