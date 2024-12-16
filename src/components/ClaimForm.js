@@ -478,6 +478,8 @@ class ClaimForm extends Component {
       isHealthFacilityPage = false,
       classes,
     } = this.props;
+    console.log('claim form state ', this.state)
+    console.log('claim form props ',this.props)
     const { claim, claim_uuid, lockNew, isSaved } = this.state;
     const nameProgram = claim?.program?.nameProgram
 
