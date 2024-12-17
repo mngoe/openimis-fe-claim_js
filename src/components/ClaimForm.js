@@ -357,7 +357,6 @@ class ClaimForm extends Component {
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
-    //console.log(this.state.claim);
     return true;
   };
 
@@ -376,11 +375,9 @@ class ClaimForm extends Component {
 
   onEditedChanged = (claim) => {
     this.setState({ claim, newClaim: false });
-    //console.log(claim);
   };
 
   changeProgram = () => {
-    //console.log(this.state.claim);
     if (!!this.state.claim.services || !!this.state.claim.items) {
       this.setState({ resetServices: this.state.reset + 1 });
     }
@@ -478,8 +475,6 @@ class ClaimForm extends Component {
       isHealthFacilityPage = false,
       classes,
     } = this.props;
-    console.log('claim form state ', this.state)
-    console.log('claim form props ',this.props)
     const { claim, claim_uuid, lockNew, isSaved } = this.state;
     const nameProgram = claim?.program?.nameProgram
 
