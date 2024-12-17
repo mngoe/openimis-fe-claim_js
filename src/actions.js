@@ -175,7 +175,6 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
 }
 
 export function formatDetail(type, detail) {
-  console.log(detail);
   let subServices = [];
   let subItems = [];
   if (type == 'service') {

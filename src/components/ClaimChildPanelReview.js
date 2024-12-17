@@ -332,7 +332,6 @@ class ClaimChildPanel extends Component {
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
-                console.log(totalClaimed);
               }
               }
             />
@@ -402,7 +401,6 @@ class ClaimChildPanel extends Component {
                     }
                   }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
-                  console.log(totalClaimed);
                 }
                 }
               />
