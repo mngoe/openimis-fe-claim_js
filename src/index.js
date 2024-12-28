@@ -5,19 +5,23 @@ import ReviewsPage from "./pages/ReviewsPage";
 import ReviewPage from "./pages/ReviewPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
+import ClaimProgramPicker from "./pickers/ClaimProgramPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import CareTypePicker from "./pickers/CareTypePicker"
 import AttachmentGeneralTypePicker from "./pickers/AttachmentGeneralTypePicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
+import ServiceFilterPicker from "./pickers/MedicalServiceFilterPicker";
 import AttachmentStatusPicker from "./pickers/AttachmentStatusPicker";
 import ClaimAttachmentPredefinedTypePicker from "./pickers/ClaimAttachmentPredefinedTypePicker";
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
+import FeedbackSexPicker from "./pickers/FeedbackSexPicker"
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
+import messages_fr from "./translations/fr.json";
 import reducer from "./reducer";
 import { decodeId } from "@openimis/fe-core";
 import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
@@ -33,7 +37,7 @@ const ROUTE_CLAIM_REVIEW = "claim/reviews/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
 
 const DEFAULT_CONFIG = {
-  "translations": [{ key: "en", messages: messages_en }],
+  "translations": [{ key: "en", messages: messages_en }, { key: "fr", messages: messages_fr }],
   "reducers": [{ key: "claim", reducer }],
   "reports": [
     {
@@ -138,6 +142,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.route.feedback", ref: ROUTE_CLAIM_FEEDBACK },
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
+    { key: "claim.ClaimProgramPicker", ref: ClaimProgramPicker},
     {
       key: "claim.ClaimAdminPicker.projection",
       ref: [
@@ -162,9 +167,11 @@ const DEFAULT_CONFIG = {
     { key: "claim.ApprovalStatusPicker", ref: ApprovalStatusPicker },
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },
+    { key: "claim.FeedbackSexPicker", ref: FeedbackSexPicker },
     { key: "claim.FeedbackStatusPicker.projection", ref: null },
     { key: "claim.RejectionReasonPicker", ref: RejectionReasonPicker },
     { key: "claim.RejectionReasonPicker.projection", ref: null },
+    { key: "medical.ServiceFilterPicker", ref: ServiceFilterPicker },
     { key: "claim.CreateClaim.feedbackStatus", ref: 1 },
     { key: "claim.CreateClaim.reviewStatus", ref: 1 },
     { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },

@@ -72,7 +72,7 @@ class ClaimSearcher extends Component {
       prms.push(`orderBy: ["dateClaimed", "?"]`);
       this.setState({ random });
     } else {
-      prms.push(`orderBy: ["${state.orderBy}"]`);
+      //prms.push(`orderBy: ["${state.orderBy}"]`);
       this.setState({ random: null });
     }
     if (!forced.length && !random) {
@@ -356,6 +356,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
+          canFetch = {false}
           showOrdinalNumber={this.showOrdinalNumber}
         />
       </Fragment>

@@ -3,7 +3,9 @@ import _ from "lodash";
 export const CLAIM_STATUS = [1, 2, 4, 8, 16];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
+export const FEEDBACK_SEX = ["Masculin", "Feminin"];
 export const APPROVAL_STATUS = [1, 2];
+export const CLAIM_TDR = ["T","F"];
 
 export const CLAIM_DETAIL_REJECTED_STATUS = 2;
 export const STATUS_REJECTED = 1;
@@ -14,6 +16,10 @@ export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 export const ATTACHMENT_STATUS_WITH = 1;
 export const ATTACHMENT_STATUS_WITHOUT = 2;
 export const ATTACHMENT_STATUS = [ATTACHMENT_STATUS_WITH, ATTACHMENT_STATUS_WITHOUT];
+
+export const SERVICE_TYPE_PP_S = "S";
+export const SERVICE_TYPE_PP_P = "P";
+export const SERVICE_TYPE_PP_F = "F";
 
 export const IN_PATIENT_STRING = "IPD";
 export const OUT_PATIENT_STRING = "OPD";

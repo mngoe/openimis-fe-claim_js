@@ -131,12 +131,6 @@ class ClaimMasterPanelExt extends Component {
     return (
       <Grid container>
         <Grid item xs={6} className={classes.item}>
-          <Typography className={policyInfoStyle}>
-            <FormattedMessage module="claim" id={policyInfoLabel} />
-          </Typography>
-          <Divider />
-        </Grid>
-        <Grid item xs={6} className={classes.item}>
           <Typography className={classes.tableTitle}>
             <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.header" />
           </Typography>

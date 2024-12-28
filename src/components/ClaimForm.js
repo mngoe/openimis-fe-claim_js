@@ -33,6 +33,7 @@ import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions"
 import {
   RIGHT_ADD,
   RIGHT_PRINT,
+  RIGHT_LOAD,
   CARE_TYPE_STATUS,
   IN_PATIENT_STRING,
   RIGHT_RESTORE,
@@ -44,6 +45,7 @@ import {
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
+import ClaimChildPanelReview from "./ClaimChildPanelReview";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
@@ -58,13 +60,17 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePickerFilter" />;
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    if (!this.props.forReview) {
+      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPickerFilter" />;
+    } else {
+      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPickerFilter" />;
+    }
   }
 }
 
@@ -72,6 +78,7 @@ class ClaimForm extends Component {
   state = {
     lockNew: false,
     reset: 0,
+    resetServices: 0,
     claim_uuid: null,
     claim: this._newClaim(),
     newClaim: true,
@@ -99,6 +106,11 @@ class ClaimForm extends Component {
       "fe-claim",
       "canSaveClaimWithoutServiceNorItem",
       true,
+    );
+    this.claimPrefix = props.modulesManager.getConf(
+      "fe-claim",
+      "claimPrex",
+      0,
     );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "claimForm.claimTypeReferSymbol", "R");
@@ -142,7 +154,7 @@ class ClaimForm extends Component {
     if (!itemsOrServices) return null;
     return itemsOrServices.map((itemOrService) => {
       Object.keys(itemOrService).forEach((key) => {
-        if (!["item", "service", "priceAsked", "qtyProvided"].includes(key)) {
+        if (!["item", "service", "priceAsked", "qtyProvided", "claimlinkedService", "claimlinkedItem"].includes(key)) {
           delete itemOrService[key];
         }
       });
@@ -199,7 +211,7 @@ class ClaimForm extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.fetchedClaim !== this.props.fetchedClaim && !!this.props.fetchedClaim) {
       var claim = this.props.claim;
-      claim.jsonExt = !!claim.jsonExt ? JSON.parse(claim.jsonExt) : {};
+      claim.jsonExt = !!claim.jsonExt && claim.jsonExt !={} ? JSON.parse(claim.jsonExt) : {};
       this.setState(
         { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
         this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
@@ -238,33 +250,17 @@ class ClaimForm extends Component {
     );
   };
 
-  canSaveDetail = (detail, type, forReview) => {
-    if (!detail[type]) return false;
-
-    const qtyProvided = Number(detail.qtyProvided);
-    if (isNaN(qtyProvided) || qtyProvided <= 0) return false;
-
-    const priceAsked = Number(detail.priceAsked);
-    if (isNaN(priceAsked) || priceAsked < 0) return false;
-
-    if (
-      this.explanationRequiredIfQuantityAboveThreshold &&
-      type === "service" &&
-      !detail.explanation &&
-      qtyProvided > this.quantityExplanationThreshold
-    ) {
-      return false;
-    }
-
-    if (forReview && qtyProvided < detail.qtyApproved) return false;
-
+  canSaveDetail = (d, type) => {
+    if (!d[type]) return false;
+    if (d[type].packagetype === 'S') return true;
+    if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
+    if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
+    if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
     return true;
   };
 
-  canSave = (forFeedback, forReview) => {
-    if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
-    if (this.state.lockNew) return false;
-    if (!this.props.isClaimCodeValid) return false;
+  canSave = (forFeedback,forReview) => {
+    if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     if (
@@ -277,9 +273,34 @@ class ClaimForm extends Component {
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
+    if (!this.state.claim.dateTo) return false;
+    if (!this.state.claim.program) return false;
+    if(this.state.claim.program?.code == "PAL"){
+      if (!this.state.claim.testNumber) return false;
+      if (!this.state.claim.tdr) return false;
+    }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
+    if(!this.state.claim_uuid){
+      if (!this.state.claim.code ) return false;
+    }
+
+    if (this.state.claim.services !== undefined) {
+      if (this.props.forReview && !this.state.isRestored) {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+          return false;
+        }
+      } else {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
+          return false;
+        }
+      }
+
+    } else {
+      return false;
+    }
+
     if (this.isCareTypeMandatory) {
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
@@ -287,6 +308,7 @@ class ClaimForm extends Component {
       if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
     }
     if (!forFeedback) {
+      //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
@@ -333,10 +355,16 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
     return true;
   };
+
+  NAME_PROGRAM = {
+    Chèque_Sante : "Chèque Santé",
+    Cheque_Sante : "Cheque Santé",
+    Vih : "VIH",
+  }
 
   reload = () => {
     const { fetchClaim, modulesManager, forFeedback } = this.props;
@@ -348,6 +376,12 @@ class ClaimForm extends Component {
   onEditedChanged = (claim) => {
     this.setState({ claim, newClaim: false });
   };
+
+  changeProgram = () => {
+    if (!!this.state.claim.services || !!this.state.claim.items) {
+      this.setState({ resetServices: this.state.reset + 1 });
+    }
+  }
 
   _save = (claim) => {
     this.setState({ lockNew: true, isSaved: true }, () => {
@@ -387,6 +421,17 @@ class ClaimForm extends Component {
 
   _deliverReview = (claim) => {
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
+  };
+  duplicate = () => {
+    const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
+    this.props.history.replace(`/${routeRef}`);
+    this.setState({ isDuplicate: true });
+  };
+
+  restore = () => {
+    const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
+    this.props.history.replace(`/${routeRef}`);
+    this.setState({ isRestored: true });
   };
 
   duplicate = () => {
@@ -431,6 +476,7 @@ class ClaimForm extends Component {
       classes,
     } = this.props;
     const { claim, claim_uuid, lockNew, isSaved } = this.state;
+    const nameProgram = claim?.program?.nameProgram
 
     let readOnly =
       lockNew ||
@@ -550,9 +596,11 @@ class ClaimForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram ==  this.NAME_PROGRAM.Chèque_Sante ) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}
+              resetServices={this.state.resetServices}
+              changeProgram= {this.changeProgram}
               {...editingProps}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
