@@ -26,6 +26,7 @@ const styles = (theme) => ({});
 
 class ClaimSearcher extends Component {
   state = {
+    searchInitiated: false,
     random: null,
     attachmentsClaim: null,
   };
@@ -289,6 +290,13 @@ class ClaimSearcher extends Component {
     this.setState({ showRestored });
   };
 
+  onFiltersApplied = (filters) => {
+    this.setState({
+      searchInitiated: true,
+      filters, // Update the active filters
+    });
+  };
+
   isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
 
   render() {
@@ -307,6 +315,8 @@ class ClaimSearcher extends Component {
       onDoubleClick,
       actionsContributionKey,
     } = this.props;
+
+    const { searchInitiated } = this.state;
 
     let count = !!this.state.random && this.state.random.value;
     if (!count) {
@@ -338,7 +348,7 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={this.fetch}
+          fetch={searchInitiated ? this.fetch : () => {}}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
@@ -358,6 +368,7 @@ class ClaimSearcher extends Component {
           actionsContributionKey={actionsContributionKey}
           canFetch = {false}
           showOrdinalNumber={this.showOrdinalNumber}
+          onChangeFilters={this.onFiltersApplied}
         />
       </Fragment>
     );

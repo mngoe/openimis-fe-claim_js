@@ -151,6 +151,8 @@ export function downloadAttachment(attach) {
   };
 }
 
+
+
 export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
   var projections = [
     "uuid",
