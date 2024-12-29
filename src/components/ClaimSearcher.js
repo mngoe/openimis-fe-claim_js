@@ -254,6 +254,13 @@ class ClaimSearcher extends Component {
     selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
     !selection.includes(claim);
 
+  onFiltersApplied = (filters) => {
+    this.setState({
+      searchInitiated: true,
+      filters, // Update the active filters
+    });
+  };
+
   render() {
     const {
       intl,
@@ -272,6 +279,7 @@ class ClaimSearcher extends Component {
     } = this.props;
 
     let count = !!this.state.random && this.state.random.value;
+    const { searchInitiated } = this.state;
     if (!count) {
       count = claimsPageInfo.totalCount;
     }
@@ -300,7 +308,7 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={this.fetch}
+          fetch={searchInitiated ? this.fetch : () => {}}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
@@ -318,6 +326,7 @@ class ClaimSearcher extends Component {
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
           canFetch = {false}
+          onChangeFilters={this.onFiltersApplied}
         />
       </Fragment>
     );
