@@ -26,7 +26,7 @@ const styles = (theme) => ({});
 
 class ClaimSearcher extends Component {
   state = {
-    searchInitiated: false,
+    searchInitiated: true,
     random: null,
     attachmentsClaim: null,
   };
@@ -50,6 +50,7 @@ class ClaimSearcher extends Component {
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
 
   fetch = (prms) => {
+    console.log("params", prms)
     this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
   };
 
@@ -315,6 +316,8 @@ class ClaimSearcher extends Component {
       onDoubleClick,
       actionsContributionKey,
     } = this.props;
+    console.log(" this.state ", this.state )
+    console.log(" props  ", this.props)
 
     const { searchInitiated } = this.state;
 
