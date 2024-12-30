@@ -47,8 +47,8 @@ class ClaimSearcher extends Component {
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.state.searchInitiated == false && !!this.state.initialFitlers && this.props.canFetchClaimDetails == true) {
+  canFetchClaimDetails = () =>{
+    if (this.state.searchInitiated == false && !!this.state.initialFitlers) {
       console.log("enter filter ", this.state.initialFitlers);
       this.onFiltersApplied(this.state.initialFitlers);
     }
@@ -371,6 +371,7 @@ class ClaimSearcher extends Component {
           selectionMessage={"claimSummaries.selection.count"}
           preHeaders={this.preHeaders}
           headers={this.headers}
+          applyFilters={this.canFetchClaimDetails}
           itemFormatters={this.itemFormatters}
           actions={actions}
           aligns={this.aligns}
