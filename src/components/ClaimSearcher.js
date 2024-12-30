@@ -29,7 +29,6 @@ class ClaimSearcher extends Component {
     searchInitiated: false,
     random: null,
     attachmentsClaim: null,
-    initialfilter: null
   };
 
   constructor(props) {

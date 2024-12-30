@@ -52,6 +52,12 @@ class HealthFacilitiesPage extends Component {
     } else if (!prevProps.confirmed && this.props.confirmed) {
       this.state.confirmedAction();
     }
+    if(prevState.defaultFilters){
+      this.setState = {
+        defaultFilters: prevState.defaultFilters
+      }
+    }
+   
   }
 
   canSubmitSelected = (selection) =>
@@ -155,6 +161,8 @@ class HealthFacilitiesPage extends Component {
 
   render() {
     const { intl, classes, rights, generatingPrint } = this.props;
+    console.log(" page props  ", this.props  )
+    console.log('state  page ', this.state)
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
