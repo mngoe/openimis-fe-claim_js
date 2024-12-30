@@ -52,11 +52,6 @@ class HealthFacilitiesPage extends Component {
     } else if (!prevProps.confirmed && this.props.confirmed) {
       this.state.confirmedAction();
     }
-    if(prevState.defaultFilters){
-      this.setState = {
-        defaultFilters: prevState.defaultFilters
-      }
-    }
    
   }
 

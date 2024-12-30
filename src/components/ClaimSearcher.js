@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
-import _ from "lodash";
+import _, { filter, initial } from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
@@ -29,6 +29,7 @@ class ClaimSearcher extends Component {
     searchInitiated: false,
     random: null,
     attachmentsClaim: null,
+    initialFitlers: this.props.defaultFilters,
   };
 
   constructor(props) {
@@ -45,12 +46,19 @@ class ClaimSearcher extends Component {
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+      console.log('enter filter ', this.state.initialFitlers)
+      if (this.state.searchInitiated == false && !!this.state.initialFitlers){
+        this.onFiltersApplied(initialFitlers)
+      }
+     
+    }
 
   canSelectAll = (selection) =>
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
 
   fetch = (prms) => {
-    console.log("params", prms)
+    console.log("params", prms);
     this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
   };
 
@@ -292,11 +300,16 @@ class ClaimSearcher extends Component {
   };
 
   onFiltersApplied = (filters) => {
-    console.log("filters obtain", filters)
-    this.setState({
-      searchInitiated: true,
-      filters, // Update the active filters
-    });
+    if (this.state.searchInitiated == false) {
+      this.setState({
+        filters: this.state.initialFitlers,
+      });
+    } else {
+      this.setState({
+        searchInitiated: true,
+        filters,
+      });
+    }
   };
 
   isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
@@ -317,8 +330,8 @@ class ClaimSearcher extends Component {
       onDoubleClick,
       actionsContributionKey,
     } = this.props;
-    console.log(" this.state ", this.state )
-    console.log(" props  ", this.props)
+    console.log(" this.state ", this.state);
+    console.log(" props  ", this.props);
 
     const { searchInitiated } = this.state;
 
@@ -370,7 +383,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
-          canFetch = {false}
+          canFetch={false}
           showOrdinalNumber={this.showOrdinalNumber}
           onChangeFilters={this.onFiltersApplied}
         />
