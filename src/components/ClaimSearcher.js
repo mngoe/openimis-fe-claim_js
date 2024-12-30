@@ -46,9 +46,9 @@ class ClaimSearcher extends Component {
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
- 
-  fetchWithInitialFilters (filters){
-    if (this.state.searchInitiated == false && !!this.state.initialFitlers) {
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.state.searchInitiated == false && !!this.state.initialFitlers && this.props.canFetchClaimDetails == true) {
       console.log("enter filter ", this.state.initialFitlers);
       this.onFiltersApplied(this.state.initialFitlers);
     }
@@ -300,21 +300,10 @@ class ClaimSearcher extends Component {
   };
 
   onFiltersApplied = (filters) => {
-    if (this.state.searchInitiated == false && !!this.state.initialFitlers) {
-      console.log("enter filter ", this.state.initialFitlers);
-      let filters = this.state.initialFitlers
-      this.setState({
-        searchInitiated: true,
-        filters,
-      });
-      
-    }else {
-      this.setState({
-        searchInitiated: true,
-        filters,
-      });
-    }
-   
+    this.setState({
+      searchInitiated: true,
+      filters,
+    });
   };
 
   isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;

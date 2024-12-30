@@ -42,7 +42,12 @@ class HealthFacilitiesPage extends Component {
     this.state = {
       defaultFilters,
       confirmedAction: null,
+      canFetchClaimDetails: false
     };
+  }
+
+  componentDidMount() {
+    this.setState({ canFetchClaimDetails: false });
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -51,6 +56,10 @@ class HealthFacilitiesPage extends Component {
       this.setState({ reset: this.state.reset + 1 });
     } else if (!prevProps.confirmed && this.props.confirmed) {
       this.state.confirmedAction();
+    }
+     if (!prevState.defaultFilters && !!this.state.defaultFilters) {
+      console.log(" status changed")
+      this.setState({ canFetchClaimDetails: true });
     }
    
   }
@@ -186,6 +195,7 @@ class HealthFacilitiesPage extends Component {
           processing={generatingPrint}
           filterPaneContributionsKey={CLAIM_HF_FILTER_CONTRIBUTION_KEY}
           actionsContributionKey={CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY}
+          canFetchClaimDetails={this.state.canFetchClaimDetails}
         />
         {!generatingPrint && rights.includes(RIGHT_ADD) && (
           <Tooltip
