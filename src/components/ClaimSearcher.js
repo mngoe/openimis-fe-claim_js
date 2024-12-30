@@ -47,9 +47,9 @@ class ClaimSearcher extends Component {
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
     componentDidUpdate(prevProps, prevState, snapshot) {
-      console.log('enter filter ', this.state.initialFitlers)
       if (this.state.searchInitiated == false && !!this.state.initialFitlers){
-        this.onFiltersApplied(initialFitlers)
+        console.log('enter filter ', this.state.initialFitlers)
+        this.onFiltersApplied(this.state.initialFitlers)
       }
      
     }
