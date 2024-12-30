@@ -371,7 +371,6 @@ class ClaimSearcher extends Component {
           selectionMessage={"claimSummaries.selection.count"}
           preHeaders={this.preHeaders}
           headers={this.headers}
-          applyFilters={this.canFetchClaimDetails}
           itemFormatters={this.itemFormatters}
           actions={actions}
           aligns={this.aligns}

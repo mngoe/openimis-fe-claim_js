@@ -46,12 +46,8 @@ class HealthFacilitiesPage extends Component {
     };
   }
 
-  componentDidMount() {
-    if (!!this.state.defaultFilters) {
-      console.log("status changed");
-      this.setState({ canFetchClaimDetails: true });
-    }
-  }
+
+  
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.submittingMutation && !this.props.submittingMutation) {
@@ -151,6 +147,10 @@ class HealthFacilitiesPage extends Component {
   componentDidMount = () => {
     const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+    if (!!this.state.defaultFilters) {
+      console.log("status changed");
+      this.setState({ canFetchClaimDetails: true });
+    }
   };
 
   componentWillUnmount = () => {
