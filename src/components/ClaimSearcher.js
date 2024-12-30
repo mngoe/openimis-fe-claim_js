@@ -26,9 +26,10 @@ const styles = (theme) => ({});
 
 class ClaimSearcher extends Component {
   state = {
-    searchInitiated: true,
+    searchInitiated: false,
     random: null,
     attachmentsClaim: null,
+    initialfilter: null
   };
 
   constructor(props) {
@@ -292,6 +293,7 @@ class ClaimSearcher extends Component {
   };
 
   onFiltersApplied = (filters) => {
+    console.log("filters obtain", filters)
     this.setState({
       searchInitiated: true,
       filters, // Update the active filters
