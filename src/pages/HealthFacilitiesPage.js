@@ -42,12 +42,15 @@ class HealthFacilitiesPage extends Component {
     this.state = {
       defaultFilters,
       confirmedAction: null,
-      canFetchClaimDetails: false,
+      canFetchClaimDetails: false
     };
   }
 
   componentDidMount() {
-    this.setState({ canFetchClaimDetails: false });
+    if (!!this.state.defaultFilters) {
+      console.log("status changed");
+      this.setState({ canFetchClaimDetails: true });
+    }
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -57,10 +60,7 @@ class HealthFacilitiesPage extends Component {
     } else if (!prevProps.confirmed && this.props.confirmed) {
       this.state.confirmedAction();
     }
-    if (!!this.state.defaultFilters) {
-      console.log(" status changed");
-      this.setState({ canFetchClaimDetails: true });
-    }
+  
   }
 
   canSubmitSelected = (selection) =>
@@ -164,8 +164,8 @@ class HealthFacilitiesPage extends Component {
 
   render() {
     const { intl, classes, rights, generatingPrint } = this.props;
-    console.log(" page props  ", this.props);
-    console.log("state  page ", this.state);
+    console.log(" page props  ", this.props  )
+    console.log('state  page ', this.state)
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
