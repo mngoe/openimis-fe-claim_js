@@ -53,10 +53,6 @@ class HealthFacilitiesPage extends Component {
     } else if (!prevProps.confirmed && this.props.confirmed) {
       this.state.confirmedAction();
     }
-    if (!!this.state.defaultFilters) {
-      console.log("status changed");
-      this.setState({ canFetchClaimDetails: false });
-    }
   }
 
   canSubmitSelected = (selection) =>

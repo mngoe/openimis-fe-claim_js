@@ -47,12 +47,40 @@ class ClaimSearcher extends Component {
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
 
-  canFetchClaimDetails = () =>{
-    if (this.state.searchInitiated == false && !!this.state.initialFitlers) {
+  canFetchClaimDetails = () => {
+    if (this.state.searchInitiated === false && !!this.state.initialFitlers) {
       console.log("enter filter ", this.state.initialFitlers);
-      this.onFiltersApplied(this.state.initialFitlers);
+      this.onFiltersApplied(this.state.initialFitlers); // Votre logique
+    }
+  };
+  
+  componentDidMount() {
+    // Exécuter après que le composant est complètement monté
+    this.scheduleCanFetchClaimDetails();
+  }
+  
+  componentDidUpdate(prevProps, prevState) {
+    // Exécuter seulement si les conditions nécessaires sont remplies
+    if (
+      prevState.searchInitiated !== this.state.searchInitiated || // Si searchInitiated a changé
+      prevState.initialFitlers !== this.state.initialFitlers // Ou si initialFitlers a changé
+    ) {
+      this.scheduleCanFetchClaimDetails();
     }
   }
+  
+  // Planification pour s'assurer qu'il s'exécute après le dernier rendu
+  scheduleCanFetchClaimDetails = () => {
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout); // Annule les appels précédents
+    }
+  
+    // Attendre un court délai pour laisser React finir tous les rendus successifs
+    this.debounceTimeout = setTimeout(() => {
+      this.canFetchClaimDetails(); // Appelle la fonction après les rendus
+    }, 100); // Vous pouvez ajuster le délai selon vos besoins
+  };
+  
 
   canSelectAll = (selection) =>
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
