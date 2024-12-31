@@ -51,7 +51,7 @@ class ClaimSearcher extends Component {
   canFetchClaimDetails = () => {
     if (this.canFetchClaimData === false && !!this.state.initialFitlers) {
       console.log("enter filter ", this.state.initialFitlers);
-      this.onFiltersApplied(this.state.initialFitlers); // Votre logique
+      this.onFiltersApplied(this.state.initialFitlers); 
     }
   };
 
@@ -63,6 +63,7 @@ class ClaimSearcher extends Component {
   componentDidUpdate(prevProps, prevState) {
    
     if (
+      this.canFetchClaimData == false ||
       prevState.initialFitlers !== this.state.initialFitlers 
     ) {
       this.scheduleCanFetchClaimDetails();
