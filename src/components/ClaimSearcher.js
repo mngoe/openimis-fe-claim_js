@@ -45,40 +45,42 @@ class ClaimSearcher extends Component {
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
-    this.canFetchClaimData = props.modulesManager.getConf("fe-claim", "canFetchClaimData", false);
   }
 
   canFetchClaimDetails = () => {
-    if (this.canFetchClaimData === false && !!this.state.initialFitlers) {
+    if (this.state.searchInitiated === false && !!this.state.initialFitlers) {
       console.log("enter filter ", this.state.initialFitlers);
-      this.onFiltersApplied(this.state.initialFitlers); 
+      this.onFiltersApplied(this.state.initialFitlers); // Votre logique
     }
   };
-
+  
   componentDidMount() {
-    
+    // Exécuter après que le composant est complètement monté
     this.scheduleCanFetchClaimDetails();
   }
-
+  
   componentDidUpdate(prevProps, prevState) {
-   
+    // Exécuter seulement si les conditions nécessaires sont remplies
     if (
-      this.canFetchClaimData == false ||
-      prevState.initialFitlers !== this.state.initialFitlers 
+      prevState.searchInitiated !== this.state.searchInitiated || // Si searchInitiated a changé
+      prevState.initialFitlers !== this.state.initialFitlers // Ou si initialFitlers a changé
     ) {
       this.scheduleCanFetchClaimDetails();
     }
   }
-
+  
+  // Planification pour s'assurer qu'il s'exécute après le dernier rendu
   scheduleCanFetchClaimDetails = () => {
     if (this.debounceTimeout) {
-      clearTimeout(this.debounceTimeout); 
+      clearTimeout(this.debounceTimeout); // Annule les appels précédents
     }
-    
+  
+    // Attendre un court délai pour laisser React finir tous les rendus successifs
     this.debounceTimeout = setTimeout(() => {
-      this.canFetchClaimDetails(); 
-    }, 100); 
+      this.canFetchClaimDetails(); // Appelle la fonction après les rendus
+    }, 100); // Vous pouvez ajuster le délai selon vos besoins
   };
+  
 
   canSelectAll = (selection) =>
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
@@ -350,6 +352,8 @@ class ClaimSearcher extends Component {
       onDoubleClick,
       actionsContributionKey,
     } = this.props;
+    console.log(" this.state ", this.state);
+    console.log(" props  ", this.props);
 
     const { searchInitiated } = this.state;
 
@@ -383,7 +387,7 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={this.canFetchClaimData ? this.fetch : () => {}}
+          fetch={searchInitiated ? this.fetch : () => {}}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
