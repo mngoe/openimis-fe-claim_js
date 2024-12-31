@@ -42,7 +42,6 @@ class HealthFacilitiesPage extends Component {
     this.state = {
       defaultFilters,
       confirmedAction: null,
-      canFetchClaimDetails: false,
     };
   }
 
@@ -143,8 +142,6 @@ class HealthFacilitiesPage extends Component {
   componentDidMount = () => {
     const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
-
-    this.setState({ canFetchClaimDetails: false });
   };
 
   componentWillUnmount = () => {
@@ -158,8 +155,6 @@ class HealthFacilitiesPage extends Component {
 
   render() {
     const { intl, classes, rights, generatingPrint } = this.props;
-    console.log(" page props  ", this.props);
-    console.log("state  page ", this.state);
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
@@ -188,7 +183,6 @@ class HealthFacilitiesPage extends Component {
           processing={generatingPrint}
           filterPaneContributionsKey={CLAIM_HF_FILTER_CONTRIBUTION_KEY}
           actionsContributionKey={CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY}
-          canFetchClaimDetails={this.state.canFetchClaimDetails}
         />
         {!generatingPrint && rights.includes(RIGHT_ADD) && (
           <Tooltip
