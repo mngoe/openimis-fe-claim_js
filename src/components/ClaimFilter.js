@@ -603,7 +603,7 @@ class Details extends Component {
                 {
                   id: "program_Code",
                   value: value,
-                  filter: !!value ? `program_Code: "${value.nameProgram}"` : null,
+                  filter: !!value ? `program_Code: "${value.code}"` : null,
                 },
               ])
             }
