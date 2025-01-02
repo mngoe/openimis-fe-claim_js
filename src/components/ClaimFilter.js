@@ -597,7 +597,7 @@ class Details extends Component {
             name="program"
             label={formatMessage(intl, "claim", "programPicker.label")}
             placeholder={formatMessage(intl, "claim", "programPicker.placeholder")}
-            value={edited ? edited.program : ""}
+            value={(filters["program_Code"] && filters["program_Code"]["value"]) || null}
             onChange={(value) =>
               onChangeFilters([
                 {
