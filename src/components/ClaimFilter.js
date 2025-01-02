@@ -16,7 +16,6 @@ import {
   TextInput,
   AmountInput,
   Contributions,
-  decodeId,
 } from "@openimis/fe-core";
 import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
@@ -604,7 +603,7 @@ class Details extends Component {
                 {
                   id: "program_Code",
                   value: value,
-                  filter: !!value ? `program_Code: "${decodeId(value.id)}"` : null,
+                  filter: !!value ? `program_Code: "${value.nameProgram}"` : null,
                 },
               ])
             }
