@@ -45,6 +45,11 @@ class ClaimSearcher extends Component {
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
+    this.isDefaultFetchClaimActivated = this.props.modulesManager.getConf(
+      "fe-claim",
+      "isDefaultFetchClaimActivated",
+      true
+    );
   }
 
   canFetchClaimDetails = () => {
@@ -377,7 +382,7 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={searchInitiated ? this.fetch : () => {}}
+          fetch={this.isDefaultFetchClaimActivated == false  && searchInitiated ? this.fetch : this.isDefaultFetchClaimActivated == true ? this.fetch : () => {}}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
