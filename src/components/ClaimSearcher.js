@@ -48,7 +48,7 @@ class ClaimSearcher extends Component {
     this.isDefaultFetchClaimActivated = this.props.modulesManager.getConf(
       "fe-claim",
       "isDefaultFetchClaimActivated",
-      true
+      false
     );
   }
 
