@@ -570,6 +570,24 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={3} className={classes.item}>
+          <PublishedComponent
+            pubRef="program.ProgramPicker"
+            name="program"
+            label={formatMessage(intl, "claim", "programPicker.label")}
+            placeholder={formatMessage(intl, "claim", "programPicker.placeholder")}
+            value={(filters["program_Code"] && filters["program_Code"]["value"]) || null}
+            onChange={(value) =>
+              onChangeFilters([
+                {
+                  id: "program_Code",
+                  value: value,
+                  filter: !!value ? `program_Code: "${value.code}"` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
 
         <Contributions
           filters={filters}
