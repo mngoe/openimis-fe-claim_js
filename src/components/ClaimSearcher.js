@@ -26,8 +26,10 @@ const styles = (theme) => ({});
 
 class ClaimSearcher extends Component {
   state = {
+    searchInitiated: false,
     random: null,
     attachmentsClaim: null,
+    initialFitlers: this.props.defaultFilters,
   };
 
   constructor(props) {
@@ -42,7 +44,41 @@ class ClaimSearcher extends Component {
     this.highlightAltInsurees = props.modulesManager.getConf("fe-claim", "claimFilter.highlightAltInsurees", true);
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
+    this.isDefaultFetchClaimActivated = this.props.modulesManager.getConf(
+      "fe-claim",
+      "isDefaultFetchClaimActivated",
+      true
+    );
   }
+
+  canFetchClaimDetails = () => {
+    if (this.state.searchInitiated === false && !!this.state.initialFitlers) {
+      this.onFiltersApplied(this.state.initialFitlers);
+    }
+  };
+
+  componentDidMount() {
+    this.scheduleCanFetchClaimDetails();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.searchInitiated !== this.state.searchInitiated ||
+      prevState.initialFitlers !== this.state.initialFitlers
+    ) {
+      this.scheduleCanFetchClaimDetails();
+    }
+  }
+
+  scheduleCanFetchClaimDetails = () => {
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+    }
+
+    this.debounceTimeout = setTimeout(() => {
+      this.canFetchClaimDetails();
+    }, 100);
+  };
 
   canSelectAll = (selection) =>
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
@@ -308,7 +344,7 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={searchInitiated ? this.fetch : () => {}}
+          fetch={this.isDefaultFetchClaimActivated == false  && searchInitiated ? this.fetch : this.isDefaultFetchClaimActivated == true ? this.fetch : () => {}}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
