@@ -266,6 +266,7 @@
     "claim.ClaimMasterPanelExt.restore": "",
     "claim.ClaimMasterPanel.referHFLabel": "Établissement de santé de référence",
     "ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsFirstVisit": "Voici la premiere visite (Claim)",
+    "claim.programPicker.placeholder": "Programme",
 
     "claim.ClaimMasterPanel.autogenerate": "",
     "claim.ClaimChildPanel.review.approveAll": "",

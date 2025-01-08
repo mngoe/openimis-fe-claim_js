@@ -39,8 +39,7 @@ class Head extends Component {
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    document.addEventListener('keydown', this.props.handleEnter)
-   
+    document.addEventListener("keydown", this.props.handleEnter);
   }
 
   _filterValue = (k) => {
@@ -287,9 +286,12 @@ class Details extends Component {
     const { filters } = this.props;
     return !!filters && !!filters[k] ? filters[k].value : "";
   };
+ 
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, } = this.props;
+    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
+    console.log("props ", this.props )
+
     return (
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
@@ -589,28 +591,45 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={3} className={classes.item}>
+          <PublishedComponent
+            pubRef="program.ProgramPicker"
+            name="program"
+            label={formatMessage(intl, "claim", "programPicker.label")}
+            placeholder={formatMessage(intl, "claim", "programPicker.placeholder")}
+            value={(filters["program_Code"] && filters["program_Code"]["value"]) || null}
+            onChange={(value) =>
+              onChangeFilters([
+                {
+                  id: "program_Code",
+                  value: value,
+                  filter: !!value ? `program_Code: "${value.code}"` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.CareTypePicker"
             name="careType"
-            value={filters["careType"] && filters["careType"]["value"] || null}
-            onChange={(value) =>{
+            value={(filters["careType"] && filters["careType"]["value"]) || null}
+            onChange={(value) => {
               onChangeFilters([
                 {
                   id: "careType",
                   value: value,
                   filter: !!value ? `careType: "${value}"` : null,
                 },
-              ])
-            }
-            }
+              ]);
+            }}
           />
         </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
-            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"] || null}
+            value={(filters["attachmentStatus"] && filters["attachmentStatus"]["value"]) || null}
             onChange={(value) =>
               onChangeFilters([
                 {
@@ -631,7 +650,7 @@ class Details extends Component {
                   control={
                     <Checkbox
                       color="primary"
-                      checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
+                      checked={(filters["showRestored"] && filters["showRestored"]["value"]) || false}
                       onChange={(event) =>
                         onChangeFilters([
                           {
@@ -649,7 +668,6 @@ class Details extends Component {
             }
           />
         </Grid>
-
 
         <Contributions
           filters={filters}
