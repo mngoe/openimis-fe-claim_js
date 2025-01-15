@@ -18,6 +18,8 @@ import {
   journalize,
   coreAlert,
   Helmet,
+  clearCurrentPaginationPage,
+  Contributions,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import {
@@ -31,11 +33,12 @@ import {
   skipReview,
   process,
 } from "../actions";
-import { RIGHT_UPDATE, RIGHT_FEEDBACK, RIGHT_CLAIMREVIEW, RIGHT_PROCESS } from "../constants";
+import { RIGHT_UPDATE, RIGHT_FEEDBACK, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, MODULE_NAME } from "../constants";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 
 const CLAIM_REVIEWS_FILTER_CONTRIBUTION_KEY = "claim.ReviewsFilter";
 const CLAIM_REVIEWS_ACTION_CONTRIBUTION_KEY = "claim.ReviewSelectionAction";
+const CLAIM_SAMPLING_BATCH_CONTRIBUTION_KEY = "claimSampling.claimSamplingButton";
 
 const styles = (theme) => ({
   page: theme.page,
@@ -154,7 +157,7 @@ class RawRandomAndValueFilters extends Component {
         {
           id: "claimedAbove",
           value: this.state.value,
-          filter: `claimed_Gte: ${this.state.value}`,
+          filter: `claimed_Gte: "${this.state.value}"`,
         },
       ];
     }
@@ -195,9 +198,12 @@ class RawRandomAndValueFilters extends Component {
     );
   };
   render() {
-    const { classes } = this.props;
+    const { classes, filters } = this.props;
+    const { filters: additionalFilters } = this.state;
+    const allFilters = { ...filters, ...additionalFilters };
+
     return (
-      <Grid container justify="center" alignItems="center" direction="row">
+      <Grid container direction="row">
         <Grid item xs={3} className={classes.item}>
           <NumberInput
             module="claim"
@@ -244,7 +250,7 @@ class RawRandomAndValueFilters extends Component {
             onChange={this.valueChange}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid className={classes.item} xs={3}>
           <NumberInput
             module="claim"
             label="ClaimFilter.Reviews.variance"
@@ -270,6 +276,7 @@ class RawRandomAndValueFilters extends Component {
             }}
           />
         </Grid>
+        <Contributions contributionKey={CLAIM_SAMPLING_BATCH_CONTRIBUTION_KEY} filters={allFilters} />
       </Grid>
     );
   }
@@ -574,6 +581,20 @@ class ReviewsPage extends Component {
     this.review(c, newTab);
   };
 
+  componentDidMount = () => {
+    const { module } = this.props;
+    if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+  };
+
+  componentWillUnmount = () => {
+    const { location, history } = this.props;
+    const {
+      location: { pathname },
+    } = history;
+    const urlPath = location.pathname;
+    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
+  };
+
   render() {
     const { classes, rights } = this.props;
     if (!rights.filter((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS).length) return null;
@@ -625,8 +646,6 @@ class ReviewsPage extends Component {
       });
     }
 
-    //actions.push(...extra_action);
-
     return (
       <div className={classes.page}>
         <Helmet title={formatMessage(this.props.intl, "claim", "claim.reviews.page.title")} />
@@ -652,6 +671,7 @@ const mapStateToProps = (state) => ({
   claimHealthFacility: state.claim.claimHealthFacility,
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   claimsPageInfo: state.claim.claimsPageInfo,
+  module: state.core?.savedPagination?.module,
   //props used from super.componentDidUpdate !!
   submittingMutation: state.claim.submittingMutation,
   mutation: state.claim.mutation,
@@ -671,6 +691,7 @@ const mapDispatchToProps = (dispatch) => {
       deliverReview,
       skipReview,
       process,
+      clearCurrentPaginationPage,
     },
     dispatch,
   );

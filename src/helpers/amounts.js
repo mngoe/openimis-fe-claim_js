@@ -1,3 +1,5 @@
+import { SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P, SERVICE_TYPE_PP_S } from "../constants";
+
 export function claimedAmount(r) {
   let totalPrice = 0;
   if(Object?.keys(r)?.length!=0){
@@ -7,19 +9,19 @@ export function claimedAmount(r) {
       if(r?.service){
         if(Object?.keys(r.service)?.length!=0){
           let currentPackageType = r.service.packagetype;
-          if(currentPackageType=="S"){
+          if(currentPackageType==SERVICE_TYPE_PP_S){
             totalPrice += parseFloat(r.service.price);
           }else{
             // if this product has subItems we add everything
             if(r.service?.serviceserviceSet){
               r.service.serviceserviceSet.forEach(subItem => {
                 let qtyAsked = 0;
-                if(currentPackageType=="P"){
+                if(currentPackageType==SERVICE_TYPE_PP_P){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                   }
                   totalPrice += qtyAsked * subItem.priceAsked;
-                }else if (currentPackageType=="F"){
+                }else if (currentPackageType==SERVICE_TYPE_PP_F){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                     if(subItem.qtyProvided<subItem.qtyAsked){
@@ -33,12 +35,12 @@ export function claimedAmount(r) {
             if(r.service.servicesLinked){
               r.service.servicesLinked.forEach(subItem => {
                 let qtyAsked = 0;
-                if(currentPackageType=="P"){
+                if(currentPackageType==SERVICE_TYPE_PP_P){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                   }
                   totalPrice += qtyAsked * subItem.priceAsked;
-                }else if (currentPackageType=="F"){
+                }else if (currentPackageType==SERVICE_TYPE_PP_F){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                     if(subItem.qtyProvided<subItem.qtyAsked){
@@ -52,12 +54,12 @@ export function claimedAmount(r) {
             if(r?.claimlinkedService){
               r.claimlinkedService.forEach(subItem => {
                 let qtyAsked = 0;
-                if(currentPackageType=="P"){
+                if(currentPackageType==SERVICE_TYPE_PP_P){
                   if(subItem.qtyDisplayed){
                     qtyAsked = subItem.qtyDisplayed;
                   }
                   totalPrice += qtyAsked * subItem.priceAsked;
-                }else if (currentPackageType=="F"){
+                }else if (currentPackageType==SERVICE_TYPE_PP_F){
                   if(subItem.qtyDisplayed){
                     qtyAsked = subItem.qtyDisplayed;
                     if(subItem.qtyProvided<subItem.qtyDisplayed){
@@ -76,7 +78,7 @@ export function claimedAmount(r) {
                     qtyAsked = subItem.qtyDisplayed;
                   }
                   totalPrice += qtyAsked * subItem.priceAsked;
-                }else if (currentPackageType=="F"){
+                }else if (currentPackageType==SERVICE_TYPE_PP_F){
                   if(subItem.qtyDisplayed){
                     qtyAsked = subItem.qtyDisplayed;
                     if(subItem.qtyProvided<subItem.qtyDisplayed){
