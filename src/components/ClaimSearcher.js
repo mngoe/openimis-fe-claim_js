@@ -349,7 +349,6 @@ class ClaimSearcher extends Component {
       onDoubleClick,
       actionsContributionKey,
     } = this.props;
-    const { searchInitiated } = this.state;
 
     let count = !!this.state.random && this.state.random.value;
     const { searchInitiated } = this.state;
