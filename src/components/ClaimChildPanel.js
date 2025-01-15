@@ -388,6 +388,7 @@ class ClaimChildPanel extends Component {
             value={i[type]}
             healthFacility={edited?.healthFacility}
             claimProgram={edited.program?.idProgram}
+            healthFacility={edited?.healthFacility}
             fullWidth
             pricelistUuid={edited.healthFacility[`${this.props.type}sPricelist`].uuid}
             date={edited.dateClaimed}

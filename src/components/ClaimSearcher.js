@@ -333,7 +333,6 @@ class ClaimSearcher extends Component {
   };
 
   isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
-
   render() {
     const {
       intl,
@@ -353,6 +352,7 @@ class ClaimSearcher extends Component {
     const { searchInitiated } = this.state;
 
     let count = !!this.state.random && this.state.random.value;
+    const { searchInitiated } = this.state;
     if (!count) {
       count = (claimsPageInfo?.totalCount || 0).toLocaleString();
     }

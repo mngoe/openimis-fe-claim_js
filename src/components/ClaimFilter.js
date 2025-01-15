@@ -37,6 +37,10 @@ class Head extends Component {
   state = {
     reset: 0,
   };
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    document.addEventListener('keydown', this.props.handleEnter)
+
+  }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     document.addEventListener("keydown", this.props.handleEnter);
@@ -668,7 +672,6 @@ class Details extends Component {
             }
           />
         </Grid>
-
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}
