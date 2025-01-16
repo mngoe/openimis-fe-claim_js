@@ -575,6 +575,7 @@ class ClaimForm extends Component {
       forFeedback: forFeedback,
       onEditedChanged: this.onEditedChanged,
     };
+    console.log('readonly', readOnly)
     return (
       <div className={readOnly ? classes.lockedPage : null}>
         <Helmet
