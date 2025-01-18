@@ -143,6 +143,8 @@ class ClaimMasterPanel extends FormPanel {
         v = csuNumber + v
       }
     }
+    console.log(v)
+    console.log(c)
     this.setState(
       {
         claimCodeError: null,
