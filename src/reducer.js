@@ -301,7 +301,7 @@ function reducer(
           ...state.validationFields,
           claimCode: {
             isValidating: false,
-            isValid: action.payload?.data.isValid,
+            isValid: action.payload?.data.validateClaimCode,
             validationError: formatGraphQLError(action.payload),
           },
         },

@@ -21,7 +21,6 @@ import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
   claimCodeSetValid,
-  claimCodeValidationCheck,
   claimCodeValidationClear,
   claimHealthFacilitySet,
   clearClaim,
@@ -94,10 +93,10 @@ class ClaimMasterPanel extends FormPanel {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this._componentDidUpdate(prevProps, prevState, snapshot)) return;
-    if (!prevProps.fetchingClaimCodeCount && this.props.fetchingClaimCodeCount) {
+    if (!prevProps.isCodeValidating && this.props.isCodeValidating) {
       this.setState({ claimCodeError: null });
-    } else if (!prevProps.fetchedClaimCodeCount && this.props.fetchedClaimCodeCount) {
-      if (!!this.props.claimCodeCount) {
+    } else if (!prevProps.isCodeValid && this.props.isCodeValid) {
+      if (!!this.props.codeValidationError) {
         this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
         this.updateAttribute("codeError", true);
       } else {
@@ -717,11 +716,7 @@ class ClaimMasterPanel extends FormPanel {
 
 const mapStateToProps = (state) => ({
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
-  fetchingClaimCodeCount: state.claim.fetchingClaimCodeCount,
-  fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
-  claimCodeCount: state.claim.claimCodeCount,
   savedClaimCode: state.claim.claim?.code,
-  errorClaimCodeCount: state.claim.errorClaimCodeCount,
   isCodeValid: state.claim.validationFields?.claimCode?.isValid,
   isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
   codeValidationError: state.claim.validationFields?.claimCode?.validationError,
@@ -731,7 +726,6 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       claimHealthFacilitySet,
-      claimCodeValidationCheck,
       clearClaim,
       validateClaimCode,
     },
