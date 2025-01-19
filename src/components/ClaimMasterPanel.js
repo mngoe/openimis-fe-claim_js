@@ -248,8 +248,8 @@ class ClaimMasterPanel extends FormPanel {
     console.log("insureePolicies : " + insureePolicies);
     console.log("PolicyNumber : " + policyNumber);
     console.log("Claim Program : " + CLAIMPROGRAM);
-    console.log(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9");
-    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
+    console.log(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9");
+    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") {
       if (edited.code && policyNumber != undefined && policyNumber != "") {
         claimCode = edited.code.replace(policyNumber, '');
       }
@@ -456,7 +456,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") ? policyNumber : csuNumber}
+                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
