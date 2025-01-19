@@ -242,6 +242,7 @@ class ClaimMasterPanel extends FormPanel {
       console.log(policy.policy.status == 2 && policy.policy.policyNumber != null);
       if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
         policyNumber = policy.policy.policyNumber;
+        console.log(policyNumber);
       }
     })
     console.log("insureePolicies : " + insureePolicies);
