@@ -240,6 +240,7 @@ class ClaimMasterPanel extends FormPanel {
     insureePolicies.forEach(function (policy) {
       if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
         policyNumber = policy.policy.policyNumber;
+        console.log(policyNumber);
       }
     })
     if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
