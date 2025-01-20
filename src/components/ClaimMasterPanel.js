@@ -143,8 +143,8 @@ class ClaimMasterPanel extends FormPanel {
         v = csuNumber + v
       }
     }
-    console.log(v)
-    console.log(c)
+    /*console.log(v)
+    console.log(c)*/
     this.setState(
       {
         claimCodeError: null,
@@ -238,17 +238,18 @@ class ClaimMasterPanel extends FormPanel {
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     
     insureePolicies.forEach(function (policy) {
-      console.log("If Policy Number");
-      console.log(policy.policy.status == 2 && policy.policy.policyNumber != null);
+      //console.log("If Policy Number");
+      //console.log(policy.policy.status == 2 && policy.policy.policyNumber != null);
       if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
         policyNumber = policy.policy.policyNumber;
-        console.log(policyNumber);
+        //console.log(policyNumber);
       }
     })
-    console.log("insureePolicies : " + insureePolicies);
+    /*console.log("insureePolicies : " + insureePolicies);
     console.log("PolicyNumber : " + policyNumber);
     console.log("Claim Program : " + CLAIMPROGRAM);
     console.log(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9");
+    */
     if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") {
       if (edited.code && policyNumber != undefined && policyNumber != "") {
         claimCode = edited.code.replace(policyNumber, '');
