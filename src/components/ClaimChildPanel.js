@@ -388,7 +388,6 @@ class ClaimChildPanel extends Component {
             value={i[type]}
             healthFacility={edited?.healthFacility}
             claimProgram={edited.program?.idProgram}
-            healthFacility={edited?.healthFacility}
             fullWidth
             pricelistUuid={edited.healthFacility[`${this.props.type}sPricelist`].uuid}
             date={edited.dateClaimed}
@@ -408,7 +407,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={this.state.data[idx].service?.priceAsked}
+          value={!!forReview ? i.priceAsked : this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
@@ -706,7 +705,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={!i.product?.uuid}
+            readOnly={readOnly}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
@@ -729,7 +728,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={subServicesItemsFormatters}
+          subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}

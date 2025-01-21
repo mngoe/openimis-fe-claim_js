@@ -51,8 +51,8 @@ export function claimedAmount(r) {
                 }
               });
             }
-            if(r?.claimlinkedService){
-              r.claimlinkedService.forEach(subItem => {
+            if(r?.services){
+              r.services.forEach(subItem => {
                 let qtyAsked = 0;
                 if(currentPackageType==SERVICE_TYPE_PP_P){
                   if(subItem.qtyDisplayed){
@@ -70,8 +70,8 @@ export function claimedAmount(r) {
                 }
               });
             }
-            if(r?.claimlinkedItem){
-              r.claimlinkedItem.forEach(subItem => {
+            if(r?.items){
+              r.items.forEach(subItem => {
                 let qtyAsked = 0;
                 if(currentPackageType=="P"){
                   if(subItem.qtyDisplayed){
