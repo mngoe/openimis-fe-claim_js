@@ -487,6 +487,8 @@ class ClaimForm extends Component {
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
 
+    console.log(rights);
+
     var actions = [];
     if (!!claim_uuid) {
       actions.push({
