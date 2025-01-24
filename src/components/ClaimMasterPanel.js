@@ -446,7 +446,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") ? policyNumber : csuNumber}
+                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" ) ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
