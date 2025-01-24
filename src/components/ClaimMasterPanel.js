@@ -125,7 +125,7 @@ class ClaimMasterPanel extends FormPanel {
     let c = v;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
-    if (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
+    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
       insureePolicies.forEach(function (policy) {
         if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
           policyNumber = policy.policy.policyNumber;
@@ -143,8 +143,6 @@ class ClaimMasterPanel extends FormPanel {
         v = csuNumber + v
       }
     }
-    /*console.log(v)
-    console.log(c)*/
     this.setState(
       {
         claimCodeError: null,
@@ -238,19 +236,11 @@ class ClaimMasterPanel extends FormPanel {
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     
     insureePolicies.forEach(function (policy) {
-      //console.log("If Policy Number");
-      //console.log(policy.policy.status == 2 && policy.policy.policyNumber != null);
       if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
         policyNumber = policy.policy.policyNumber;
-        //console.log(policyNumber);
       }
     })
-    /*console.log("insureePolicies : " + insureePolicies);
-    console.log("PolicyNumber : " + policyNumber);
-    console.log("Claim Program : " + CLAIMPROGRAM);
-    console.log(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9");
-    */
-    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") {
+    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") {
       if (edited.code && policyNumber != undefined && policyNumber != "") {
         claimCode = edited.code.replace(policyNumber, '');
       }
@@ -447,7 +437,6 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-
         {!!this.claimPrefix && !edited.uuid && (<ControlledField
           module="claim"
           id="Claim.codechfId"
@@ -457,7 +446,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") ? policyNumber : csuNumber}
+                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>

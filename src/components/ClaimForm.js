@@ -475,7 +475,6 @@ class ClaimForm extends Component {
       isHealthFacilityPage = false,
       classes,
     } = this.props;
-    console.log('propriété', this.props)
     const { claim, claim_uuid, lockNew, isSaved } = this.state;
     const nameProgram = claim?.program?.nameProgram
 
@@ -575,7 +574,6 @@ class ClaimForm extends Component {
       forFeedback: forFeedback,
       onEditedChanged: this.onEditedChanged,
     };
-    console.log('readonly', readOnly)
     return (
       <div className={readOnly ? classes.lockedPage : null}>
         <Helmet
