@@ -500,7 +500,6 @@ class ClaimMasterPanel extends FormPanel {
                 value={!!edited.uuid ? edited.code : isRestored ? claimCode : this.state.codeClaim}
                 error={this.state.claimCodeError}
                 reset={reset}
-                autoFocus={true}
                 onChange={this.debounceUpdateCode}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
