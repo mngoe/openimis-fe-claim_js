@@ -263,7 +263,6 @@ class Head extends Component {
 
 const mapStateToProps = (state) => ({
   userHealthFacilityId: state.core.user.i_user.health_facility_id,
-  user: state.core.user,
   claimFilter: state.claim.claimFilter,
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},

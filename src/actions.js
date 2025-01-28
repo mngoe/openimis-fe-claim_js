@@ -157,14 +157,14 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
   var projections = [
     "uuid",
     "code",
-    // "jsonExt",
+    "jsonExt",
     "dateClaimed",
     "dateProcessed",
     "feedbackStatus",
     "reviewStatus",
     "claimed",
     "approved",
-    // "status",
+    "status",
     "restoreId",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
@@ -330,7 +330,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "claimed",
     "approved",
     "valuated",
-    // "status",
+    "status",
     "feedbackStatus",
     "reviewStatus",
     "guaranteeId",
@@ -353,7 +353,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "program {id code idProgram nameProgram validityDateFrom}",
     "testNumber",
     "tdr",
-    // "jsonExt",
+    "jsonExt",
   ];
   if (!!forFeedback) {
     projections.push(
@@ -363,12 +363,12 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     projections.push(
       "services{" +
 
-      "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason" +
+      "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
       " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }" +
       " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }" +
       "}",
       "items{" +
-      "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason" +
+      "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
       "}",
     );
   }
@@ -411,7 +411,7 @@ export function fetchLastClaimWithSameDiagnosis(icd, chfid) {
     CLAIMS_WITH_AT_LEAST_ENTERED_STATUS,
   ];
 
-  const projection = ["code", "dateFrom", "dateTo", "uuid"];
+  const projection = ["code", "dateFrom", "dateTo", "uuid", "status"];
 
   const payload = formatPageQuery(
     "claimWithSameDiagnosis",
