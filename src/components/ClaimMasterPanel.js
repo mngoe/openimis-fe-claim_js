@@ -20,8 +20,6 @@ import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
-  claimCodeSetValid,
-  claimCodeValidationClear,
   claimHealthFacilitySet,
   clearClaim,
   validateClaimCode
@@ -95,16 +93,16 @@ class ClaimMasterPanel extends FormPanel {
     if (this._componentDidUpdate(prevProps, prevState, snapshot)) return;
     if (!prevProps.isCodeValidating && this.props.isCodeValidating) {
       this.setState({ claimCodeError: null });
-    } else if (!prevProps.isCodeValid && this.props.isCodeValid) {
-      if (!!this.props.codeValidationError) {
-        this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
-        this.updateAttribute("codeError", true);
-      } else {
-        this.updateAttributes({
-          code: this.state.claimCode,
-          codeError: null,
-        });
-      }
+    } else if (prevProps.isCodeValidating && !this.props.isCodeValidating) {
+        if(!this.props.isCodeValid){
+          this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
+          this.updateAttribute("codeError", true);
+        }else{
+          this.updateAttributes({
+            code: this.state.claimCode,
+            codeError: null,
+          });
+        }
     }
   }
 
@@ -145,7 +143,7 @@ class ClaimMasterPanel extends FormPanel {
     }
     this.setState(
       {
-        claimCodeError: null,
+        claimCodeError: this.state.claimCodeError,
         claimCode: v,
         codeClaim: c,
       },
@@ -155,7 +153,6 @@ class ClaimMasterPanel extends FormPanel {
 
   shouldValidate = (inputValue) => {
     if (this.autoGenerateClaimCode) return false;
-
     const { savedClaimCode } = this.props;
     const shouldValidate = inputValue !== savedClaimCode;
     return shouldValidate;
