@@ -420,6 +420,7 @@ class ClaimForm extends Component {
   };
 
   _deliverReview = (claim) => {
+    console.log(claim);
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
   duplicate = () => {
