@@ -423,11 +423,6 @@ class ClaimForm extends Component {
     console.log(claim);
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
-  duplicate = () => {
-    const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
-    this.props.history.replace(`/${routeRef}`);
-    this.setState({ isDuplicate: true });
-  };
 
   restore = () => {
     const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
