@@ -684,6 +684,7 @@ export function saveReview(claim, clientMutationLabel) {
 export function deliverReview(claims, clientMutationLabel, clientMutationDetails = null) {
   let claimUuids = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]`;
   let mutation = formatMutation("deliverClaimsReview", claimUuids, clientMutationLabel, clientMutationDetails);
+  console.log(mutation);
   var requestedDateTime = new Date();
   claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_DELIVER_CLAIMS_REVIEW_RESP", "CLAIM_MUTATION_ERR"], {
