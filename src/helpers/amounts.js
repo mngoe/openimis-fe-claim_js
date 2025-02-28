@@ -13,8 +13,8 @@ export function claimedAmount(r) {
             totalPrice += parseFloat(r.service.price);
           }else{
             // if this product has subItems we add everything
-            if(r.service?.serviceServiceSet){
-              r.service.serviceServiceSet.forEach(subItem => {
+            if(r.service?.serviceserviceSet){
+              r.service.serviceserviceSet.forEach(subItem => {
                 let qtyAsked = 0;
                 if(currentPackageType==SERVICE_TYPE_PP_P){
                   if(subItem.qtyAsked){
@@ -32,8 +32,8 @@ export function claimedAmount(r) {
                 }
               });
             }
-            if(r.service.serviceItemSet){
-              r.service.serviceItemSet.forEach(subItem => {
+            if(r.service.serviceLinked){
+              r.service.serviceLinked.forEach(subItem => {
                 let qtyAsked = 0;
                 if(currentPackageType==SERVICE_TYPE_PP_P){
                   if(subItem.qtyAsked){
