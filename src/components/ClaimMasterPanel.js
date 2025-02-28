@@ -125,7 +125,7 @@ class ClaimMasterPanel extends FormPanel {
     let c = v;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
-    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
+    if (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
       insureePolicies.forEach(function (policy) {
         if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
           policyNumber = policy.policy.policyNumber;
@@ -240,7 +240,7 @@ class ClaimMasterPanel extends FormPanel {
         policyNumber = policy.policy.policyNumber;
       }
     })
-    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") {
+    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") {
       if (edited.code && policyNumber != undefined && policyNumber != "") {
         claimCode = edited.code.replace(policyNumber, '');
       }
@@ -446,7 +446,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" ) ? policyNumber : csuNumber}
+                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") ? policyNumber : csuNumber}
                 readOnly="true"
               />
             </Grid>
