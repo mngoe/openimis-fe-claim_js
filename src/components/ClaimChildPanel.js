@@ -388,7 +388,6 @@ class ClaimChildPanel extends Component {
             value={i[type]}
             healthFacility={edited?.healthFacility}
             claimProgram={edited.program?.idProgram}
-            healthFacility={edited?.healthFacility}
             fullWidth
             pricelistUuid={edited.healthFacility[`${this.props.type}sPricelist`].uuid}
             date={edited.dateClaimed}
@@ -560,7 +559,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={readOnly}
-              value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
+              value={ u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed }
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                   if (u.qtyProvided < v) {
@@ -568,15 +567,15 @@ class ClaimChildPanel extends Component {
                       totalApproved: u.qtyProvided,
                     }));
                   }
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
+                  u.qtyAdjusted = v;
+                  u.qtyApproved = v;
                 } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                   if (v == u.qtyProvided) {
-                    u.qtyDisplayed = u.qtyProvided;
-                    u.qtyAsked = u.qtyProvided;
+                    u.qtyAdjusted = u.qtyProvided;
+                    u.qtyApproved = u.qtyProvided;
                   } else {
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = 0;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = 0;
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
@@ -612,7 +611,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={readOnly}
-                value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                value={ u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed }
                 onChange={(v) => {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                     if (u.qtyProvided < v) {
@@ -620,15 +619,15 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = v;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = v;
                   } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                     if (v == u.qtyProvided) {
-                      u.qtyAsked = u.qtyProvided;
-                      u.qtyDisplayed = u.qtyProvided;
+                      u.qtyApproved = u.qtyProvided;
+                      u.qtyAdjusted = u.qtyProvided;
                     } else {
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = 0;
+                      u.qtyAdjusted = v;
+                      u.qtyApproved = 0;
                     }
                   }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
