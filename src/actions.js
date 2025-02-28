@@ -228,6 +228,7 @@ export function formatDetailSubService(type, detail) {
     ${detail.qtyAsked !== null ? `qtyAsked: "${_.round(detail.qtyAsked, 2).toFixed(2) && _.round(detail.qtyDisplayed, 2).toFixed(2)}"` : ""}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
+    ${detail.qtyAdjusted !== null ? `qtyAdjusted: "${_.round(detail.qtyAdjusted, 2).toFixed(2)}"` : ""}
   },`;
 }
 
@@ -364,8 +365,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
       "services{" +
 
       "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
-      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }" +
-      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }" +
+      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided qtyAdjusted }" +
+      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted }" +
       "}",
       "items{" +
       "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +

@@ -478,7 +478,6 @@ class ClaimForm extends Component {
       isHealthFacilityPage = false,
       classes,
     } = this.props;
-    console.log('propriété', this.props)
     const { claim, claim_uuid, lockNew, isSaved } = this.state;
     const nameProgram = claim?.program?.nameProgram
 
@@ -568,8 +567,8 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
-      save: !!save && this.state.claim.status !== STATUS_REJECTED ? forReview ? this._saveReview : this._save : null,
-      fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
+      save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
+      fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
       canSave: (e) => this.canSave(forFeedback, forReview),
@@ -580,7 +579,6 @@ class ClaimForm extends Component {
       forFeedback: forFeedback,
       onEditedChanged: this.onEditedChanged,
     };
-    console.log('readonly', readOnly)
     return (
       <div className={readOnly ? classes.lockedPage : null}>
         <Helmet
