@@ -743,3 +743,19 @@ export function generate(uuid) {
       .then((e) => dispatch({ type: "CLAIM_PRINT_DONE" }));
   };
 }
+
+export function getUserClaimAdmin(lastName, otherNames){
+  const payload = formatPageQuery(
+    "claimAdmins",
+    [`lastName: "${lastName}"`,`otherNames: "${otherNames}"`],
+    [
+      "id",
+        "uuid",
+        "code",
+        "lastName",
+        "otherNames",
+        "healthFacility{id, uuid, code, name, level, servicesPricelist{id, uuid}, itemsPricelist{id, uuid}, location{id, uuid, code, name, parent{id, uuid, code, name}}}"
+    ],
+  );
+  return graphql(payload, "CLAIM_USER_ADMIN");
+}
