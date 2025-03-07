@@ -179,7 +179,6 @@ class Head extends Component {
       onChangeFilters, 
       userHealthFacilityId,
       userClaimAdminInfos,
-      errorClaimAdminInfos 
     } = this.props;
     return (
       <Grid container className={classes.form}>
@@ -206,7 +205,7 @@ class Head extends Component {
           field={
             <Grid item xs={2} className={classes.item}>
               { userClaimAdminInfos == null ?
-                <ProgressOrError progress={userClaimAdminInfos == null} error={errorClaimAdminInfos} /> : 
+                <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> : 
                 <PublishedComponent
                 pubRef="location.DistrictPicker"
                 value={!!userClaimAdminInfos ? userClaimAdminInfos?.healthFacility?.location : this._filterValue("district")}
@@ -225,7 +224,7 @@ class Head extends Component {
           field={
             <Grid item xs={3} className={classes.item}>
               { userClaimAdminInfos == null ?
-                  <ProgressOrError progress={userClaimAdminInfos == null} error={errorClaimAdminInfos} /> : 
+                  <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> : 
                   <PublishedComponent
                   pubRef="location.HealthFacilityPicker"
                   value={!!userClaimAdminInfos ? userClaimAdminInfos?.healthFacility : this._filterValue("healthFacility")}
@@ -244,7 +243,7 @@ class Head extends Component {
           field={
             <Grid item xs={2} className={classes.item}>
               { userClaimAdminInfos == null ?
-                <ProgressOrError progress={userClaimAdminInfos == null} error={errorClaimAdminInfos} /> :
+                <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> :
                 <PublishedComponent
                   pubRef="claim.ClaimAdminPicker"
                   value={ !!userClaimAdminInfos ? userClaimAdminInfos : this._filterValue("admin")}
@@ -291,7 +290,6 @@ const mapStateToProps = (state) => ({
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
   user: state.core.user ? state.core.user.i_user : null,
   userClaimAdminInfos: state.claim?.userClaimAdminInfos,
-  errorClaimAdminInfos: state.claim?.errorClaimAdminInfos
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -323,7 +321,7 @@ class Details extends Component {
 
   render() {
     const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
-    // console.log("props ", this.props )
+    console.log("props ", this.props )
 
     return (
       <Grid container className={classes.form}>
@@ -731,7 +729,6 @@ class Details extends Component {
 class ClaimFilter extends Component {
   render() {
     const { classes } = this.props;
-    console.log("props ", this.props )
     return (
       <form className={classes.container} noValidate autoComplete="off">
         <BoundHead {...this.props} />
