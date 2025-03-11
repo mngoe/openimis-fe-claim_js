@@ -228,6 +228,7 @@ export function formatDetailSubService(type, detail) {
     ${detail.qtyAsked !== null ? `qtyAsked: "${_.round(detail.qtyAsked, 2).toFixed(2) && _.round(detail.qtyDisplayed, 2).toFixed(2)}"` : ""}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
+    ${detail.qtyAdjusted !== null ? `qtyAdjusted: "${_.round(detail.qtyAdjusted, 2).toFixed(2)}"` : ""}
   },`;
 }
 
@@ -364,8 +365,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
       "services{" +
 
       "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
-      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }" +
-      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }" +
+      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided qtyAdjusted }" +
+      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted }" +
       "}",
       "items{" +
       "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
@@ -684,6 +685,7 @@ export function saveReview(claim, clientMutationLabel) {
 export function deliverReview(claims, clientMutationLabel, clientMutationDetails = null) {
   let claimUuids = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]`;
   let mutation = formatMutation("deliverClaimsReview", claimUuids, clientMutationLabel, clientMutationDetails);
+  console.log(mutation);
   var requestedDateTime = new Date();
   claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_DELIVER_CLAIMS_REVIEW_RESP", "CLAIM_MUTATION_ERR"], {
@@ -741,4 +743,20 @@ export function generate(uuid) {
       .then((blob) => openBlob(blob, `${_uuid.uuid()}.pdf`, "pdf"))
       .then((e) => dispatch({ type: "CLAIM_PRINT_DONE" }));
   };
+}
+
+export function getUserClaimAdmin(lastName, otherNames){
+  const payload = formatPageQuery(
+    "claimAdmins",
+    [`lastName: "${lastName}"`,`otherNames: "${otherNames}"`],
+    [
+      "id",
+        "uuid",
+        "code",
+        "lastName",
+        "otherNames",
+        "healthFacility{id, uuid, code, name, level, servicesPricelist{id, uuid}, itemsPricelist{id, uuid}, location{id, uuid, code, name, parent{id, uuid, code, name}}}"
+    ],
+  );
+  return graphql(payload, "CLAIM_USER_ADMIN");
 }

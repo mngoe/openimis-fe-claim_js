@@ -388,7 +388,6 @@ class ClaimChildPanel extends Component {
             value={i[type]}
             healthFacility={edited?.healthFacility}
             claimProgram={edited.program?.idProgram}
-            healthFacility={edited?.healthFacility}
             fullWidth
             pricelistUuid={edited.healthFacility[`${this.props.type}sPricelist`].uuid}
             date={edited.dateClaimed}
@@ -408,7 +407,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={this.state.data[idx].service?.priceAsked}
+          value={!!forReview ? i.priceAsked : this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
@@ -560,23 +559,23 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={readOnly}
-              value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
+              value={ u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed }
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                   if (u.qtyProvided < v) {
                     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                       totalApproved: u.qtyProvided,
                     }));
-                  }
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
+                  } 
+                  u.qtyAdjusted = v;
+                  u.qtyApproved = v;
                 } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                   if (v == u.qtyProvided) {
-                    u.qtyDisplayed = u.qtyProvided;
-                    u.qtyAsked = u.qtyProvided;
+                    u.qtyAdjusted = u.qtyProvided;
+                    u.qtyApproved = u.qtyProvided;
                   } else {
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = 0;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = 0;
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
@@ -592,8 +591,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.items.map((u, udx) => {
-        return (
+      (i, idx) => (i.items.map((u, udx) => (
           <tr>
             <TableCell>
               <TextInput
@@ -612,7 +610,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={readOnly}
-                value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                value={ u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed }
                 onChange={(v) => {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                     if (u.qtyProvided < v) {
@@ -620,15 +618,15 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = v;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = v;
                   } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                     if (v == u.qtyProvided) {
-                      u.qtyAsked = u.qtyProvided;
-                      u.qtyDisplayed = u.qtyProvided;
+                      u.qtyApproved = u.qtyProvided;
+                      u.qtyAdjusted = u.qtyProvided;
                     } else {
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = 0;
+                      u.qtyAdjusted = v;
+                      u.qtyApproved = 0;
                     }
                   }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
@@ -644,7 +642,6 @@ class ClaimChildPanel extends Component {
             </TableCell>
           </tr>
         )
-      }
       ))
     ]
 
@@ -706,7 +703,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={!i.product?.uuid}
+            readOnly={readOnly}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
@@ -729,7 +726,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={subServicesItemsFormatters}
+          subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}

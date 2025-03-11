@@ -415,17 +415,20 @@ class ClaimForm extends Component {
     });
   };
 
+  _saveReview = (claim) => {
+    this.setState(
+      { lockNew: true, isSaved: true },
+      () => this.props.save(claim),
+    );
+  }
+
   print = (claimUuid) => {
     this.setState({ printParam: claimUuid }, (e) => this.props.print());
   };
 
   _deliverReview = (claim) => {
+    console.log(claim);
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
-  };
-  duplicate = () => {
-    const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
-    this.props.history.replace(`/${routeRef}`);
-    this.setState({ isDuplicate: true });
   };
 
   restore = () => {
@@ -485,6 +488,8 @@ class ClaimForm extends Component {
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
+
+    console.log(rights);
 
     var actions = [];
     if (!!claim_uuid) {
@@ -562,8 +567,8 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
-      save: !!save && !forReview && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
-      fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
+      save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
+      fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
       canSave: (e) => this.canSave(forFeedback, forReview),
