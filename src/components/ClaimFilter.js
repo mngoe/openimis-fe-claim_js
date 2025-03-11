@@ -176,7 +176,17 @@ class Head extends Component {
   };
 
   render() {
-    const { classes, filters, onChangeFilters, userHealthFacilityId, userClaimAdminInfos } = this.props;
+    const { 
+      classes, 
+      filters, 
+      onChangeFilters, 
+      userHealthFacilityId, 
+      userClaimAdminInfos,
+      claimAdmin,
+      claimHealthFacility,
+      claimDistrict,
+      claimRegion
+    } = this.props;
     return (
       <Grid container className={classes.form}>
         <ControlledField
@@ -187,7 +197,7 @@ class Head extends Component {
               { userClaimAdminInfos == null ? <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> : 
                 <PublishedComponent
                   pubRef="location.RegionPicker"
-                  value={!!userClaimAdminInfos ? userClaimAdminInfos?.healthFacility?.location?.parent : this._filterValue("region")}
+                  value={!!this._filterValue("region") ? this._filterValue("region") : claimRegion}
                   withNull={true}
                   onChange={this._onChangeRegion}
                 />
@@ -203,7 +213,7 @@ class Head extends Component {
               { userClaimAdminInfos == null ? <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> :
                 <PublishedComponent
                   pubRef="location.DistrictPicker"
-                  value={!!userClaimAdminInfos ? userClaimAdminInfos?.healthFacility?.location : this._filterValue("district")}
+                  value={!!this._filterValue("district") ? this._filterValue("district") : claimDistrict}
                   region={this._filterValue("region")}
                   withNull={true}
                   reset={this.state.reset}
@@ -221,7 +231,7 @@ class Head extends Component {
               { userClaimAdminInfos == null ? <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> :
                 <PublishedComponent
                   pubRef="location.HealthFacilityPicker"
-                  value={!!userClaimAdminInfos ? userClaimAdminInfos?.healthFacility : this._filterValue("healthFacility")}
+                  value={!!this._filterValue("healthFacility") ? this._filterValue("healthFacility") : claimHealthFacility}
                   region={this._filterValue("region")}
                   district={this._filterValue("district")}
                   reset={this.state.reset}
@@ -239,7 +249,7 @@ class Head extends Component {
               { userClaimAdminInfos == null ? <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> :
                 <PublishedComponent
                   pubRef="claim.ClaimAdminPicker"
-                  value={!!userClaimAdminInfos ? userClaimAdminInfos : this._filterValue("admin")}
+                  value={!!this._filterValue("admin") ? this._filterValue("admin") : claimAdmin}
                   withNull={true}
                   hfFilter={this._filterValue("healthFacility")}
                   reset={this.state.reset}
@@ -283,6 +293,10 @@ const mapStateToProps = (state) => ({
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
   user: state.core.user ? state.core.user.i_user : null,
   userClaimAdminInfos: state.claim?.userClaimAdminInfos,
+  claimAdmin: state.claim.claimAdmin,
+  claimHealthFacility: state.claim.claimHealthFacility,
+  claimDistrict: state.claim.claimDistrict,
+  claimRegion: state.claim.claimRegion
 });
 
 const mapDispatchToProps = (dispatch) => {
