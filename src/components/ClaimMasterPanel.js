@@ -286,7 +286,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.insuree}
                 reset={reset || isDuplicate}
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
-                readOnly={ro}
+                readOnly={ro || isRestored }
                 required={true}
               />
             </Grid>
