@@ -20,9 +20,6 @@ import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
-  claimCodeSetValid,
-  claimCodeValidationCheck,
-  claimCodeValidationClear,
   claimHealthFacilitySet,
   clearClaim,
   validateClaimCode
@@ -94,18 +91,18 @@ class ClaimMasterPanel extends FormPanel {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this._componentDidUpdate(prevProps, prevState, snapshot)) return;
-    if (!prevProps.fetchingClaimCodeCount && this.props.fetchingClaimCodeCount) {
+    if (!prevProps.isCodeValidating && this.props.isCodeValidating) {
       this.setState({ claimCodeError: null });
-    } else if (!prevProps.fetchedClaimCodeCount && this.props.fetchedClaimCodeCount) {
-      if (!!this.props.claimCodeCount) {
-        this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
-        this.updateAttribute("codeError", true);
-      } else {
-        this.updateAttributes({
-          code: this.state.claimCode,
-          codeError: null,
-        });
-      }
+    } else if (prevProps.isCodeValidating && !this.props.isCodeValidating) {
+        if(!this.props.isCodeValid){
+          this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
+          this.updateAttribute("codeError", true);
+        }else{
+          this.updateAttributes({
+            code: this.state.claimCode,
+            codeError: null,
+          });
+        }
     }
   }
 
@@ -145,7 +142,7 @@ class ClaimMasterPanel extends FormPanel {
     }
     this.setState(
       {
-        claimCodeError: null,
+        claimCodeError: this.state.claimCodeError,
         claimCode: v,
         codeClaim: c,
       },
@@ -155,7 +152,6 @@ class ClaimMasterPanel extends FormPanel {
 
   shouldValidate = (inputValue) => {
     if (this.autoGenerateClaimCode) return false;
-
     const { savedClaimCode } = this.props;
     const shouldValidate = inputValue !== savedClaimCode;
     return shouldValidate;
@@ -715,11 +711,7 @@ class ClaimMasterPanel extends FormPanel {
 
 const mapStateToProps = (state) => ({
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
-  fetchingClaimCodeCount: state.claim.fetchingClaimCodeCount,
-  fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
-  claimCodeCount: state.claim.claimCodeCount,
   savedClaimCode: state.claim.claim?.code,
-  errorClaimCodeCount: state.claim.errorClaimCodeCount,
   isCodeValid: state.claim.validationFields?.claimCode?.isValid,
   isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
   codeValidationError: state.claim.validationFields?.claimCode?.validationError,
@@ -729,7 +721,6 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       claimHealthFacilitySet,
-      claimCodeValidationCheck,
       clearClaim,
       validateClaimCode,
     },
