@@ -726,7 +726,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
+          subServicesItemsFormatters={!!forReview || isRestored ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
