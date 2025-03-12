@@ -191,15 +191,12 @@ class Head extends Component {
           id="ClaimFilter.region"
           field={
             <Grid item xs={2} className={classes.item}>
-              { userClaimAdminInfos == null ?
-                <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> : 
-                <PublishedComponent
-                pubRef="location.RegionPicker"
-                value={!!this._filterValue("region") ? this._filterValue("region") : claimRegion}
-                withNull={true}
-                onChange={this._onChangeRegion}
-                />
-              }
+              <PublishedComponent
+              pubRef="location.RegionPicker"
+              value={!!this._filterValue("region") ? this._filterValue("region") : claimRegion}
+              withNull={true}
+              onChange={this._onChangeRegion}
+              />
             </Grid>
           }
         />
@@ -208,17 +205,14 @@ class Head extends Component {
           id="ClaimFilter.district"
           field={
             <Grid item xs={2} className={classes.item}>
-              { userClaimAdminInfos == null ?
-                <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> : 
-                <PublishedComponent
-                pubRef="location.DistrictPicker"
-                value={!!this._filterValue("district") ? this._filterValue("district") : claimDistrict}
-                region={this._filterValue("region")}
-                withNull={true}
-                reset={this.state.reset}
-                onChange={this._onChangeDistrict}
-                />
-              }
+              <PublishedComponent
+              pubRef="location.DistrictPicker"
+              value={!!this._filterValue("district") ? this._filterValue("district") : claimDistrict}
+              region={this._filterValue("region")}
+              withNull={true}
+              reset={this.state.reset}
+              onChange={this._onChangeDistrict}
+              />
             </Grid>
           }
         />
@@ -227,17 +221,14 @@ class Head extends Component {
           id="ClaimFilter.healthFacility"
           field={
             <Grid item xs={3} className={classes.item}>
-              { userClaimAdminInfos == null ?
-                  <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> : 
-                  <PublishedComponent
-                  pubRef="location.HealthFacilityPicker"
-                  value={ !!this._filterValue("healthFacility") ? this._filterValue("healthFacility") : claimHealthFacility}
-                  region={this._filterValue("region")}
-                  district={this._filterValue("district")}
-                  reset={this.state.reset}
-                  onChange={this._onChangeHealthFacility}
-                  />
-              }
+              <PublishedComponent
+              pubRef="location.HealthFacilityPicker"
+              value={ !!this._filterValue("healthFacility") ? this._filterValue("healthFacility") : claimHealthFacility}
+              region={this._filterValue("region")}
+              district={this._filterValue("district")}
+              reset={this.state.reset}
+              onChange={this._onChangeHealthFacility}
+              />
             </Grid>
           }
         />
@@ -246,20 +237,17 @@ class Head extends Component {
           id="ClaimFilter.claimAdmin"
           field={
             <Grid item xs={2} className={classes.item}>
-              { userClaimAdminInfos == null ?
-                <ProgressOrError progress={userClaimAdminInfos == null} error={false} /> :
-                <PublishedComponent
-                  pubRef="claim.ClaimAdminPicker"
-                  value={ !!this._filterValue("admin") ? this._filterValue("admin") : claimAdmin }
-                  withNull={true}
-                  hfFilter={this._filterValue("healthFacility")}
-                  reset={this.state.reset}
-                  onChange={this._onChangeClaimAdmin}
-                  region={this._filterValue("region")}
-                  district={this._filterValue("district")}
-                  required={true}
-                />
-              }
+              <PublishedComponent
+                pubRef="claim.ClaimAdminPicker"
+                value={ !!this._filterValue("admin") ? this._filterValue("admin") : claimAdmin }
+                withNull={true}
+                hfFilter={this._filterValue("healthFacility")}
+                reset={this.state.reset}
+                onChange={this._onChangeClaimAdmin}
+                region={this._filterValue("region")}
+                district={this._filterValue("district")}
+                required={true}
+              />
             </Grid>
           }
         />
