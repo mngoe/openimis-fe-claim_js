@@ -154,7 +154,7 @@ class ClaimForm extends Component {
     if (!itemsOrServices) return null;
     return itemsOrServices.map((itemOrService) => {
       Object.keys(itemOrService).forEach((key) => {
-        if (!["item", "service", "priceAsked", "qtyProvided", "claimlinkedService", "claimlinkedItem"].includes(key)) {
+        if (!["item", "service", "priceAsked", "qtyProvided", "services", "items"].includes(key)) {
           delete itemOrService[key];
         }
       });
@@ -287,7 +287,7 @@ class ClaimForm extends Component {
     }
 
     if (this.state.claim.services !== undefined) {
-      if (this.props.forReview && !this.state.isRestored) {
+      if (this.props.forReview || this.state.isRestored) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
@@ -445,12 +445,6 @@ class ClaimForm extends Component {
     const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
     this.props.history.replace(`/${routeRef}`);
     this.setState({ isDuplicate: true });
-  };
-
-  restore = () => {
-    const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
-    this.props.history.replace(`/${routeRef}`);
-    this.setState({ isRestored: true });
   };
 
   resetForm = () =>
