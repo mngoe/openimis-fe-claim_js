@@ -216,7 +216,7 @@ class ClaimMasterPanel extends FormPanel {
     let policyNumber;
     let csuNumber;
     let tdr;
-    var claimCode = this.state.claimCode != null ? this.state.claimCode : "";
+    var claimCode = this.state.claimCode != null ? this.state.claimCode : isRestored ? edited.code :  "";
     var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
@@ -287,7 +287,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.insuree}
                 reset={reset || isDuplicate}
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
-                readOnly={ro}
+                readOnly={ro || isRestored}
                 required={true}
               />
             </Grid>
