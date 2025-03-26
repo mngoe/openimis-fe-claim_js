@@ -342,5 +342,6 @@
     "claim.claimTdrNumber": "TDR",
     "claim.claimTdrNumber.null": "Aucun",
     "claim.claimTdrNumber.T": "Positif",
-    "claim.claimTdrNumber.F": "Negatif"
+    "claim.claimTdrNumber.F": "Negatif",
+    "claim.edit.multipleCsPolicies": "Problème avec l'assuré. Merci de contacter l'administrateur"
 }

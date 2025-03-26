@@ -123,11 +123,17 @@ class ClaimMasterPanel extends FormPanel {
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
 
     if (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
+      let activeOrInactivePolicies = [];
       insureePolicies.forEach(function (policy) {
-        if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
-          policyNumber = policy.policy.policyNumber;
+        if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+          activeOrInactivePolicies.push(policy)
         }
       })
+      if(activeOrInactivePolicies.length > 1){
+        alert(formatMessage(this.props.intl, "claim", "edit.multipleCsPolicies"))
+      } else if(activeOrInactivePolicies.length == 1){
+        policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
+      }
       if (policyNumber != undefined) {
         v = policyNumber + v
       }
@@ -230,13 +236,19 @@ class ClaimMasterPanel extends FormPanel {
     let ro = readOnly || !!forReview || !!forFeedback;
 
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
-    
-    insureePolicies.forEach(function (policy) {
-      if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
-        policyNumber = policy.policy.policyNumber;
-      }
-    })
+  
     if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") {
+      let activeOrInactivePolicies = [];
+      insureePolicies.forEach(function (policy) {
+        if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+          activeOrInactivePolicies.push(policy)
+        }
+        if(activeOrInactivePolicies.length > 1){
+          alert(formatMessage(this.props.intl, "claim", "edit.multipleCsPolicies"))
+        } else if(activeOrInactivePolicies.length == 1){
+          policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
+        }
+      })
       if (edited.code && policyNumber != undefined && policyNumber != "") {
         claimCode = edited.code.replace(policyNumber, '');
       }
