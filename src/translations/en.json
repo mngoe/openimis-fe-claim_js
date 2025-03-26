@@ -358,5 +358,6 @@
   "claim.calculateAge.util.weeks": "Week(s)",
   "claim.calculateAge.util.months": "Month(s)",
   "claim.calculateAge.util.years": "Year(s)",
-  "claim.programPicker.placeholder": "program"
+  "claim.programPicker.placeholder": "program",
+  "claim.edit.multipleCsPolicies": "An error occured with this insuree. Please contact the administrator"
 }
