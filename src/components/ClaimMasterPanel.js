@@ -244,7 +244,7 @@ class ClaimMasterPanel extends FormPanel {
           activeOrInactivePolicies.push(policy)
         }
         if(activeOrInactivePolicies.length > 1){
-          alert(formatMessage(this.props.intl, "claim", "edit.multipleCsPolicies"))
+          alert(formatMessage(intl, "claim", "edit.multipleCsPolicies"))
         } else if(activeOrInactivePolicies.length == 1){
           policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
         }
