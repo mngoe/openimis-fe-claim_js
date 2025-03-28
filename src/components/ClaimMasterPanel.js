@@ -141,6 +141,7 @@ class ClaimMasterPanel extends FormPanel {
       if (policyNumber != undefined) {
         v = policyNumber + v
       }
+      edited[`prefix`] = policyNumber
     } else {
       var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
       var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
@@ -149,6 +150,7 @@ class ClaimMasterPanel extends FormPanel {
       if (csuNumber != undefined) {
         v = csuNumber + v
       }
+      edited[`prefix`] = csuNumber
     }
     this.setState(
       {
