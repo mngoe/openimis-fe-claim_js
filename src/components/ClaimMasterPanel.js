@@ -122,12 +122,15 @@ class ClaimMasterPanel extends FormPanel {
     var csuNumber;
     let c = v;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
+    const { edited } = this.props;
 
     if (programName == "Chèque Santé" || programName == "Cheque Santé") {
       let activeOrInactivePolicies = [];
       insureePolicies.forEach(function (policy) {
-        if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
-          activeOrInactivePolicies.push(policy)
+        if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom ){
+          if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+            activeOrInactivePolicies.push(policy)
+          }
         }
       })
       if(activeOrInactivePolicies.length > 1){
@@ -139,6 +142,7 @@ class ClaimMasterPanel extends FormPanel {
       if (policyNumber != undefined) {
         v = policyNumber + v
       }
+      edited[`prefix`] = policyNumber
     } else {
       var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
       var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
@@ -147,6 +151,7 @@ class ClaimMasterPanel extends FormPanel {
       if (csuNumber != undefined) {
         v = csuNumber + v
       }
+      edited[`prefix`] = csuNumber
     }
     this.setState(
       {
@@ -243,9 +248,11 @@ class ClaimMasterPanel extends FormPanel {
     if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé") {
       let activeOrInactivePolicies = [];
        insureePolicies.forEach(function (policy) {
-         if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
-           activeOrInactivePolicies.push(policy)
-         }
+        if(policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom){
+          if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+            activeOrInactivePolicies.push(policy)
+          }
+        }
          if(activeOrInactivePolicies.length > 1){
            policyNumber = ""
          } else if(activeOrInactivePolicies.length == 1){
@@ -314,7 +321,10 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="visitDateFrom"
                 reset={reset}
-                onChange={(d) => this.updateAttribute("dateFrom", d)}
+                onChange={(d)=> {
+                  this.updateAttribute("dateFrom", d);
+                  this.debounceUpdateCode(claimCode)
+                }}
                 readOnly={ro}
                 required={true}
                 maxDate={edited.dateTo < edited.dateClaimed ? edited.dateTo : edited.dateClaimed}

@@ -279,6 +279,7 @@ class ClaimForm extends Component {
       if (!this.state.claim.testNumber) return false;
       if (!this.state.claim.tdr) return false;
     }
+    if(!this.state.claim.prefix) return false;
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
