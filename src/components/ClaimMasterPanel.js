@@ -45,6 +45,8 @@ class ClaimMasterPanel extends FormPanel {
     claimCode: null,
     claimCodeError: null,
     codeClaim: null,
+    claimPrefix: null,
+    policyNumber: null
   };
 
   constructor(props) {
@@ -157,6 +159,8 @@ class ClaimMasterPanel extends FormPanel {
         claimCodeError: this.state.claimCodeError,
         claimCode: v,
         codeClaim: c,
+        claimPrefix: !!csuNumber ? csuNumber : policyNumber,
+        policyNumber: policyNumber
       },
       (e) => this.props.validateClaimCode(v),
     );
@@ -217,14 +221,15 @@ class ClaimMasterPanel extends FormPanel {
       isDuplicate,
       changeProgram
     } = this.props;
+    const {policyNumber, codeClaim, claimCode, claimPrefix, claimCodeError} = this.state;
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
-    let policyNumber;
-    let csuNumber;
     let tdr;
-    var claimCode = this.state.claimCode != null ? this.state.claimCode : isRestored ? edited.code : "";
-    var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
+    //var claimCode = this.state.claimCode != null ? this.state.claimCode : isRestored ? edited.code : "";
+    var chequeNumber = policyNumber;
+    var prefix = claimPrefix;
+    var suffix = !!codeClaim ? codeClaim :  "";
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
@@ -241,32 +246,36 @@ class ClaimMasterPanel extends FormPanel {
 
     let ro = readOnly || !!forReview || !!forFeedback;
 
-    let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
-  
-    if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") {
-      let activeOrInactivePolicies = [];
-      insureePolicies.forEach(function (policy) {
-        if(policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom){
-          if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
-            activeOrInactivePolicies.push(policy)
+    if(!!edited.uuid){
+      let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
+      var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
+
+      if (CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") {
+        let activeOrInactivePolicies = [];
+        insureePolicies.forEach(function (policy) {
+          if(policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom){
+            if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+              activeOrInactivePolicies.push(policy)
+            }
           }
+        })
+        if(activeOrInactivePolicies.length > 1){
+          chequeNumber = "";
+        } else if(activeOrInactivePolicies.length == 1){
+          chequeNumber = activeOrInactivePolicies[0].policy.policyNumber;
         }
-      })
-      if(activeOrInactivePolicies.length > 1){
-        policyNumber = "";
-      } else if(activeOrInactivePolicies.length == 1){
-        policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
-      }
-      if (edited.code && policyNumber != undefined && policyNumber != "") {
-        claimCode = edited.code.replace(policyNumber, '');
-      }
-    } else {
-      var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
-      var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
-      var codeFosa = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.code : "";
-      csuNumber = `${codeFosa}.${dateTo}.${programCode}.`;
-      if (edited.code && csuNumber != undefined && csuNumber != "") {
-        claimCode = edited.code.replace(csuNumber, '');
+        prefix = chequeNumber;
+        if (edited.code && chequeNumber != undefined && chequeNumber != "") {
+          suffix = edited.code.replace(prefix, '')
+        }
+      } else {
+        var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
+        var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
+        var codeFosa = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.code : "";
+        prefix = `${codeFosa}.${dateTo}.${programCode}.`;
+        if (edited.code && prefix != undefined && prefix != "") {
+          suffix = edited.code.replace(prefix, '')
+        }
       }
     }
     if (edited.tdr === true) {
@@ -321,7 +330,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 onChange={(d)=> {
                   this.updateAttribute("dateFrom", d);
-                  this.debounceUpdateCode(claimCode)
+                  this.debounceUpdateCode(suffix)
                 }}
                 readOnly={ro}
                 required={true}
@@ -342,7 +351,7 @@ class ClaimMasterPanel extends FormPanel {
                 label="visitDateTo"
                 reset={reset}
                 onChange={(d) => {
-                  this.debounceUpdateCode(claimCode)
+                  this.debounceUpdateCode(suffix)
                   this.onChangeValue("dateTo", d);
                 }}
                 readOnly={ro}
@@ -438,7 +447,7 @@ class ClaimMasterPanel extends FormPanel {
             />
           )
         }
-        {policyNumber != undefined && policyNumber != null && (
+        {chequeNumber != undefined && chequeNumber != null && (
           <ControlledField
             module="policy"
             id="Claim.policyNumber"
@@ -448,7 +457,7 @@ class ClaimMasterPanel extends FormPanel {
                   module="policy"
                   label="policy.PolicyNumber"
                   name="policyNumber"
-                  value={policyNumber}
+                  value={chequeNumber}
                   readOnly={true}
                   reset={reset}
                 />
@@ -456,7 +465,7 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {!!this.claimPrefix && !edited.uuid && (<ControlledField
+        {!!this.claimPrefix && (<ControlledField
           module="claim"
           id="Claim.codechfId"
           field={
@@ -465,7 +474,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="codechfId"
                 required
-                value={(CLAIMPROGRAM == "Chèque Santé" || CLAIMPROGRAM == "Cheque Santé" || CLAIMPROGRAM == "Ch\u00e8que Sant\u00e9") ? policyNumber : csuNumber}
+                value={prefix}
                 readOnly="true"
               />
             </Grid>
@@ -505,8 +514,8 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="code"
                 required
-                value={!!edited.uuid ? edited.code : isRestored ? claimCode : this.state.codeClaim}
-                error={this.state.claimCodeError}
+                value={suffix}
+                error={claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
