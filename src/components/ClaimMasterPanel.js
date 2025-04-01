@@ -138,7 +138,7 @@ class ClaimMasterPanel extends FormPanel {
       if( length > 1){
         console.log(activeOrInactivePolicies)
         policyNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
-      } else if(activeOrInactivePolicies.length == 1){
+      } else if(length == 1){
         policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
       }
       if (policyNumber != undefined) {
@@ -231,7 +231,6 @@ class ClaimMasterPanel extends FormPanel {
     var chequeNumber = policyNumber;
     var prefix = claimPrefix;
     var suffix = !!codeClaim ? codeClaim :  "";
-    var codeError = claimCodeError;
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
@@ -261,9 +260,10 @@ class ClaimMasterPanel extends FormPanel {
             }
           }
         })
-        if(activeOrInactivePolicies.length > 1){
-          chequeNumber = "";
-        } else if(activeOrInactivePolicies.length == 1){
+        let length = activeOrInactivePolicies.length
+        if(length > 1){
+          chequeNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
+        } else if(length == 1){
           chequeNumber = activeOrInactivePolicies[0].policy.policyNumber;
         }
         prefix = chequeNumber;
