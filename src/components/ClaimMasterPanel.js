@@ -134,9 +134,10 @@ class ClaimMasterPanel extends FormPanel {
             }
           }
       })
-      if(activeOrInactivePolicies.length > 1){
-        alert(formatMessage(this.props.intl, "claim", "edit.multipleCsPolicies"))
-        policyNumber = ""
+      var length = activeOrInactivePolicies.length
+      if( length > 1){
+        console.log(activeOrInactivePolicies)
+        policyNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
       } else if(activeOrInactivePolicies.length == 1){
         policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
       }
