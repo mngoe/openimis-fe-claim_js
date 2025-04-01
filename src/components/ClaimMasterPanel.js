@@ -230,6 +230,7 @@ class ClaimMasterPanel extends FormPanel {
     var chequeNumber = policyNumber;
     var prefix = claimPrefix;
     var suffix = !!codeClaim ? codeClaim :  "";
+    var codeError = claimCodeError;
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
@@ -246,7 +247,7 @@ class ClaimMasterPanel extends FormPanel {
 
     let ro = readOnly || !!forReview || !!forFeedback;
 
-    if(!!edited.uuid){
+    if(!!edited.uuid || isRestored){
       let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
       var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
 
