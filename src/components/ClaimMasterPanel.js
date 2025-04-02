@@ -140,6 +140,8 @@ class ClaimMasterPanel extends FormPanel {
         policyNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
       } else if(activeOrInactivePolicies.length == 1){
         policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
+      } else{
+        policyNumber = ""
       }
       if (policyNumber != undefined) {
         v = policyNumber + v
@@ -264,6 +266,8 @@ class ClaimMasterPanel extends FormPanel {
         chequeNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
       } else if(length == 1){
         chequeNumber = activeOrInactivePolicies[0].policy.policyNumber;
+      }else{
+        chequeNumber = ""
       }
     }
 
