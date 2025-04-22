@@ -344,6 +344,8 @@
     "claim.claimTdrNumber.T": "Positif",
     "claim.claimTdrNumber.F": "Negatif",
     "claim.edit.multipleCsPolicies": "Problème avec l'assuré. Merci de contacter l'administrateur",
-    "claim.menu.uploadClaims": "Importer Prestation"
+    "claim.menu.importClaim": "Importer les Prestations",
+    "claim.importClaims": "Importer les fichiers de prestations",
+    "claim.tableImport" : "Table Prestations"
 
 }

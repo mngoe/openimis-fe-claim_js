@@ -31,7 +31,7 @@ class ClaimMainMenu extends Component {
     //     .filter((c) => !c.filter || c.filter(rights)),
     // );
     entries.push({
-      text: formatMessage(this.props.intl, "claim", "menu.uploadClaims"),
+      text: formatMessage(this.props.intl, "claim", "menu.importClaim"),
       icon: <ImportExport />,
       route: "/claim/import",
     });

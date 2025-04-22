@@ -360,5 +360,8 @@
   "claim.calculateAge.util.years": "Year(s)",
   "claim.programPicker.placeholder": "program",
   "claim.edit.multipleCsPolicies": "An error occured with this insuree. Please contact the administrator",
-  "claim.menu.uploadClaims": "Import Claim"
+  "claim.menu.importClaim": "Import Claim",
+  "claim.importClaims": "Import Claim files",
+  "claim.tableImport" : "Table Import Claims"
+
 }
