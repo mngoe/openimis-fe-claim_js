@@ -4,6 +4,7 @@ import EditPage from "./pages/EditPage";
 import ReviewsPage from "./pages/ReviewsPage";
 import ReviewPage from "./pages/ReviewPage";
 import FeedbackPage from "./pages/FeedbackPage";
+import ImportClaimPage from "./pages/ImportClaimPage";
 import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimProgramPicker from "./pickers/ClaimProgramPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
@@ -35,6 +36,7 @@ const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
 const ROUTE_CLAIM_REVIEW = "claim/reviews/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
+const ROUTE_CLAIM_IMPORT = "claim/import";
 
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }, { key: "fr", messages: messages_fr }],
@@ -143,6 +145,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
     { key: "claim.ClaimProgramPicker", ref: ClaimProgramPicker},
+    { key: "claim.route.importClaim", ref: ROUTE_CLAIM_IMPORT },
     {
       key: "claim.ClaimAdminPicker.projection",
       ref: [
@@ -184,6 +187,8 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_REVIEWS, component: ReviewsPage },
     { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid", component: ReviewPage },
     { path: ROUTE_CLAIM_FEEDBACK + "/:claim_uuid", component: FeedbackPage },
+    { path: ROUTE_CLAIM_IMPORT, component: ImportClaimPage },
+
   ],
   "core.MainMenu": [ClaimMainMenu],
   "claim.MasterPanel": [ClaimMasterPanelExt],

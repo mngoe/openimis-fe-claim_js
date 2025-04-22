@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
-import { Keyboard, ScreenShare, Assignment } from "@material-ui/icons";
+import { Keyboard, ScreenShare, Assignment, ImportExport } from "@material-ui/icons";
 import { formatMessage, MainMenuContribution, withModulesManager } from "@openimis/fe-core";
 import { RIGHT_ADD, RIGHT_SUBMIT, RIGHT_CLAIMREVIEW, RIGHT_PROCESS } from "../constants";
 const CLAIM_MAIN_MENU_CONTRIBUTION_KEY = "claim.MainMenu";
@@ -30,6 +30,11 @@ class ClaimMainMenu extends Component {
     //     .getContribs(CLAIM_MAIN_MENU_CONTRIBUTION_KEY)
     //     .filter((c) => !c.filter || c.filter(rights)),
     // );
+    entries.push({
+      text: formatMessage(this.props.intl, "claim", "menu.uploadClaims"),
+      icon: <ImportExport />,
+      route: "/claim/import",
+    });
     if (!entries.length) return null;
     return (
       <MainMenuContribution
