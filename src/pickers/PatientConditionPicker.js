@@ -3,17 +3,15 @@ import { ConstantBasedPicker } from "@openimis/fe-core";
 
 import { PATIENT_CONDITION } from "../constants";
 
-class PatientConditionPicker extends Component {
-  render() {
+const PatientConditionPicker = (props) => {
     return (
       <ConstantBasedPicker
         module="claim"
-        label="claim.patientCondition"
+        label="patientCondition"
         constants={PATIENT_CONDITION}
-        {...this.props}
+        {...props}
       />
     );
-  }
-}
+  };
 
 export default PatientConditionPicker;
