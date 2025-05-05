@@ -336,6 +336,25 @@ class Details extends Component {
             }
           />
         </Grid>
+        { !!filters["claimStatus"] && filters["claimStatus"]["value"] == 1 && (
+          <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.RejectionCodePicker"
+            name="rejectionCode"
+            value={(filters["rejectionCode"] && filters["rejectionCode"]["value"]) || null}
+            onChange={(value) =>
+              onChangeFilters([
+                {
+                  id: "rejectionCode",
+                  value: value,
+                  filter: !!value ? `rejectionCode: ${value}` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
+        )
+        }
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.FeedbackStatusPicker"
