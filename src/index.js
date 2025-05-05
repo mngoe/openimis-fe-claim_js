@@ -29,6 +29,7 @@ import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
+import RejectionCodePicker from "./pickers/RejectionCodePicker";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -177,6 +178,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },
     { key: "claim.ClaimMasterPanelExt", ref: ClaimMasterPanelExt },
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
+    { key: "claim.RejectionCodePicker", ref: RejectionCodePicker }
   ],
   "core.Router": [
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
