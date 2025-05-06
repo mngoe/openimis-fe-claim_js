@@ -282,8 +282,6 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
         ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
         : ""
     }
-    ${!!claim.patientCondition ? `patientCondition: "${formatGQLString(claim.patientCondition)}"` : ""}
-    ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
  `;
 }
 
@@ -343,8 +341,6 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd2" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
-    "patientCondition",
-    "referralCode",
     "jsonExt",
   ];
   if (!!forFeedback) {
