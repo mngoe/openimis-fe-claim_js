@@ -336,7 +336,7 @@ class Details extends Component {
             }
           />
         </Grid>
-        { !!filters["claimStatus"] && filters["claimStatus"]["value"] == 1 && (
+        {/* { !!filters["claimStatus"] && filters["claimStatus"]["value"] == 1 && (
           <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.RejectionCodePicker"
@@ -354,7 +354,7 @@ class Details extends Component {
           />
         </Grid>
         )
-        }
+        } */}
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.FeedbackStatusPicker"
