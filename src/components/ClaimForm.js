@@ -301,21 +301,21 @@ class ClaimForm extends Component {
       console.log("visitType false")
       return false
     } 
-    if (this.state.claim.services !== undefined || this.state.claim.items !== undefined) {
-      if (this.props.forReview) {
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
-          return false;
-        }
-      } else {
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
-          return false;
-        }
-      }
+    // if (this.state.claim.services !== undefined) {
+    //   if (this.props.forReview) {
+    //     if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+    //       return false;
+    //     }
+    //   } else {
+    //     if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
+    //       return false;
+    //     }
+    //   }
 
-    } else {
-      console.log("services non ok")
-      return false;
-    }
+    // } else {
+    //   console.log("services non ok")
+    //   return false;
+    // }
 
 
     if (this.isCareTypeMandatory){
