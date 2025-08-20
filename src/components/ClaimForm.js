@@ -393,7 +393,7 @@ class ClaimForm extends Component {
         console.log("canSave - 26");
       }
       console.log("canSave - 26.1",!services.length);
-      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
       console.log("canSave - 26.2",!services.length);
     }
     console.log("canSave - 26.3",this.state.claim.attachments && this.state.claim.attachments.length > 0);
