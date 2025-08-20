@@ -370,6 +370,7 @@ class ClaimForm extends Component {
         console.log("canSave - 23");
       }
       let services = [];
+      console.log("canSave - 23.1",!!this.state.claim.services);
       if (!!this.state.claim.services) {
         services = [...this.state.claim.services];
 
@@ -391,9 +392,11 @@ class ClaimForm extends Component {
         }
         console.log("canSave - 26");
       }
+      console.log("canSave - 26.1",!services.length);
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      console.log("canSave - 26.2",!services.length);
     }
-    
+    console.log("canSave - 26.3",this.state.claim.attachments && this.state.claim.attachments.length > 0);
     if(this.state.claim.attachments && this.state.claim.attachments.length > 0){
       // Vérification que chaque pièce jointe a un type prédéfini
       const attachmentsWithoutType = this.state.claim.attachments.filter(
