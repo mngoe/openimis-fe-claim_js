@@ -301,7 +301,7 @@ class ClaimForm extends Component {
       console.log("visitType false")
       return false
     } 
-    if (this.state.claim.services !== undefined) {
+    if (this.state.claim.services !== undefined || this.state.claim.items !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
