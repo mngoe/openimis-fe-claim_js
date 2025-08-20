@@ -271,11 +271,12 @@ class ClaimForm extends Component {
   };
 
   canSave = (forFeedback, forReview) => {
+    console.log("claim",this.state.claim)
     if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
     if (this.state.lockNew) return false;
     if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
-    if (!this.state.claim.healthFacility) return false;
+    if (!this.state.claim.healthFacility){console.log("fosa non ok"); return false};
     if (
       this.fields.referalHF == "M" &&
       this.state.claim.visitType === this.claimTypeReferSymbol &&
@@ -283,20 +284,21 @@ class ClaimForm extends Component {
     )
       return false;
     if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
-    if (!this.state.claim.insuree) return false;
-    if (!this.state.claim.admin) return false;
+    if (!this.state.claim.insuree){console.log("assuré non ok"); return false};
+    if (!this.state.claim.admin) {console.log("admin non ok"); return false};
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
     if (this.fields.visitDateTo == "M"){
       if( !this.state.claim.dateTo) return false;
     }
-    if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
+    if (this.state.claim.dateClaimed < this.state.claim.dateFrom){console.log("probleme date"); return false;};
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
-    if (!this.state.claim.icd) return false;
+    if (!this.state.claim.icd) {console.log("diagnostic non ok"); return false};
     if (
       (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
       (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
     ){
+      console.log("visitType false")
       return false
     } 
     if (this.state.claim.services !== undefined) {
@@ -311,6 +313,7 @@ class ClaimForm extends Component {
       }
 
     } else {
+      console.log("services non ok")
       return false;
     }
 
