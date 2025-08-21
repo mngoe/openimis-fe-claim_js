@@ -310,9 +310,7 @@ class ClaimForm extends Component {
         }
       }
 
-    } else {
-      return false;
-    }
+    } 
 
 
     if (this.isCareTypeMandatory){
