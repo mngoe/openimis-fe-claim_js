@@ -280,7 +280,7 @@ class ClaimForm extends Component {
     console.log("canSave - 3");
     if (!!this.state.claim.codeError) return false;
     console.log("canSave - 4");
-    if (!this.state.claim.healthFacility){console.log("fosa non ok"); return false};
+    if (!this.state.claim.healthFacility) return false;
     console.log("canSave - 5");
     if (
       this.fields.referalHF == "M" &&
@@ -291,9 +291,9 @@ class ClaimForm extends Component {
     console.log("canSave - 6");
     if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
     console.log("canSave - 7");
-    if (!this.state.claim.insuree){console.log("assuré non ok"); return false};
+    if (!this.state.claim.insuree) return false;
     console.log("canSave - 8");
-    if (!this.state.claim.admin) {console.log("admin non ok"); return false};
+    if (!this.state.claim.admin) return false;
     console.log("canSave - 9");
     if (!this.state.claim.dateClaimed) return false;
     console.log("canSave - 10");
@@ -303,17 +303,16 @@ class ClaimForm extends Component {
       if( !this.state.claim.dateTo) return false;
     }
     console.log("canSave - 12");
-    if (this.state.claim.dateClaimed < this.state.claim.dateFrom){console.log("probleme date"); return false;};
+    if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     console.log("canSave - 13");
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     console.log("canSave - 14");
-    if (!this.state.claim.icd) {console.log("diagnostic non ok"); return false};
+    if (!this.state.claim.icd) return false;
     console.log("canSave - 15");
     if (
       (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
       (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
     ){
-      console.log("visitType false")
       return false
     } 
     console.log("canSave - 16");
