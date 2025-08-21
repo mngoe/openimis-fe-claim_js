@@ -271,51 +271,34 @@ class ClaimForm extends Component {
   };
 
   canSave = (forFeedback, forReview) => {
-    console.log("claim",this.state.claim)
     if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
-    console.log("canSave - 1");
     if (this.state.lockNew) return false;
-    console.log("canSave - 2");
     if (!this.props.isClaimCodeValid) return false;
-    console.log("canSave - 3");
     if (!!this.state.claim.codeError) return false;
-    console.log("canSave - 4");
     if (!this.state.claim.healthFacility) return false;
-    console.log("canSave - 5");
     if (
       this.fields.referalHF == "M" &&
       this.state.claim.visitType === this.claimTypeReferSymbol &&
       !this.state.claim.referHF
     )
       return false;
-    console.log("canSave - 6");
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
-    console.log("canSave - 7");
+    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
     if (!this.state.claim.insuree) return false;
-    console.log("canSave - 8");
     if (!this.state.claim.admin) return false;
-    console.log("canSave - 9");
     if (!this.state.claim.dateClaimed) return false;
-    console.log("canSave - 10");
     if (!this.state.claim.dateFrom) return false;
-    console.log("canSave - 11");
     if (this.fields.visitDateTo == "M"){
       if( !this.state.claim.dateTo) return false;
     }
-    console.log("canSave - 12");
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
-    console.log("canSave - 13");
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
-    console.log("canSave - 14");
     if (!this.state.claim.icd) return false;
-    console.log("canSave - 15");
     if (
       (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
       (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
     ){
       return false
     } 
-    console.log("canSave - 16");
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
@@ -328,22 +311,18 @@ class ClaimForm extends Component {
       }
 
     }
-    console.log("canSave - 17");
 
 
     if (this.isCareTypeMandatory){
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
-    console.log("canSave - 18");
     if (this.isExplanationMandatoryForIPD) {
       if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
     }
-    console.log("canSave - 19");
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
-      console.log("canSave - 20");
       //if there are items or services, they have to be complete
       let items = [];
       if (!!this.state.claim.items) {
@@ -356,25 +335,20 @@ class ClaimForm extends Component {
             isUnderMaximumAmount = false;
           }
         });
-        console.log("canSave - 21");
         if (!isUnderMaximumAmount) {
           return false;
         }
-        console.log("canSave - 22");
         if (!this.props.forReview) items.pop();
         
         if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview)).length) {
           return false;
         }
-        console.log("canSave - 23");
       }
       let services = [];
-      console.log("canSave - 23.1",!!this.state.claim.services);
       if (!!this.state.claim.services) {
         services = [...this.state.claim.services];
 
         let isUnderMaximumAmount = true;
-        console.log("canSave - 24");
         services.forEach((item) => {
           if (parseFloat(item.qtyProvided) > parseFloat(item?.service?.maximumAmount ?? this.quantityMaxValue)) {
             isUnderMaximumAmount = false;
@@ -384,18 +358,13 @@ class ClaimForm extends Component {
         if (!isUnderMaximumAmount) {
           return false;
         }
-        console.log("canSave - 25");
         if (!this.props.forReview) services.pop();
         if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length) {
           return false;
         }
-        console.log("canSave - 26");
       }
-      console.log("canSave - 26.1",!services.length);
       if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
-      console.log("canSave - 26.2",!services.length);
     }
-    console.log("canSave - 26.3",this.state.claim.attachments && this.state.claim.attachments.length > 0);
     if(this.state.claim.attachments && this.state.claim.attachments.length > 0){
       // Vérification que chaque pièce jointe a un type prédéfini
       const attachmentsWithoutType = this.state.claim.attachments.filter(
@@ -404,7 +373,6 @@ class ClaimForm extends Component {
       if(attachmentsWithoutType.length > 0) {
         return false;
       }
-      console.log("canSave - 27");
     }
     return true;
   };
