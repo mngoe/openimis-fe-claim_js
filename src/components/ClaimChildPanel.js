@@ -363,7 +363,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
-          readOnly={!!forReview || readOnly || true}
+          readOnly={!!forReview || readOnly || (type === 'service' && i[type]?.packagetype != "S")}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
           error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
@@ -373,7 +373,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={!!forReview ? i.priceAsked : this.state.data[idx].service?.priceAsked}
+          value={i[type] === 'service' && i[type]?.packagetype != "S" ? this.state.data[idx].service?.priceAsked : i.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
