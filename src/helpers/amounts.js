@@ -8,7 +8,7 @@ export function claimedAmount(r) {
         if(Object?.keys(r.service)?.length!=0){
           let currentPackageType = r.service.packagetype;
           if(currentPackageType=="S"){
-            totalPrice += parseFloat(r.service.price);
+            totalPrice += (r?.qtyProvided * parseFloat(r.priceAsked));
           }else{
             if(r?.service.manualPrice){
               totalPrice += parseFloat(r.service.price);
