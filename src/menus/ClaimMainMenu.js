@@ -25,13 +25,6 @@ class ClaimMainMenu extends Component {
         route: "/claim/reviews",
       });
     }
-    if (!!rights.filter((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS).length) {
-      entries.push({
-        text: formatMessage(this.props.intl, "claim", "menu.specialities"),
-        icon: <Assignment />,
-        route: "/claim/specialites",
-      });
-    }
     entries.push(
       ...this.props.modulesManager
         .getContribs(CLAIM_MAIN_MENU_CONTRIBUTION_KEY)
