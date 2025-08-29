@@ -88,6 +88,53 @@ export function fetchClaimAttachments(claim) {
   return graphql(payload, "CLAIM_CLAIM_ATTACHMENTS");
 }
 
+
+
+export function fetchSpecialities(filters) {
+  let payload = `
+    query {
+      specialities (${filters}) {
+        edges {
+          node {
+            id
+            uuid
+            code
+            speciality
+            validityFrom
+            validityTo
+          }
+        }
+        totalCount
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+      }
+    }
+  `;
+  return graphql(payload, "SPECIALITIES");
+}
+
+export function deleteSpeciality(speciality, clientMutationLabel) {
+  let payload = `
+    mutation {
+      deleteSpecialities(
+        uuids: ["${speciality.uuid}"],
+        clientMutationLabel: "${clientMutationLabel}"
+      ) {
+        clientMutationId
+      }
+    }
+  `;
+  return commitMutation(
+    payload,
+    [fetchSpecialities],
+    speciality.clientMutationId ? [speciality.clientMutationId] : [],
+  );
+}
+
 export function formatAttachment(attach) {
   return `
     ${!!attach.id ? `id: "${decodeId(attach.id)}"` : ""}

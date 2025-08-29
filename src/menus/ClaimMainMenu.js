@@ -30,6 +30,13 @@ class ClaimMainMenu extends Component {
         .getContribs(CLAIM_MAIN_MENU_CONTRIBUTION_KEY)
         .filter((c) => !c.filter || c.filter(rights)),
     );
+    if (!!rights.filter((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS).length) {
+      entries.push({
+        text: formatMessage(this.props.intl, "claim", "menu.specialities"),
+        icon: <Assignment />,
+        route: "/claim/specialites",
+      });
+    }
     if (!entries.length) return null;
     return (
       <MainMenuContribution

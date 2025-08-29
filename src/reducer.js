@@ -10,6 +10,11 @@ import {
 
 function reducer(
   state = {
+    specialities: [],
+    specialitiesPageInfo: {},
+    fetchingSpecialities: false,
+    fetchedSpecialities: false,
+    errorSpecialities: null,
     fetchingClaimAttachments: false,
     fetchedClaimAttachments: false,
     errorClaimAttachments: null,
@@ -56,6 +61,50 @@ function reducer(
   action,
 ) {
   switch (action.type) {
+    case "SPECIALITIES_REQ":
+      return {
+        ...state,
+        fetchingSpecialities: true,
+        fetchedSpecialities: false,
+        specialities: [],
+        specialitiesPageInfo: {},
+        errorSpecialities: null,
+      };
+      case "SPECIALITIES_RESP":
+        console.log("Specialities response:", action.payload.data);
+        return {
+          ...state,
+          fetchingSpecialities: false,
+          fetchedSpecialities: true,
+          specialities: action.payload.data.specialities.edges.map(edge => edge.node),
+          specialitiesPageInfo: action.payload.data.specialities.pageInfo,
+          errorSpecialities: null,
+        };
+    case "SPECIALITIES_ERR":
+      return {
+        ...state,
+        fetchingSpecialities: false,
+        fetchedSpecialities: false,
+        errorSpecialities: action.payload,
+      };
+    case "SPECIALITIES_MUTATION_REQ":
+      return {
+        ...state,
+        submittingMutation: true,
+        mutation: null,
+      };
+    case "SPECIALITIES_MUTATION_RESP":
+      return {
+        ...state,
+        submittingMutation: false,
+        mutation: action.payload,
+      };
+    case "SPECIALITIES_MUTATION_ERR":
+      return {
+        ...state,
+        submittingMutation: false,
+        mutation: null,
+      };
     case "CLAIM_CLAIM_ATTACHMENTS_REQ":
       return {
         ...state,
