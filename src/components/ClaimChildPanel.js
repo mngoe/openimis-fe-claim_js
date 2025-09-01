@@ -59,6 +59,7 @@ class ClaimChildPanel extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
+    this.isDecimalPrice = props.modulesManager.getConf("fe-claim","isDecimalPrice", true);
   }
 
   initData = () => {
@@ -375,6 +376,7 @@ class ClaimChildPanel extends Component {
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
           value={i[type] === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S ? this.state.data[idx].service?.priceAsked : i.priceAsked}
           decimal={true}
+          allowDecimals= {this.isDecimalPrice}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
