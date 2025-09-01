@@ -105,15 +105,24 @@ export function fetchSpecialities(filters) {
 }
 
 export function fetchSpeciality(uuid) {
-  const payload = formatQuery("specialities", { uuid }, [
-    "uuid",
-    "code",
-    "speciality",
-    "altLanguage",
-    "validityFrom",
-    "validityTo",
-  ]);
-  return graphql(payload, "SPECIALITY_FETCH_ONE");
+  console.log("fetchSpeciality", uuid);
+  const query = `
+    query {
+      specialities(uuid: "${uuid}") {
+        edges {
+          node {
+            uuid
+            code
+            speciality
+            altLanguage
+            validityFrom
+            validityTo
+          }
+        }
+      }
+    }
+  `;
+  return graphql(query , "SPECIALITY_FETCH_ONE");
 }
 
 export function formatSpeciality(speciality) {

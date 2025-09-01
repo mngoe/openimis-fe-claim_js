@@ -83,29 +83,32 @@ function reducer(
         specialitiesPageInfo: pageInfo(action.payload.data.specialities),
         errorSpecialities: formatGraphQLError(action.payload),
       };
-    case "SPECIALITY_SEARCHER_ERR":
-      return {
-        ...state,
-        fetchingSpecialities: false,
-        fetchedSpecialities: false,
-        errorSpecialities: formatServerError(action.payload),
-      };
-    case "SPECIALITY_FETCH_ONE_REQ":
-      return {
-        ...state,
-        fetchingSpeciality: true,
-        fetchedSpeciality: false,
-        speciality: {},
-        errorSpeciality: null,
-      };
-    case "SPECIALITY_FETCH_ONE_RESP":
-      return {
-        ...state,
-        fetchingSpeciality: false,
-        fetchedSpeciality: true,
-        speciality: action.payload.data.speciality,
-        errorSpeciality: formatGraphQLError(action.payload),
-      };
+      case "SPECIALITY_FETCH_ONE_ERR":
+        return {
+          ...state,
+          fetchingSpecialities: false,
+          fetchedSpecialities: false,
+          errorSpecialities: formatServerError(action.payload),
+        };
+      case "SPECIALITY_FETCH_ONE_REQ":
+        return {
+          ...state,
+          fetchingSpeciality: true,
+          fetchedSpeciality: false,
+          speciality: {},
+          errorSpeciality: null,
+        };
+      case "SPECIALITY_FETCH_ONE_RESP": {
+        const edges = action.payload?.data?.specialities?.edges || [];
+        const speciality = edges.length > 0 ? edges[0].node : null;
+        return {
+          ...state,
+          fetchingSpeciality: false,
+          fetchedSpeciality: true,
+          speciality,
+          errorSpeciality: formatGraphQLError(action.payload),
+        };
+      }
     case "SPECIALITY_FETCH_ONE_ERR":
       return {
         ...state,
