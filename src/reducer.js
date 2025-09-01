@@ -15,6 +15,10 @@ function reducer(
     fetchingSpecialities: false,
     fetchedSpecialities: false,
     errorSpecialities: null,
+    speciality: {},
+    fetchingSpeciality: false,
+    fetchedSpeciality: false,
+    errorSpeciality: null,
     fetchingClaimAttachments: false,
     fetchedClaimAttachments: false,
     errorClaimAttachments: null,
@@ -86,12 +90,44 @@ function reducer(
         fetchedSpecialities: false,
         errorSpecialities: formatServerError(action.payload),
       };
-      case "SPECIALITY_MUTATION_REQ":
-        return dispatchMutationReq(state, action);
-      case "SPECIALITY_MUTATION_ERR":
-        return dispatchMutationErr(state, action);
-      case "SPECIALITY_DELETE_SPECIALITY_RESP":
-        return dispatchMutationResp(state, "deleteSpecialities", action);
+    case "SPECIALITY_FETCH_ONE_REQ":
+      return {
+        ...state,
+        fetchingSpeciality: true,
+        fetchedSpeciality: false,
+        speciality: {},
+        errorSpeciality: null,
+      };
+    case "SPECIALITY_FETCH_ONE_RESP":
+      return {
+        ...state,
+        fetchingSpeciality: false,
+        fetchedSpeciality: true,
+        speciality: action.payload.data.speciality,
+        errorSpeciality: formatGraphQLError(action.payload),
+      };
+    case "SPECIALITY_FETCH_ONE_ERR":
+      return {
+        ...state,
+        fetchingSpeciality: false,
+        errorSpeciality: formatServerError(action.payload),
+      };
+    case "SPECIALITY_CLEAR":
+      return {
+        ...state,
+        fetchingSpeciality: false,
+        fetchedSpeciality: false,
+        speciality: {},
+        errorSpeciality: null,
+      };
+    case "SPECIALITY_MUTATION_REQ":
+      return dispatchMutationReq(state, action);
+    case "SPECIALITY_MUTATION_ERR":
+      return dispatchMutationErr(state, action);
+    case "SPECIALITY_MUTATION_RESP":
+      return dispatchMutationResp(state, "createOrUpdateSpeciality", action);
+    case "SPECIALITY_DELETE_SPECIALITY_RESP":
+      return dispatchMutationResp(state, "deleteSpecialities", action);
     case "CLAIM_CLAIM_ATTACHMENTS_REQ":
       return {
         ...state,

@@ -34,7 +34,7 @@ class ClaimMainMenu extends Component {
       entries.push({
         text: formatMessage(this.props.intl, "claim", "menu.specialities"),
         icon: <Assignment />,
-        route: "/claim/specialites",
+        route: "/claim/specialities",
       });
     }
     if (!entries.length) return null;

@@ -96,11 +96,57 @@ export function fetchSpecialities(filters) {
     "uuid",
     "code",
     "speciality",
+    "altLanguage",
     "validityFrom",
     "validityTo",
   ];
   const payload = formatPageQueryWithCount("specialities", filters, projections);
   return graphql(payload, "SPECIALITY_SEARCHER");
+}
+
+export function fetchSpeciality(uuid) {
+  const payload = formatQuery("specialities", { uuid }, [
+    "uuid",
+    "code",
+    "speciality",
+    "altLanguage",
+    "validityFrom",
+    "validityTo",
+  ]);
+  return graphql(payload, "SPECIALITY_FETCH_ONE");
+}
+
+export function formatSpeciality(speciality) {
+  return `
+    ${!!speciality.uuid ? `uuid: "${speciality.uuid}"` : ""}
+    ${!!speciality.code ? `code: "${formatGQLString(speciality.code)}"` : ""}
+    ${!!speciality.speciality ? `speciality: "${formatGQLString(speciality.speciality)}"` : ""}
+    ${!!speciality.altLanguage ? `altLanguage: "${formatGQLString(speciality.altLanguage)}"` : ""}
+  `;
+}
+
+export function createOrUpdateSpeciality(speciality, clientMutationLabel) {
+  console.log("createOrUpdateSpeciality", speciality);
+  const mutationName = speciality.uuid ? "updateSpeciality" : "createSpeciality";
+  const inputFields = formatSpeciality(speciality);
+  
+  const mutation = formatMutation(
+    mutationName,
+    inputFields,
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  speciality.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["SPECIALITY_MUTATION_REQ", "SPECIALITY_MUTATION_RESP", "SPECIALITY_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      specialityUuid: speciality.uuid
+    },
+  );
 }
 
 export function deleteSpeciality(speciality, clientMutationLabel) {
@@ -121,6 +167,10 @@ export function deleteSpeciality(speciality, clientMutationLabel) {
       specialityUuid: speciality.uuid
     },
   );
+}
+
+export function clearSpeciality() {
+  return { type: "SPECIALITY_CLEAR" };
 }
 
 export function formatAttachment(attach) {

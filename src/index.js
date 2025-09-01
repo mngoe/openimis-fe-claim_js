@@ -9,7 +9,7 @@ import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import CareTypePicker from "./pickers/CareTypePicker"
 import SpecialitiesPage from "./pages/SpecialitiesPage";
-import SpecialitiesSearcher from "./components/SpecialitiesSearcher";
+import SpecialityEditPage from "./pages/SpecialityEditPage";
 import AttachmentGeneralTypePicker from "./pickers/AttachmentGeneralTypePicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
 import ServiceFilterPicker from "./pickers/MedicalServiceFilterPicker";
@@ -36,7 +36,8 @@ const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
 const ROUTE_CLAIM_REVIEW = "claim/reviews/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
-const ROUTE_SPECIALITIES = "claim/specialites";
+const ROUTE_SPECIALITIES = "claim/specialities";
+const ROUTE_SPECIALITY_EDIT = "claim/specialities/speciality";
 
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }],
@@ -139,8 +140,8 @@ const DEFAULT_CONFIG = {
   ],
   "refs": [
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
-    { key: "claim.route.specialites", ref: ROUTE_SPECIALITIES },
-    { key: "claim.route.claimEdit", ref: ROUTE_CLAIM_EDIT },
+    { key: "claim.route.specialities", ref: ROUTE_SPECIALITIES },
+    { key: "claim.route.specialityEdit", ref: ROUTE_SPECIALITY_EDIT },
     { key: "claim.route.reviews", ref: ROUTE_REVIEWS },
     { key: "claim.route.feedback", ref: ROUTE_CLAIM_FEEDBACK },
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
@@ -184,6 +185,7 @@ const DEFAULT_CONFIG = {
   "core.Router": [
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
     { path: ROUTE_SPECIALITIES, component: SpecialitiesPage },
+    { path: ROUTE_SPECIALITY_EDIT + "/:speciality_uuid?", component: SpecialityEditPage },
     { path: ROUTE_CLAIM_EDIT + "/:claim_uuid?", component: EditPage }, // ? = optional (needed to route new claims)
     { path: ROUTE_REVIEWS, component: ReviewsPage },
     { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid", component: ReviewPage },

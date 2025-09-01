@@ -17,11 +17,11 @@ const styles = (theme) => ({
 
 class SpecialitiesPage extends Component {
   onAdd = () => {
-    historyPush(this.props.modulesManager, this.props.history, "medical.route.specialityEdit");
+    historyPush(this.props.modulesManager, this.props.history, "claim.route.specialityEdit");
   };
 
   onDoubleClick = (speciality) => {
-    historyPush(this.props.modulesManager, this.props.history, "medical.route.specialityEdit", [speciality.uuid]);
+    historyPush(this.props.modulesManager, this.props.history, "claim.route.specialityEdit",[speciality.uuid]);
   };
 
   componentDidMount = () => {
