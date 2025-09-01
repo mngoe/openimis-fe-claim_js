@@ -59,7 +59,7 @@ class ClaimChildPanel extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.isDecimalPrice = props.modulesManager.getConf("fe-claim","isDecimalPrice", true);
+    this.isDecimalPrice = props.modulesManager.getConf("fe-claim","isDecimalPrice", false);
   }
 
   initData = () => {
