@@ -135,7 +135,6 @@ export function formatSpeciality(speciality) {
 }
 
 export function createOrUpdateSpeciality(speciality, clientMutationLabel) {
-  console.log("createOrUpdateSpeciality", speciality);
   const mutationName = speciality.uuid ? "updateSpeciality" : "createSpeciality";
   const inputFields = formatSpeciality(speciality);
   
@@ -144,6 +143,8 @@ export function createOrUpdateSpeciality(speciality, clientMutationLabel) {
     inputFields,
     clientMutationLabel,
   );
+
+  console.log("mutation", mutation);
   const requestedDateTime = new Date();
   speciality.clientMutationId = mutation.clientMutationId;
   return graphql(
