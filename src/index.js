@@ -140,6 +140,7 @@ const DEFAULT_CONFIG = {
   ],
   "refs": [
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
+    { key: "claim.route.claimEdit", ref: ROUTE_CLAIM_EDIT },
     { key: "claim.route.specialities", ref: ROUTE_SPECIALITIES },
     { key: "claim.route.specialityEdit", ref: ROUTE_SPECIALITY_EDIT },
     { key: "claim.route.reviews", ref: ROUTE_REVIEWS },
