@@ -61,50 +61,37 @@ function reducer(
   action,
 ) {
   switch (action.type) {
-    case "SPECIALITIES_REQ":
+    case "SPECIALITY_SEARCHER_REQ":
       return {
         ...state,
         fetchingSpecialities: true,
         fetchedSpecialities: false,
         specialities: [],
-        specialitiesPageInfo: {},
+        specialitiesPageInfo: { totalCount: 0 },
         errorSpecialities: null,
       };
-      case "SPECIALITIES_RESP":
-        console.log("Specialities response:", action.payload.data);
-        return {
-          ...state,
-          fetchingSpecialities: false,
-          fetchedSpecialities: true,
-          specialities: action.payload.data.specialities.edges.map(edge => edge.node),
-          specialitiesPageInfo: action.payload.data.specialities.pageInfo,
-          errorSpecialities: null,
-        };
-    case "SPECIALITIES_ERR":
+    case "SPECIALITY_SEARCHER_RESP":
+      return {
+        ...state,
+        fetchingSpecialities: false,
+        fetchedSpecialities: true,
+        specialities: parseData(action.payload.data.specialities),
+        specialitiesPageInfo: pageInfo(action.payload.data.specialities),
+        errorSpecialities: formatGraphQLError(action.payload),
+      };
+    case "SPECIALITY_SEARCHER_ERR":
       return {
         ...state,
         fetchingSpecialities: false,
         fetchedSpecialities: false,
-        errorSpecialities: action.payload,
+        errorSpecialities: formatServerError(action.payload),
       };
-    case "SPECIALITIES_MUTATION_REQ":
-      return {
-        ...state,
-        submittingMutation: true,
-        mutation: null,
-      };
-    case "SPECIALITIES_MUTATION_RESP":
-      return {
-        ...state,
-        submittingMutation: false,
-        mutation: action.payload,
-      };
-    case "SPECIALITIES_MUTATION_ERR":
-      return {
-        ...state,
-        submittingMutation: false,
-        mutation: null,
-      };
+      case "SPECIALITY_MUTATION_REQ":
+        return dispatchMutationReq(state, action);
+      case "SPECIALITY_MUTATION_ERR":
+        return dispatchMutationErr(state, action);
+      case "SPECIALITY_DELETE_SPECIALITY_RESP":
+        return dispatchMutationResp(state, "deleteSpecialities", action);
     case "CLAIM_CLAIM_ATTACHMENTS_REQ":
       return {
         ...state,

@@ -91,47 +91,35 @@ export function fetchClaimAttachments(claim) {
 
 
 export function fetchSpecialities(filters) {
-  let payload = `
-    query {
-      specialities (${filters}) {
-        edges {
-          node {
-            id
-            uuid
-            code
-            speciality
-            validityFrom
-            validityTo
-          }
-        }
-        totalCount
-        pageInfo {
-          hasNextPage
-          hasPreviousPage
-          startCursor
-          endCursor
-        }
-      }
-    }
-  `;
-  return graphql(payload, "SPECIALITIES");
+  const projections = [
+    "id",
+    "uuid",
+    "code",
+    "speciality",
+    "validityFrom",
+    "validityTo",
+  ];
+  const payload = formatPageQueryWithCount("specialities", filters, projections);
+  return graphql(payload, "SPECIALITY_SEARCHER");
 }
 
 export function deleteSpeciality(speciality, clientMutationLabel) {
-  let payload = `
-    mutation {
-      deleteSpecialities(
-        uuids: ["${speciality.uuid}"],
-        clientMutationLabel: "${clientMutationLabel}"
-      ) {
-        clientMutationId
-      }
-    }
-  `;
-  return commitMutation(
-    payload,
-    [fetchSpecialities],
-    speciality.clientMutationId ? [speciality.clientMutationId] : [],
+  const mutation = formatMutation(
+    "deleteSpecialities",
+    `uuids: ["${speciality.uuid}"]`,
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  speciality.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["SPECIALITY_MUTATION_REQ", "SPECIALITY_DELETE_SPECIALITY_RESP", "SPECIALITY_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      specialityUuid: speciality.uuid
+    },
   );
 }
 

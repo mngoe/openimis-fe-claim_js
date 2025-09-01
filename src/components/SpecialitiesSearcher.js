@@ -31,12 +31,21 @@ class SpecialitiesSearcher extends Component {
     this.defaultPageSize = props.modulesManager.getConf("fe-medical", "specialityFilter.defaultPageSize", 10);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     if (prevProps.submittingMutation && !this.props.submittingMutation) {
-      this.props.journalize(this.props.mutation);
-      this.setState((prevState) => ({ ...prevState, reset: prevState.reset + 1 }));
-    } else if (prevProps.confirmed !== this.props.confirmed && !!this.props.confirmed && !!this.state.confirmedAction) {
+        this.props.journalize(this.props.mutation);  
+        this.props.fetchSpecialities();
+        console.log("Re-fetching specialities after mutation"); 
+    }
+    
+    if (
+      prevProps.confirmed !== this.props.confirmed &&
+      !!this.props.confirmed &&
+      !!this.state.confirmedAction
+    ) {
+        console.log("Confirmed action execution");
       this.state.confirmedAction();
+      this.setState({ confirmedAction: null }); // Reset après exécution
     }
   }
 
@@ -46,8 +55,6 @@ class SpecialitiesSearcher extends Component {
     let headers = [
       "speciality.code",
       "speciality.speciality",
-      "speciality.validityFrom",
-      "speciality.validityTo",
     ];
     if (this.props.rights.includes(RIGHT_DELETE)) {
       headers.push(null);
@@ -58,16 +65,12 @@ class SpecialitiesSearcher extends Component {
   sorts = () => [
     ["code", true],
     ["speciality", true],
-    ["validityFrom", false],
-    ["validityTo", false],
   ];
 
   itemFormatters = () => {
     let formatters = [
       (speciality) => speciality.code,
       (speciality) => speciality.speciality,
-      (speciality) => formatDateFromISO(this.props.modulesManager, this.props.intl, speciality.validityFrom),
-      (speciality) => formatDateFromISO(this.props.modulesManager, this.props.intl, speciality.validityTo),
     ];
     if (this.props.rights.includes(RIGHT_DELETE)) {
       formatters.push((speciality) =>
