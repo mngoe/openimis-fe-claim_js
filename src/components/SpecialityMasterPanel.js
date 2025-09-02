@@ -28,6 +28,7 @@ class SpecialityMasterPanel extends FormPanel {
                 name="code"
                 value={edited.code}
                 readOnly={readOnly}
+                required={true}
                 onChange={(v, s) => this.updateAttribute("code", v)}
                 inputProps={{
                   maxLength: 50,
