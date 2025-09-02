@@ -37,6 +37,13 @@ class ClaimMainMenu extends Component {
         route: "/claim/specialities",
       });
     }
+    if (!!rights.filter((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS).length) {
+      entries.push({
+        text: formatMessage(this.props.intl, "claim", "menu.prescribers"),
+        icon: <Assignment />,
+        route: "/claim/prescribers",
+      });
+    }
     if (!entries.length) return null;
     return (
       <MainMenuContribution

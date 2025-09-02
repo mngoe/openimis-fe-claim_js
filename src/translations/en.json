@@ -1,4 +1,6 @@
 {
+  "claim.menu.prescribers": "Prescribers",
+  "claim.prescribers.page.title": "Prescribers Management",
   "medical.specialities.page.title": "Specialities Management",
   "claim.speciality.edit.title": "Edit Speciality",
   "claim.SpecialityForm.code": "Code",
