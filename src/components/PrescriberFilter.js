@@ -112,6 +112,58 @@ class PrescriberFilter extends Component {
             }
           />
         </Grid>
+        <Grid item xs={3} className={classes.item}>
+          <TextInput
+            module="claim"
+            label="prescriber.lastName"
+            name="lastName"
+            value={this._filterTextFieldValue("lastName")}
+            onChange={(v) =>
+              this.debouncedOnChangeFilter([
+                {
+                  id: "lastName",
+                  value: v,
+                  filter: !!v ? `lastName_Icontains: "${v}"` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
+        <Grid item xs={3} className={classes.item}>
+          <TextInput
+            module="claim"
+            label="prescriber.otherNames"
+            name="otherNames"
+            value={this._filterTextFieldValue("otherNames")}
+            onChange={(v) =>
+              this.debouncedOnChangeFilter([
+                {
+                  id: "otherNames",
+                  value: v,
+                  filter: !!v ? `otherNames_Icontains: "${v}"` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
+
+        <Grid item xs={3} className={classes.item}>
+          <TextInput
+            module="claim"
+            label="prescriber.nin"
+            name="nin"
+            value={this._filterTextFieldValue("nin")}
+            onChange={(v) =>
+              this.debouncedOnChangeFilter([
+                {
+                  id: "nin",
+                  value: v,
+                  filter: !!v ? `nin_Istartswith: "${v}"` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
         <ControlledField
           module="claim"
           id="prescriber.mainHealthFacility"
