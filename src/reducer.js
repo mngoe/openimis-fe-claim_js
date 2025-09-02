@@ -10,6 +10,14 @@ import {
 
 function reducer(
   state = {
+    status:[],
+    fetchingPrescriberStatus:false,
+    fetchedPrescriberStatus:false,
+    prescribers: [],
+    prescribersPageInfo: {},
+    fetchingPrescribers: false,
+    fetchedPrescribers: false,
+    errorPrescribers: null,
     specialities: [],
     specialitiesPageInfo: {},
     fetchingSpecialities: false,
@@ -65,6 +73,40 @@ function reducer(
   action,
 ) {
   switch (action.type) {
+    case "PRESCRIBER_STATUS_REQ":
+      return {
+        ...state,
+        fetchingPrescriberStatus: true,
+        fetchedPrescriberStatus: false,
+        status: [],
+        errorPrescribers: null,
+      }
+    case "PRESCRIBER_STATUS_RESP":
+      return {
+        ...state,
+        fetchingPrescriberStatus: false,
+        fetchedPrescriberStatus: true,
+        status: action.payload.data.statusOptions,
+        errorPrescribers: null,
+      }
+    case "PRESCRIBERS_SEARCHER_REQ":
+      return {
+        ...state,
+        fetchingPrescribers: true,
+        fetchedPrescribers: false,
+        prescribers: [],
+        prescribersPageInfo: { totalCount: 0 },
+        errorPrescribers: null,
+      };
+    case "PRESCRIBERS_SEARCHER_RESP":
+      return {
+        ...state,
+        fetchingPrescribers: false,
+        fetchedPrescribers: true,
+        prescribers: parseData(action.payload.data.prescribers),
+        prescribersPageInfo: pageInfo(action.payload.data.prescribers),
+        errorSpecialities: formatGraphQLError(action.payload),
+      };
     case "SPECIALITY_SEARCHER_REQ":
       return {
         ...state,

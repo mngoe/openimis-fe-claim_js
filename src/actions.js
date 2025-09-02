@@ -88,7 +88,10 @@ export function fetchClaimAttachments(claim) {
   return graphql(payload, "CLAIM_CLAIM_ATTACHMENTS");
 }
 
-
+export function fetchPrescriberStatus() {
+  const payload = formatQuery("statusOptions", null, ["code", "status", "altLanguage"]);
+  return graphql(payload, 'PRESCRIBER_STATUS');
+}
 
 export function fetchSpecialities(filters) {
   const projections = [
@@ -181,6 +184,46 @@ export function deleteSpeciality(speciality, clientMutationLabel) {
 
 export function clearSpeciality() {
   return { type: "SPECIALITY_CLEAR" };
+}
+
+export function fetchPrescribers(filters) {
+  const projections = [
+    "uuid",
+    "code",
+    "nin",
+    "lastName",
+    "otherNames",
+    "phone",
+    "entryDate",
+    "releaseDate",
+    "validityTo",
+    "validityFrom",
+    "mainHealthFacility { uuid name code }",
+    "speciality { uuid speciality code }",
+    "status { code status }"
+  ];
+  const payload = formatPageQueryWithCount("prescribers", filters, projections);
+  return graphql(payload, "PRESCRIBERS_SEARCHER");
+}
+
+export function deletePrescriber(prescriber, clientMutationLabel){
+  const mutation = formatMutation(
+    "deletePrescribers",
+    `uuids: ["${prescriber.uuid}"]`,
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  prescriber.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["PRESCRIBER_MUTATION_REQ", "PRESCRIBER_DELETE_PRESCRIBER_RESP", "SPECIALITY_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      prescriberUuid: prescriber.uuid
+    },
+  );
 }
 
 export function formatAttachment(attach) {
