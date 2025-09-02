@@ -85,7 +85,6 @@ class AttachmentsDialog extends Component {
         (state, props) => ({
           open: true,
           claimUuid: props.claim.uuid,
-          // ⚠️ Ne pas écraser, on prépare juste une base temporaire
           claimAttachments: props.claim.attachments || [],
           updatedAttachments: new Set(),
         }),
@@ -95,14 +94,14 @@ class AttachmentsDialog extends Component {
               const serverAttachments = await this.props.fetchClaimAttachments(this.props.claim);
               console.log("serverAttachments", serverAttachments);
     
-              // 1. Récupération des données serveur
+              // 1. Retrieving server data
               const edges = serverAttachments?.payload?.data?.claimAttachments?.edges || [];
               const serverList = edges.map((e) => e.node);
     
-              // 2. Récupération des données locales
+              // 2. Retrieving local data
               const localList = this.props.claim.attachments || [];
     
-              // 3. Fusion : on garde tous les éléments uniques (par id si présent, sinon par filename)
+              // 3. Merge: we keep all unique elements (by id if present, otherwise by filename)
               const merged = [...serverList];
               localList.forEach((loc) => {
                 const alreadyExists = merged.some(
@@ -113,23 +112,22 @@ class AttachmentsDialog extends Component {
                 }
               });
     
-              // 4. Ajout de la ligne vide si en édition
+              // 4. Add empty line if in edit mode
               if (!readOnly && (merged.length === 0 || !_.isEqual(_.last(merged), {}))) {
                 merged.push({});
               }
     
-              // 5. Mise à jour de l'état
+              // 5. Updating state
               this.setState({
                 claimAttachments: merged,
                 updatedAttachments: new Set(),
               });
             } catch (err) {
-              console.error("Erreur fetchClaimAttachments", err);
+              console.error("Error fetchClaimAttachments", err);
             }
           }
         }
       );
-      console.log("claimattachments", this.props.claim.attachments);
     } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !this.props.claim.uuid) {
       let claimAttachments = [...(this.props.claim.attachments || [])];
       if (!readOnly) {
@@ -168,14 +166,15 @@ class AttachmentsDialog extends Component {
     }
   }
 
-  //onClose = () => this.setState({ open: false }, (e) => !!this.props.close && this.props.close());
-
   onClose = () => {
     const { coreAlert, intl } = this.props;
     var claimAttachments = [...this.state.claimAttachments];
     if (!!claimAttachments) {
-      for (let i = 0; i < (claimAttachments.length - 1); i++) {
-        if (claimAttachments[i].predefinedType == undefined) {
+      for (let i = 0; i <= (claimAttachments.length - 1); i++) {
+        const isEmpty = Object.values(claimAttachments[i]).every(
+          v => v === undefined || v === null || v === ""
+        );
+        if (!isEmpty && claimAttachments[i].predefinedType == undefined) {
           coreAlert(
             formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
             formatMessage(intl, "claim", "claim.attachment.defineType"),
@@ -184,6 +183,19 @@ class AttachmentsDialog extends Component {
         }
       }
     }
+    for (let i = 0; i <= (claimAttachments.length - 1); i++) {
+      const isEmpty = Object.values(claimAttachments[i]).every(
+        v => v === undefined || v === null || v === ""
+      );
+      if (!isEmpty && !claimAttachments[i].filename) {
+        coreAlert(
+          formatMessage(intl, "claim", "claim.attachment.missingDocument"),
+          formatMessage(intl, "claim", "claim.attachment.defineDocument"),
+        );
+        return;
+      }
+    }
+    
     this.setState({ open: false }, (e) => !!this.props.close && this.props.close())
   };
 
@@ -259,7 +271,7 @@ class AttachmentsDialog extends Component {
           }),
         )
     } 
-    // si on est en mode add et que la dernière ligne est remplie, on ajoute une nouvelle ligne
+    // if we are in add mode and the last line is filled, we add a new line
     const canAdd = !this.props.readOnly && this.props.rights && this.props.rights.includes(RIGHT_ADD);
     const last = this.state.claimAttachments[this.state.claimAttachments.length - 1];
     const lastIsEmpty = last && Object.keys(last).length === 0;
@@ -287,10 +299,10 @@ class AttachmentsDialog extends Component {
   };
 
   fileSelected = (f, i) => {
-    if (!this.state.claimAttachments[i].predefinedType) {
+    if (!this.state.claimAttachments[i].predefinedType && !!this.state.claimUuid) {
       this.props.coreAlert(
         formatMessage(this.props.intl, "claim", "claim.attachment.missingPredefinedType"),
-        formatMessage(this.props.intl, "claim", "claim.attachment.defineType"),
+        formatMessage(this.props.intl, "claim", "claim.attachment.definePredefinedType"),
       );
       return;
     }
@@ -329,14 +341,6 @@ class AttachmentsDialog extends Component {
   urlSelected = (f, i, autogeneratedUrl) => {
     const { coreAlert, intl } = this.props;
     const url = this.validateUrl(f, autogeneratedUrl);
-    if (!this.state.claimAttachments[i].predefinedType) {
-      this.props.coreAlert(
-        formatMessage(this.props.intl, "claim", "claim.attachment.missingPredefinedType"),
-        formatMessage(this.props.intl, "claim", "claim.attachment.defineType"),
-      );
-      return;
-    }
-
     if (!url.isValid) {
       coreAlert(
         formatMessage(intl, "claim", "url.validation.error"),
@@ -397,24 +401,22 @@ class AttachmentsDialog extends Component {
     state.updatedAttachments.add(i);
     state.reset = state.reset + 1;
     this.setState({ ...state });
-    // repercuter sur props.claim.attachments
-    if (/*this.props.claim && !this.props.claim.uuid*/true) {
-      if (!Array.isArray(this.props.claim.attachments)) {
-        this.props.claim.attachments = [];
-      }
-      this.props.claim.attachments[i] = state.claimAttachments[i];
-      if (typeof this.props.onUpdated === "function") {
-        this.props.onUpdated();
-      }
+    // reflect on props.claim.attachments
+    if (!Array.isArray(this.props.claim.attachments)) {
+      this.props.claim.attachments = [];
+    }
+    this.props.claim.attachments[i] = state.claimAttachments[i];
+    if (typeof this.props.onUpdated === "function") {
+      this.props.onUpdated();
     }
   };
 
   cannotUpdate = (a, i) => {
-    // condition de verrouillage d'une ligne
+    // condition for locking a line
     return false;
   };
 
-  // condition de verrouillage des champs autres que generalType et predefinedType
+  // condition for locking fields other than generalType and predefinedType
   disableOtherFields(index) {
     return !!this.state.claimUuid &&
     (!this.state.claimAttachments[index].generalType || !this.state.claimAttachments[index].predefinedType);
