@@ -33,6 +33,7 @@ import YesNoPicker from "./pickers/YesNoPicker";
 import PrescribersPage from "./pages/PrescribersPage";
 import StatusPicker from "./pickers/StatusPicker";
 import SpecialityPicker from "./pickers/SpecialityPicker";
+import PrescriberPicker from "./pickers/PrescriberPicker";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -172,6 +173,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.CareTypePicker", ref: CareTypePicker},
     { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
+    { key: "claim.PrescriberPicker", ref: PrescriberPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
     { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
     { key: "claim.ClaimAttachmentPredefinedTypePicker", ref: ClaimAttachmentPredefinedTypePicker },

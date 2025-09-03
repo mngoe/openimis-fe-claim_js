@@ -13,7 +13,7 @@ import {
   coreConfirm,
   Searcher,
 } from "@openimis/fe-core";
-import { fetchPrescribers, deleteSPrescriber, deletePrescriber } from "../actions";
+import { fetchPrescribers, deletePrescriber } from "../actions";
 import { IconButton } from "@material-ui/core";
 import { RIGHT_DELETE } from "../constants";
 import PrescriberFilter from "./PrescriberFilter";

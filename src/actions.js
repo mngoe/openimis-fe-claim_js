@@ -297,6 +297,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "approved",
     "status",
     "restoreId",
+    "prescriber { uuid code lastName otherNames }",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "preAuthorization"
