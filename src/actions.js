@@ -398,6 +398,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     autogenerate: ${!!isAutogenerateEnabled}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
+    prescriberUuid: "${claim.prescriber.uuid}"
     dateFrom: "${claim.dateFrom}"
     ${claim.dateTo ? `dateTo: "${claim.dateTo}"` : ""}
     icdId: ${decodeId(claim.icd.id)}
