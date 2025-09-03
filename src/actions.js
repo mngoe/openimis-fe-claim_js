@@ -148,11 +148,13 @@ export function createOrUpdateSpeciality(speciality, clientMutationLabel) {
   );
 
   console.log("mutation", mutation);
+
+
   const requestedDateTime = new Date();
   speciality.clientMutationId = mutation.clientMutationId;
   return graphql(
     mutation.payload,
-    ["SPECIALITY_MUTATION_REQ", "SPECIALITY_MUTATION_RESP", "SPECIALITY_MUTATION_ERR"],
+    ["SPECIALITY_MUTATION_REQ", speciality.uuid ? "SPECIALITY_UPDATE_MUTATION_RESP":"SPECIALITY_MUTATION_RESP", "SPECIALITY_MUTATION_ERR"],
     {
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,

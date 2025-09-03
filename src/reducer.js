@@ -169,8 +169,10 @@ function reducer(
       return dispatchMutationReq(state, action);
     case "SPECIALITY_MUTATION_ERR":
       return dispatchMutationErr(state, action);
+    case "SPECIALITY_UPDATE_MUTATION_RESP":
+      return dispatchMutationResp(state, "updateSpeciality" ,action);
     case "SPECIALITY_MUTATION_RESP":
-      return dispatchMutationResp(state, "createOrUpdateSpeciality", action);
+      return dispatchMutationResp(state, "createSpeciality" ,action);
     case "SPECIALITY_DELETE_SPECIALITY_RESP":
       return dispatchMutationResp(state, "deleteSpecialities", action);
     case "CLAIM_CLAIM_ATTACHMENTS_REQ":
