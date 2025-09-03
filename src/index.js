@@ -32,6 +32,7 @@ import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import YesNoPicker from "./pickers/YesNoPicker";
 import PrescribersPage from "./pages/PrescribersPage";
 import StatusPicker from "./pickers/StatusPicker";
+import SpecialityPicker from "./pickers/SpecialityPicker";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -152,6 +153,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
     { key: "claim.StatusPicker", ref: StatusPicker },
+    { key: "claim.SpecialityPicker", ref: SpecialityPicker },
     {
       key: "claim.ClaimAdminPicker.projection",
       ref: [

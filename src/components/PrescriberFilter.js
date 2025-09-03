@@ -5,7 +5,7 @@ import _debounce from "lodash/debounce";
 
 import { Grid } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { withModulesManager, formatMessage, TextInput, ControlledField, PublishedComponent } from "@openimis/fe-core";
+import { withModulesManager, formatMessage, TextInput, NumberInput, ControlledField, PublishedComponent } from "@openimis/fe-core";
 
 const styles = (theme) => ({
   form: {
@@ -37,7 +37,19 @@ class PrescriberFilter extends Component {
         filter: `status_Code: ${v}`,
       };
     } else {
-      return { id: "healthFacility", value: null, filter: null };
+      return { id: "status", value: null, filter: null };
+    }
+  };
+
+  _specialityFilter = (v) => {
+    if (!!v) {
+      return {
+        id: "speciality",
+        value: v,
+        filter: `speciality_Code: "${v.code}"`,
+      };
+    } else {
+      return { id: "speciality", value: null, filter: null };
     }
   };
 
@@ -55,6 +67,12 @@ class PrescriberFilter extends Component {
   _onChangeStatus = (v, s) => {
     this.props.onChangeFilters([
       this._statusFilter(v)
+    ]);
+  };
+
+  _onChangeSpeciality = (v, s) => {
+    this.props.onChangeFilters([
+      this._specialityFilter(v)
     ]);
   };
 
@@ -96,7 +114,7 @@ class PrescriberFilter extends Component {
     return (
       <Grid container className={classes.form}>
         <Grid item xs={3} className={classes.item}>
-          <TextInput
+          <NumberInput
             module="claim"
             label="prescriber.code"
             name="code"
@@ -148,7 +166,7 @@ class PrescriberFilter extends Component {
         </Grid>
 
         <Grid item xs={3} className={classes.item}>
-          <TextInput
+          <NumberInput
             module="claim"
             label="prescriber.nin"
             name="nin"
@@ -190,6 +208,108 @@ class PrescriberFilter extends Component {
             </Grid>
           }
         />
+        <ControlledField
+          module="claim"
+          id="prescriber.speciality"
+          field={
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="claim.SpecialityPicker"
+                value={this._filterValue("speciality")}
+                onChange={this._onChangeSpeciality}
+              />
+            </Grid>
+          }
+        />
+        <ControlledField
+              module=""
+              id="prescriber.entryDate"
+              field={
+                  <Grid item xs={3}>
+                      <Grid container>
+                          <Grid item xs={6} className={classes.item}>
+                              <PublishedComponent
+                                  pubRef="core.DatePicker"
+                                  value={this._filterValue("entryDateFrom")}
+                                  module="claim"
+                                  label="prescriber.entryDateFrom"
+                                  onChange={(d) =>
+                                      this.props.onChangeFilters([
+                                          {
+                                              id: "entryDateFrom",
+                                              value: d,
+                                              filter: `entryDate_Gte: "${d}"`,
+                                          },
+                                      ])
+                                  }
+                              />
+                          </Grid>
+                          <Grid item xs={6} className={classes.item}>
+                              <PublishedComponent
+                                  pubRef="core.DatePicker"
+                                  value={this._filterValue("entryDateTo")}
+                                  module="claim"
+                                  label="prescriber.entryDateTo"
+                                  onChange={(d) =>
+                                      this.props.onChangeFilters([
+                                          {
+                                              id: "entryDateTo",
+                                              value: d,
+                                              filter: `entryDate_Lte: "${d}"`,
+                                          },
+                                      ])
+                                  }
+                              />
+                          </Grid>
+                      </Grid>
+                  </Grid>
+              }
+          />
+
+          <ControlledField
+              module=""
+              id="prescriber.releaseDate"
+              field={
+                  <Grid item xs={3}>
+                      <Grid container>
+                          <Grid item xs={6} className={classes.item}>
+                              <PublishedComponent
+                                  pubRef="core.DatePicker"
+                                  value={this._filterValue("releaseDateFrom")}
+                                  module="claim"
+                                  label="prescriber.releaseDateFrom"
+                                  onChange={(d) =>
+                                      this.props.onChangeFilters([
+                                          {
+                                              id: "releaseDateFrom",
+                                              value: d,
+                                              filter: `releaseDate_Gte: "${d}"`,
+                                          },
+                                      ])
+                                  }
+                              />
+                          </Grid>
+                          <Grid item xs={6} className={classes.item}>
+                              <PublishedComponent
+                                  pubRef="core.DatePicker"
+                                  value={this._filterValue("releaseDateTo")}
+                                  module="claim"
+                                  label="prescriber.releaseDateTo"
+                                  onChange={(d) =>
+                                      this.props.onChangeFilters([
+                                          {
+                                              id: "releaseDateTo",
+                                              value: d,
+                                              filter: `releaseDate_Lte: "${d}"`,
+                                          },
+                                      ])
+                                  }
+                              />
+                          </Grid>
+                      </Grid>
+                  </Grid>
+              }
+          />
       </Grid>
     );
   }
