@@ -83,6 +83,8 @@ function reducer(
       return dispatchMutationErr(state, action);
     case "PRESCRIBER_UPDATE_MUTATION_RESP":
       return dispatchMutationResp(state, "updatePrescriber" ,action);
+    case "PRESCRIBER_DELETE_PRESCRIBER_RESP":
+      return dispatchMutationResp(state, "deletePrescribers", action)
     case "PRESCRIBER_MUTATION_RESP":
       return dispatchMutationResp(state, "createPrescriber" ,action);
     case "PRESCRIBER_FETCH_ONE_ERR":
