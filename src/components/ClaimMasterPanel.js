@@ -177,6 +177,7 @@ class ClaimMasterPanel extends FormPanel {
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
                 readOnly={ro}
                 required={true}
+                autoFocus={true}
               />
             </Grid>
           }
@@ -347,7 +348,6 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
                 action={claimCodeValidationCheck}
-                autoFocus={true}
                 clearAction={claimCodeValidationClear}
                 codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
