@@ -183,6 +183,24 @@ class ClaimMasterPanel extends FormPanel {
           }
         />
         <ControlledField
+            module="claim"
+            id="ClaimFilter.PrescriberPicker"
+            field={
+              <Grid item xs={3} className={classes.item}>
+                <PublishedComponent
+                  pubRef="claim.PrescriberPicker"
+                  name="prescriber"
+                  label={formatMessage(intl, "claim", "prescriber")}
+                  value={edited.prescriber}
+                  reset={reset}
+                  hf_uuid={edited.healthFacility?.uuid}
+                  onChange={(v, s) => this.updateAttribute("prescriber", v)}
+                  required
+                />
+              </Grid>
+            }
+          />
+        <ControlledField
           module="claim"
           id="Claim.visitDateFrom"
           field={

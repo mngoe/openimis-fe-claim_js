@@ -10,6 +10,27 @@ import {
 
 function reducer(
   state = {
+    prescriber:{},
+    fetchingPrescriber:false,
+    fetchedPrescriber:false,
+    errorPrescriber:false,
+    status:[],
+    fetchingPrescriberStatus:false,
+    fetchedPrescriberStatus:false,
+    prescribers: [],
+    prescribersPageInfo: {},
+    fetchingPrescribers: false,
+    fetchedPrescribers: false,
+    errorPrescribers: null,
+    specialities: [],
+    specialitiesPageInfo: {},
+    fetchingSpecialities: false,
+    fetchedSpecialities: false,
+    errorSpecialities: null,
+    speciality: {},
+    fetchingSpeciality: false,
+    fetchedSpeciality: false,
+    errorSpeciality: null,
     fetchingClaimAttachments: false,
     fetchedClaimAttachments: false,
     errorClaimAttachments: null,
@@ -56,6 +77,139 @@ function reducer(
   action,
 ) {
   switch (action.type) {
+    case "PRESCRIBER_MUTATION_REQ":
+      return dispatchMutationReq(state, action);
+    case "PRESCRIBER_MUTATION_ERR":
+      return dispatchMutationErr(state, action);
+    case "PRESCRIBER_UPDATE_MUTATION_RESP":
+      return dispatchMutationResp(state, "updatePrescriber" ,action);
+    case "PRESCRIBER_DELETE_PRESCRIBER_RESP":
+      return dispatchMutationResp(state, "deletePrescribers", action)
+    case "PRESCRIBER_MUTATION_RESP":
+      return dispatchMutationResp(state, "createPrescriber" ,action);
+    case "PRESCRIBER_FETCH_ONE_ERR":
+      return {
+        ...state,
+        fetchingPrescriber: false,
+        fetchedPrescriber: false,
+        errorPrescriber: formatServerError(action.payload),
+      };
+    case "PRESCRIBER_FETCH_ONE_REQ":
+      return {
+        ...state,
+        fetchingPrescriber: true,
+        fetchedPrescriber: false,
+        prescriber: {},
+        errorPrescriber: null,
+      };
+    case "PRESCRIBER_FETCH_ONE_RESP": {
+      const edges = action.payload?.data?.prescribers?.edges || [];
+      console.log("edges",action.payload?.data);
+      const prescriber = edges.length > 0 ? edges[0].node : null;
+      return {
+        ...state,
+        fetchingPrescriber: false,
+        fetchedPrescriber: true,
+        prescriber,
+        errorSpeciality: formatGraphQLError(action.payload),
+      };
+    }
+    case "PRESCRIBER_STATUS_REQ":
+      return {
+        ...state,
+        fetchingPrescriberStatus: true,
+        fetchedPrescriberStatus: false,
+        status: [],
+        errorPrescribers: null,
+      }
+    case "PRESCRIBER_STATUS_RESP":
+      return {
+        ...state,
+        fetchingPrescriberStatus: false,
+        fetchedPrescriberStatus: true,
+        status: action.payload.data.statusOptions,
+        errorPrescribers: null,
+      }
+    case "PRESCRIBERS_SEARCHER_REQ":
+      return {
+        ...state,
+        fetchingPrescribers: true,
+        fetchedPrescribers: false,
+        prescribers: [],
+        prescribersPageInfo: { totalCount: 0 },
+        errorPrescribers: null,
+      };
+    case "PRESCRIBERS_SEARCHER_RESP":
+      return {
+        ...state,
+        fetchingPrescribers: false,
+        fetchedPrescribers: true,
+        prescribers: parseData(action.payload.data.prescribers),
+        prescribersPageInfo: pageInfo(action.payload.data.prescribers),
+        errorSpecialities: formatGraphQLError(action.payload),
+      };
+    case "SPECIALITY_SEARCHER_REQ":
+      return {
+        ...state,
+        fetchingSpecialities: true,
+        fetchedSpecialities: false,
+        specialities: [],
+        specialitiesPageInfo: { totalCount: 0 },
+        errorSpecialities: null,
+      };
+    case "SPECIALITY_SEARCHER_RESP":
+      return {
+        ...state,
+        fetchingSpecialities: false,
+        fetchedSpecialities: true,
+        specialities: parseData(action.payload.data.specialities),
+        specialitiesPageInfo: pageInfo(action.payload.data.specialities),
+        errorSpecialities: formatGraphQLError(action.payload),
+      };
+      case "SPECIALITY_FETCH_ONE_ERR":
+        return {
+          ...state,
+          fetchingSpecialities: false,
+          fetchedSpecialities: false,
+          errorSpecialities: formatServerError(action.payload),
+        };
+      case "SPECIALITY_FETCH_ONE_REQ":
+        return {
+          ...state,
+          fetchingSpeciality: true,
+          fetchedSpeciality: false,
+          speciality: {},
+          errorSpeciality: null,
+        };
+      case "SPECIALITY_FETCH_ONE_RESP": {
+        const edges = action.payload?.data?.specialities?.edges || [];
+        const speciality = edges.length > 0 ? edges[0].node : null;
+        return {
+          ...state,
+          fetchingSpeciality: false,
+          fetchedSpeciality: true,
+          speciality,
+          errorSpeciality: formatGraphQLError(action.payload),
+        };
+      }
+    case "SPECIALITY_CLEAR":
+      return {
+        ...state,
+        fetchingSpeciality: false,
+        fetchedSpeciality: false,
+        speciality: {},
+        errorSpeciality: null,
+      };
+    case "SPECIALITY_MUTATION_REQ":
+      return dispatchMutationReq(state, action);
+    case "SPECIALITY_MUTATION_ERR":
+      return dispatchMutationErr(state, action);
+    case "SPECIALITY_UPDATE_MUTATION_RESP":
+      return dispatchMutationResp(state, "updateSpeciality" ,action);
+    case "SPECIALITY_MUTATION_RESP":
+      return dispatchMutationResp(state, "createSpeciality" ,action);
+    case "SPECIALITY_DELETE_SPECIALITY_RESP":
+      return dispatchMutationResp(state, "deleteSpecialities", action);
     case "CLAIM_CLAIM_ATTACHMENTS_REQ":
       return {
         ...state,
