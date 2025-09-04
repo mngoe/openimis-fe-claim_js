@@ -34,6 +34,7 @@ import PrescribersPage from "./pages/PrescribersPage";
 import StatusPicker from "./pickers/StatusPicker";
 import SpecialityPicker from "./pickers/SpecialityPicker";
 import PrescriberPicker from "./pickers/PrescriberPicker";
+import PrescriberEditPage from "./pages/PrescriberEditPage";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -43,6 +44,7 @@ const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
 const ROUTE_SPECIALITIES = "claim/specialities";
 const ROUTE_SPECIALITY_EDIT = "claim/specialities/speciality";
 const ROUTE_PRESCRIBERS = "claim/prescribers";
+const ROUTE_PRESCRIBER_EDIT = "claim/prescriberEdit"
 
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }],
@@ -144,6 +146,7 @@ const DEFAULT_CONFIG = {
     },
   ],
   "refs": [
+    { key: "claim.route.prescriberEdit", ref: ROUTE_PRESCRIBER_EDIT },
     { key: "claim.route.prescribers", ref: ROUTE_PRESCRIBERS },
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
     { key: "claim.route.claimEdit", ref: ROUTE_CLAIM_EDIT },
@@ -193,6 +196,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.YesNoPicker", ref: YesNoPicker}
   ],
   "core.Router": [
+    { path: ROUTE_PRESCRIBER_EDIT + "/:prescriber_uuid?", component: PrescriberEditPage },
     { path: ROUTE_PRESCRIBERS, component: PrescribersPage },
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
     { path: ROUTE_SPECIALITIES, component: SpecialitiesPage },

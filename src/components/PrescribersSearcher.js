@@ -113,17 +113,18 @@ class PrescribersSearcher extends Component {
   onDelete = (prescriber) => {
     let confirm = (e) =>
       this.props.coreConfirm(
-        formatMessage(this.props.intl, "medical", "deleteSpeciality.confirm.title"),
-        formatMessageWithValues(this.props.intl, "medical", "deletePrescriber.confirm.message", {
-          code: speciality.code,
-          speciality: speciality.speciality,
+        formatMessage(this.props.intl, "claim", "deletePrescriber.confirm.title"),
+        formatMessageWithValues(this.props.intl, "claim", "deletePrescriber.confirm.message", {
+          code: prescriber.code,
+          lastName: prescriber.lastName,
+          otherNames: prescriber.otherNames
         }),
       );
     let confirmedAction = () =>
       this.props.deletePrescriber(
         prescriber,
-        formatMessageWithValues(this.props.intl, "medical", "DeleteSpeciality.mutationLabel", {
-          code: speciality.code,
+        formatMessageWithValues(this.props.intl, "claim", "deletePrescriber.mutationLabel", {
+          code: prescriber.code,
         }),
       );
     this.setState({ confirmedAction }, confirm);

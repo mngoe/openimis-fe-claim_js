@@ -147,9 +147,6 @@ export function createOrUpdateSpeciality(speciality, clientMutationLabel) {
     clientMutationLabel,
   );
 
-  console.log("mutation", mutation);
-
-
   const requestedDateTime = new Date();
   speciality.clientMutationId = mutation.clientMutationId;
   return graphql(
@@ -188,6 +185,101 @@ export function clearSpeciality() {
   return { type: "SPECIALITY_CLEAR" };
 }
 
+export function clearPrescriber(){
+  return { type: "PRESCRIBER_CLEAR" };
+}
+
+export function fetchPrescriber(uuid) {
+  const query = `
+    query {
+      prescribers(uuid: "${uuid}") {
+        edges {
+          node {
+            uuid
+            code
+            lastName,
+            otherNames,
+            phone,
+            entryDate,
+            releaseDate,
+            validityTo,
+            validityFrom,
+            mainHealthFacility { uuid name code },
+            authorizedHealthFacilities { uuid name code },
+            speciality { uuid speciality code },
+            status { code status }
+          }
+        }
+      }
+    }
+  `;
+  return graphql(query , "PRESCRIBER_FETCH_ONE");
+}
+
+export function formatAuthorizedHealthFacilitiesUuids(healthFacilities) {
+  if (!healthFacilities || !Array.isArray(healthFacilities) || healthFacilities.length === 0) {
+    return "";
+  }
+
+  const uuids = healthFacilities
+    .map((hf) => {
+      if (!hf) return null;
+      if (typeof hf === "string") return hf;
+      if (hf.uuid) return hf.uuid;
+      return null;
+    })
+    .filter((uuid) => !!uuid);
+
+  if (uuids.length === 0) return "";
+
+  return `authorizedHealthFacilitiesUuids: [${uuids.map((u) => `"${u}"`).join(", ")}]`;
+}
+
+
+export function formatPrescriber(prescriber) {
+  if (!prescriber) return "";
+  return `
+    ${!!prescriber.uuid ? `uuid: "${prescriber.uuid}"` : ""}
+    ${!!prescriber.code ? `code: "${prescriber.code}"` : ""}
+    ${!!prescriber.lastName ? `lastName: "${formatGQLString(prescriber.lastName)}"` : ""}
+    ${!!prescriber.otherNames ? `otherNames: "${formatGQLString(prescriber.otherNames)}"` : ""}
+    ${!!prescriber.nin ? `nin: "${formatGQLString(prescriber.nin)}"` : ""}
+    ${!!prescriber.phone ? `phone: "${formatGQLString(prescriber.phone)}"` : ""}
+    ${!!prescriber.mainHealthFacility ? `mainHealthFacilityUuid: "${prescriber.mainHealthFacility.uuid}"` : ""}
+    ${!!prescriber.authorizedHealthFacilities ? formatAuthorizedHealthFacilitiesUuids(prescriber.authorizedHealthFacilities) : ""}
+    ${!!prescriber.speciality ? `specialityUuid: "${prescriber.speciality.uuid}"` : ""}
+    ${!!prescriber.status ? `statusId: ${prescriber.status}` : ""}
+    ${!!prescriber.entryDate ? `entryDate: "${prescriber.entryDate}"` : ""}
+    ${!!prescriber.releaseDate ? `releaseDate: "${prescriber.releaseDate}"` : ""}
+    ${!!prescriber.jsonExt ? `jsonExt: "${formatGQLString(prescriber.jsonExt)}"` : ""}
+  `;
+}
+export function createOrUpdatePrescriber(prescriber, clientMutationLabel) {
+  const mutationName = prescriber.uuid ? "updatePrescriber" : "createPrescriber";
+  const inputFields = formatPrescriber(prescriber);
+  
+  console.log("inputFields=",inputFields);
+
+  const mutation = formatMutation(
+    mutationName,
+    inputFields,
+    clientMutationLabel,
+  );
+
+  const requestedDateTime = new Date();
+  prescriber.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["PRESCRIBER_MUTATION_REQ", prescriber.uuid ? "PRESCRIBER_UPDATE_MUTATION_RESP":"PRESCRIBER_MUTATION_RESP", "PRESCRIBER_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      specialityUuid: prescriber.uuid
+    },
+  );
+}
+
 export function fetchPrescribers(filters) {
   const projections = [
     "uuid",
@@ -218,7 +310,7 @@ export function deletePrescriber(prescriber, clientMutationLabel){
   prescriber.clientMutationId = mutation.clientMutationId;
   return graphql(
     mutation.payload,
-    ["PRESCRIBER_MUTATION_REQ", "PRESCRIBER_DELETE_PRESCRIBER_RESP", "SPECIALITY_MUTATION_ERR"],
+    ["PRESCRIBER_MUTATION_REQ", "PRESCRIBER_DELETE_PRESCRIBER_RESP", "PRESCRIBER_MUTATION_ERR"],
     {
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,

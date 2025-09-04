@@ -10,6 +10,10 @@ import {
 
 function reducer(
   state = {
+    prescriber:{},
+    fetchingPrescriber:false,
+    fetchedPrescriber:false,
+    errorPrescriber:false,
     status:[],
     fetchingPrescriberStatus:false,
     fetchedPrescriberStatus:false,
@@ -73,6 +77,41 @@ function reducer(
   action,
 ) {
   switch (action.type) {
+    case "PRESCRIBER_MUTATION_REQ":
+      return dispatchMutationReq(state, action);
+    case "PRESCRIBER_MUTATION_ERR":
+      return dispatchMutationErr(state, action);
+    case "PRESCRIBER_UPDATE_MUTATION_RESP":
+      return dispatchMutationResp(state, "updatePrescriber" ,action);
+    case "PRESCRIBER_MUTATION_RESP":
+      return dispatchMutationResp(state, "createPrescriber" ,action);
+    case "PRESCRIBER_FETCH_ONE_ERR":
+      return {
+        ...state,
+        fetchingPrescriber: false,
+        fetchedPrescriber: false,
+        errorPrescriber: formatServerError(action.payload),
+      };
+    case "PRESCRIBER_FETCH_ONE_REQ":
+      return {
+        ...state,
+        fetchingPrescriber: true,
+        fetchedPrescriber: false,
+        prescriber: {},
+        errorPrescriber: null,
+      };
+    case "PRESCRIBER_FETCH_ONE_RESP": {
+      const edges = action.payload?.data?.prescribers?.edges || [];
+      console.log("edges",action.payload?.data);
+      const prescriber = edges.length > 0 ? edges[0].node : null;
+      return {
+        ...state,
+        fetchingPrescriber: false,
+        fetchedPrescriber: true,
+        prescriber,
+        errorSpeciality: formatGraphQLError(action.payload),
+      };
+    }
     case "PRESCRIBER_STATUS_REQ":
       return {
         ...state,
@@ -151,12 +190,6 @@ function reducer(
           errorSpeciality: formatGraphQLError(action.payload),
         };
       }
-    case "SPECIALITY_FETCH_ONE_ERR":
-      return {
-        ...state,
-        fetchingSpeciality: false,
-        errorSpeciality: formatServerError(action.payload),
-      };
     case "SPECIALITY_CLEAR":
       return {
         ...state,
