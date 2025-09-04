@@ -192,6 +192,7 @@ class ClaimMasterPanel extends FormPanel {
                   label={formatMessage(intl, "claim", "prescriber")}
                   value={edited.prescriber}
                   reset={reset}
+                  hf_uuid={edited.healthFacility?.uuid}
                   onChange={(v, s) => this.updateAttribute("prescriber", v)}
                   required
                 />

@@ -15,15 +15,20 @@ const PrescriberPicker = (props) => {
     filterSelectedOptions,
     placeholder,
     multiple,
+    hf_uuid = null,
   } = props;
 
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [searchString, setSearchString] = useState("");
+  const variables = { str: searchString };
+  if (hf_uuid && hf_uuid.trim() !== "") {
+    variables.hf = hf_uuid;
+  }
   const { data, isLoading, error } = useGraphqlQuery(
     `
-    query PrescriberPicker ($str: String) {
-        prescribers: prescribers(first: 20, str: $str) {
+    query PrescriberPicker ($str: String,$hf: String) {
+        prescribers: prescribers(first: 20, str: $str ,hf: $hf) {
         edges {
           node {
             uuid
@@ -36,7 +41,7 @@ const PrescriberPicker = (props) => {
       }
     }
   `,
-    { str: searchString },
+    variables,
     { skip: true },
   );
 

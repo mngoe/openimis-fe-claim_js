@@ -461,6 +461,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   let projections = [
     "uuid",
     "code",
+    "prescriber { code uuid lastName otherNames }",
     "dateFrom",
     "dateTo",
     "dateClaimed",
