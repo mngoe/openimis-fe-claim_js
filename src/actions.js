@@ -88,6 +88,238 @@ export function fetchClaimAttachments(claim) {
   return graphql(payload, "CLAIM_CLAIM_ATTACHMENTS");
 }
 
+export function fetchPrescriberStatus() {
+  const payload = formatQuery("statusOptions", null, ["code", "status", "altLanguage"]);
+  return graphql(payload, 'PRESCRIBER_STATUS');
+}
+
+export function fetchSpecialities(filters) {
+  const projections = [
+    "id",
+    "uuid",
+    "code",
+    "speciality",
+    "altLanguage",
+    "validityFrom",
+    "validityTo",
+  ];
+  const payload = formatPageQueryWithCount("specialities", filters, projections);
+  return graphql(payload, "SPECIALITY_SEARCHER");
+}
+
+export function fetchSpeciality(uuid) {
+  console.log("fetchSpeciality", uuid);
+  const query = `
+    query {
+      specialities(uuid: "${uuid}") {
+        edges {
+          node {
+            uuid
+            code
+            speciality
+            altLanguage
+            validityFrom
+            validityTo
+          }
+        }
+      }
+    }
+  `;
+  return graphql(query , "SPECIALITY_FETCH_ONE");
+}
+
+export function formatSpeciality(speciality) {
+  return `
+    ${!!speciality.uuid ? `uuid: "${speciality.uuid}"` : ""}
+    ${!!speciality.code ? `code: "${formatGQLString(speciality.code)}"` : ""}
+    ${!!speciality.speciality ? `speciality: "${formatGQLString(speciality.speciality)}"` : ""}
+    ${!!speciality.altLanguage ? `altLanguage: "${formatGQLString(speciality.altLanguage)}"` : ""}
+  `;
+}
+
+export function createOrUpdateSpeciality(speciality, clientMutationLabel) {
+  const mutationName = speciality.uuid ? "updateSpeciality" : "createSpeciality";
+  const inputFields = formatSpeciality(speciality);
+  
+  const mutation = formatMutation(
+    mutationName,
+    inputFields,
+    clientMutationLabel,
+  );
+
+  const requestedDateTime = new Date();
+  speciality.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["SPECIALITY_MUTATION_REQ", speciality.uuid ? "SPECIALITY_UPDATE_MUTATION_RESP":"SPECIALITY_MUTATION_RESP", "SPECIALITY_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      specialityUuid: speciality.uuid
+    },
+  );
+}
+
+export function deleteSpeciality(speciality, clientMutationLabel) {
+  const mutation = formatMutation(
+    "deleteSpecialities",
+    `uuids: ["${speciality.uuid}"]`,
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  speciality.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["SPECIALITY_MUTATION_REQ", "SPECIALITY_DELETE_SPECIALITY_RESP", "SPECIALITY_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      specialityUuid: speciality.uuid
+    },
+  );
+}
+
+export function clearSpeciality() {
+  return { type: "SPECIALITY_CLEAR" };
+}
+
+export function clearPrescriber(){
+  return { type: "PRESCRIBER_CLEAR" };
+}
+
+export function fetchPrescriber(uuid) {
+  const query = `
+    query {
+      prescribers(uuid: "${uuid}") {
+        edges {
+          node {
+            uuid
+            code
+            lastName,
+            otherNames,
+            phone,
+            entryDate,
+            releaseDate,
+            validityTo,
+            validityFrom,
+            mainHealthFacility { uuid name code },
+            authorizedHealthFacilities { uuid name code },
+            speciality { uuid speciality code },
+            status { code status }
+          }
+        }
+      }
+    }
+  `;
+  return graphql(query , "PRESCRIBER_FETCH_ONE");
+}
+
+export function formatAuthorizedHealthFacilitiesUuids(healthFacilities) {
+  if (!healthFacilities || !Array.isArray(healthFacilities) || healthFacilities.length === 0) {
+    return "";
+  }
+
+  const uuids = healthFacilities
+    .map((hf) => {
+      if (!hf) return null;
+      if (typeof hf === "string") return hf;
+      if (hf.uuid) return hf.uuid;
+      return null;
+    })
+    .filter((uuid) => !!uuid);
+
+  if (uuids.length === 0) return "";
+
+  return `authorizedHealthFacilitiesUuids: [${uuids.map((u) => `"${u}"`).join(", ")}]`;
+}
+
+
+export function formatPrescriber(prescriber) {
+  if (!prescriber) return "";
+  return `
+    ${!!prescriber.uuid ? `uuid: "${prescriber.uuid}"` : ""}
+    ${!!prescriber.code ? `code: "${prescriber.code}"` : ""}
+    ${!!prescriber.lastName ? `lastName: "${formatGQLString(prescriber.lastName)}"` : ""}
+    ${!!prescriber.otherNames ? `otherNames: "${formatGQLString(prescriber.otherNames)}"` : ""}
+    ${!!prescriber.nin ? `nin: "${formatGQLString(prescriber.nin)}"` : ""}
+    ${!!prescriber.phone ? `phone: "${formatGQLString(prescriber.phone)}"` : ""}
+    ${!!prescriber.mainHealthFacility ? `mainHealthFacilityUuid: "${prescriber.mainHealthFacility.uuid}"` : ""}
+    ${!!prescriber.authorizedHealthFacilities ? formatAuthorizedHealthFacilitiesUuids(prescriber.authorizedHealthFacilities) : ""}
+    ${!!prescriber.speciality ? `specialityUuid: "${prescriber.speciality.uuid}"` : ""}
+    ${!!prescriber.status ? `statusId: ${prescriber.status}` : ""}
+    ${!!prescriber.entryDate ? `entryDate: "${prescriber.entryDate}"` : ""}
+    ${!!prescriber.releaseDate ? `releaseDate: "${prescriber.releaseDate}"` : ""}
+    ${!!prescriber.jsonExt ? `jsonExt: "${formatGQLString(prescriber.jsonExt)}"` : ""}
+  `;
+}
+export function createOrUpdatePrescriber(prescriber, clientMutationLabel) {
+  const mutationName = prescriber.uuid ? "updatePrescriber" : "createPrescriber";
+  const inputFields = formatPrescriber(prescriber);
+  
+  console.log("inputFields=",inputFields);
+
+  const mutation = formatMutation(
+    mutationName,
+    inputFields,
+    clientMutationLabel,
+  );
+
+  const requestedDateTime = new Date();
+  prescriber.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["PRESCRIBER_MUTATION_REQ", prescriber.uuid ? "PRESCRIBER_UPDATE_MUTATION_RESP":"PRESCRIBER_MUTATION_RESP", "PRESCRIBER_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      specialityUuid: prescriber.uuid
+    },
+  );
+}
+
+export function fetchPrescribers(filters) {
+  const projections = [
+    "uuid",
+    "code",
+    "nin",
+    "lastName",
+    "otherNames",
+    "phone",
+    "entryDate",
+    "releaseDate",
+    "validityTo",
+    "validityFrom",
+    "mainHealthFacility { uuid name code }",
+    "speciality { uuid speciality code }",
+    "status { code status }"
+  ];
+  const payload = formatPageQueryWithCount("prescribers", filters, projections);
+  return graphql(payload, "PRESCRIBERS_SEARCHER");
+}
+
+export function deletePrescriber(prescriber, clientMutationLabel){
+  const mutation = formatMutation(
+    "deletePrescribers",
+    `uuids: ["${prescriber.uuid}"]`,
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  prescriber.clientMutationId = mutation.clientMutationId;
+  return graphql(
+    mutation.payload,
+    ["PRESCRIBER_MUTATION_REQ", "PRESCRIBER_DELETE_PRESCRIBER_RESP", "PRESCRIBER_MUTATION_ERR"],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+      prescriberUuid: prescriber.uuid
+    },
+  );
+}
+
 export function formatAttachment(attach) {
   return `
     ${!!attach.id ? `id: "${decodeId(attach.id)}"` : ""}
@@ -159,6 +391,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "approved",
     "status",
     "restoreId",
+    "prescriber { uuid code lastName otherNames }",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "preAuthorization"
@@ -257,6 +490,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     autogenerate: ${!!isAutogenerateEnabled}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
+    prescriberUuid: "${claim.prescriber.uuid}"
     dateFrom: "${claim.dateFrom}"
     ${claim.dateTo ? `dateTo: "${claim.dateTo}"` : ""}
     icdId: ${decodeId(claim.icd.id)}
@@ -319,6 +553,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   let projections = [
     "uuid",
     "code",
+    "prescriber { code uuid lastName otherNames }",
     "dateFrom",
     "dateTo",
     "dateClaimed",
