@@ -139,7 +139,9 @@ class PrescriberForm extends Component {
       <div className={readOnly ? classes.lockedPage : null}>
         <Helmet
           title={formatMessageWithValues(this.props.intl, "claim", "prescriber.edit.page.title", {
-            name: this.state.prescriber.lastName,
+            lastName: this.state.prescriber.lastName,
+            code: this.state.prescriber.code,
+            otherNames: this.state.prescriber.code,
           })}
         />
         <ProgressOrError progress={fetchingPrescriber} error={errorPrescriber} />

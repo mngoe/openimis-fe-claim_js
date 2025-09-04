@@ -124,7 +124,7 @@ class PrescribersSearcher extends Component {
       this.props.deletePrescriber(
         prescriber,
         formatMessageWithValues(this.props.intl, "claim", "deletePrescriber.mutationLabel", {
-          code: prescriber.code,
+          code: prescriber.code || prescriber.uuid,
         }),
       );
     this.setState({ confirmedAction }, confirm);
@@ -160,7 +160,7 @@ class PrescribersSearcher extends Component {
           fetchedItems={fetchedPrescribers}
           errorItems={errorPrescribers}
           FilterPane={PrescriberFilter}
-          tableTitle={formatMessageWithValues(intl, "medical", "specialities", { count })}
+          tableTitle={formatMessageWithValues(intl, "claim", "prescribers", { count })}
           headers={this.headers}
           itemFormatters={this.itemFormatters}
           rowDisabled={this.rowDisabled}
