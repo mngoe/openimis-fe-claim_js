@@ -28,13 +28,7 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import {
-  CLAIM_DETAIL_REJECTED_STATUS,
-  DEFAULT,
-  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
-  IN_PATIENT_STRING,
-  REFERRAL,
-} from "../constants";
+import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING, REFERRAL } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -81,14 +75,14 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
-    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
-    this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
+    this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
-      "claimForm.ComplexProductWithoutPriceImpact",
-      true
+      "attachmentRequiredForReferral",
+      false,
     );
+    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
   }
 
   shouldValidate = (inputValue) => {
@@ -148,12 +142,11 @@ class ClaimMasterPanel extends FormPanel {
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     if (edited.services) {
-      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0);
+      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-
     let ro = readOnly || !!forReview || !!forFeedback;
     return (
       <Grid container>
@@ -184,6 +177,7 @@ class ClaimMasterPanel extends FormPanel {
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
                 readOnly={ro}
                 required={true}
+                autoFocus={true}
               />
             </Grid>
           }
@@ -222,6 +216,7 @@ class ClaimMasterPanel extends FormPanel {
                 readOnly={ro}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
+                required={this.fields.visitDateTo == "M"}
               />
             </Grid>
           }
@@ -311,12 +306,12 @@ class ClaimMasterPanel extends FormPanel {
                    pubRef="location.HealthFacilityReferPicker"
                    label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
                    value={
-                     (edited.visitType === this.claimTypeReferSymbol ? edited.referFrom : edited.referTo) ??
+                     (edited.visitType === this.claimTypeReferSymbol ? !!edited.referFrom ? edited.referFrom : edited.referHF : edited.referTo) ??
                      this.EMPTY_STRING
                    }
                    reset={reset}
                    readOnly={ro}
-                   required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
+                   required={this.fields.referalHF == "M" && edited.visitType === this.claimTypeReferSymbol}
                    filterOptions={(options) =>
                      options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
                    }
@@ -335,7 +330,6 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
                 action={claimCodeValidationCheck}
-                autoFocus={true}
                 clearAction={claimCodeValidationClear}
                 codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
@@ -363,28 +357,25 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        {this.fields.guaranteeNo !== "N" && (
-          <ControlledField
-            module="claim"
-            id="Claim.guarantee"
-            field={
-              <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
-                <TextInput
-                  module="claim"
-                  label="guaranteeId"
-                  value={edited.guaranteeId}
-                  reset={reset}
-                  onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                  readOnly={ro}
-                  inputProps={{
-                    "maxLength": this.guaranteeIdMaxLength,
-                  }}
-                  required={this.fields.guaranteeNo === "M"}
-                />
-              </Grid>
-            }
-          />
-        )}
+        <ControlledField
+          module="claim"
+          id="Claim.guarantee"
+          field={
+            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
+              <TextInput
+                module="claim"
+                label="guaranteeId"
+                value={edited.guaranteeId}
+                reset={reset}
+                onChange={(v) => this.updateAttribute("guaranteeId", v)}
+                readOnly={ro}
+                inputProps={{
+                  "maxLength": this.guaranteeIdMaxLength,
+                }}
+              />
+            </Grid>
+          }
+        />
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -449,7 +440,6 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Fragment>
         )}
-
         {!forFeedback && (
           <Fragment>
             {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
@@ -526,6 +516,7 @@ class ClaimMasterPanel extends FormPanel {
             )}
           </Fragment>
         )}
+
         {this.showPatientCondition && (
           <Grid item xs={2} className={classes.item}>
             <PublishedComponent

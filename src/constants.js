@@ -19,10 +19,6 @@ export const IN_PATIENT_STRING = "IPD";
 export const OUT_PATIENT_STRING = "OPD";
 export const CARE_TYPE_STATUS = [IN_PATIENT_STRING, OUT_PATIENT_STRING];
 
-export const SERVICE_TYPE_PP_S = "S";
-export const SERVICE_TYPE_PP_P = "P";
-export const SERVICE_TYPE_PP_F = "F";
-
 export const URL_TYPE_STRING = "URL";
 export const FILE_TYPE_STRING = "FILE";
 export const ATTACHMENT_TYPE_STATUS = [URL_TYPE_STRING, FILE_TYPE_STRING];
@@ -43,7 +39,7 @@ export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
 
-export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = "status_Gt: 2";
+export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = 'status_Gt: 2';
 
 export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4;
 export const POLICY_ACTIVE_STATUS = 2;
@@ -72,15 +68,15 @@ export const PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTERS = [
   PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTER_1,
   PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTER_2,
   PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTER_3,
-  PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTER_4,
+  PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTER_4
 ];
-export const STORAGE_KEY_CLAIM_HEALTH_FACILITY = "claimHealthFacility";
-export const STORAGE_KEY_ADMIN = "admin";
-
-export const YES_NO = ["true", "false"];
-
+export const STORAGE_KEY_CLAIM_HEALTH_FACILITY = 'claimHealthFacility';
+export const STORAGE_KEY_ADMIN = 'admin';
+export const REFERRAL = "R";
 export const HEALED = "H";
 export const DECEASED = "D";
 export const ESCAPED = "E";
-export const REFERRAL = "R";
-export const PATIENT_CONDITION = [HEALED, DECEASED, ESCAPED, REFERRAL];
+export const TREATMENT = "T";
+export const PATIENT_CONDITION = [HEALED, DECEASED, ESCAPED, REFERRAL, TREATMENT];
+export const YES_NO = ["true", "false"];
+export const SERVICE_TYPE_PP_S = "S"

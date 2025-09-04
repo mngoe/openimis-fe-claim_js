@@ -27,6 +27,7 @@ import {
   fetchMutation,
   parseData,
   coreAlert,
+
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -119,6 +120,7 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
     this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
       "attachmentRequiredForReferral",
@@ -275,7 +277,7 @@ class ClaimForm extends Component {
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     if (
-      !!this.isReferHFMandatory &&
+      this.fields.referalHF == "M" &&
       this.state.claim.visitType === this.claimTypeReferSymbol &&
       !this.state.claim.referHF
     )
@@ -285,6 +287,9 @@ class ClaimForm extends Component {
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
+    if (this.fields.visitDateTo == "M"){
+      if( !this.state.claim.dateTo) return false;
+    }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
@@ -305,8 +310,6 @@ class ClaimForm extends Component {
         }
       }
 
-    } else {
-      return false;
     }
 
 
@@ -364,6 +367,15 @@ class ClaimForm extends Component {
         }
       }
       if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+    }
+    if(this.state.claim.attachments && this.state.claim.attachments.length > 0){
+      // Vérification que chaque pièce jointe a un type prédéfini
+      const attachmentsWithoutType = this.state.claim.attachments.filter(
+        attachment => !attachment.predefinedType
+      );
+      if(attachmentsWithoutType.length > 0) {
+        return false;
+      }
     }
     return true;
   };

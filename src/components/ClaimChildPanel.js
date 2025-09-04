@@ -22,7 +22,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
+import { DEFAULT, SERVICE_TYPE_PP_S } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
@@ -59,11 +59,7 @@ class ClaimChildPanel extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.ComplexProductWithoutPriceImpact",
-      true,
-    );
+    this.isDecimalPrice = props.modulesManager.getConf("fe-claim","isDecimalPrice", false);
   }
 
   initData = () => {
@@ -72,10 +68,11 @@ class ClaimChildPanel extends Component {
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
-    }
-    if(!!this.props.edited[`services`]){
-      data.forEach((d) => !!d.services && (d.subServices = d.services));
-      data.forEach((d) => !!d.items && (d.subItems = d.items));
+
+      if(!!this.props.edited[`services`]){
+        data.forEach((d) => !!d.services && (d.subServices = d.services));
+        data.forEach((d) => !!d.items && (d.subItems = d.items));
+      }
     }
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
@@ -126,35 +123,35 @@ class ClaimChildPanel extends Component {
   };
 
   _price = (v) => {
-    let id = decodeId(v.id)
-    return this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][id] || v.price;
-}
+    const id = decodeId(v.id);
+    const { type, edited, [`${type}sPricelists`]: pricelists } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (pricelists[pricelistId]?.[id] || v.price);
+  }
 
   _code = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.code
-    );
+    const id = decodeId(v.id);
+    const { type, edited, [`${type}sPricelists`]: pricelists } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (pricelists[pricelistId]?.[id] || v.code);
   };
 
   _serviceSet = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.serviceserviceSet
-    );
+    const id = decodeId(v.id);
+    const { servicesPricelists, edited, type } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (servicesPricelists[pricelistId]?.[id] || v.serviceserviceSet);
   };
 
   _serviceLinked = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.servicesLinked
-    );
+    const id = decodeId(v.id);
+    const { servicesPricelists, edited, type } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (servicesPricelists[pricelistId]?.[id] || v.servicesLinked);
   };
 
   _onChangeItem = (idx, attr, v) => {
@@ -181,7 +178,7 @@ class ClaimChildPanel extends Component {
 
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    if (!this.ComplexProductWithoutPriceImpact) {
+    if (!this.state.data[idx].manualPrice) {
       this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     }
     let data = [...this.state.data];
@@ -312,7 +309,7 @@ class ClaimChildPanel extends Component {
       );
     }
     const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0),
+      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
       2,
     );
     const totalApproved = _.round(
@@ -367,7 +364,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
-          readOnly={!!forReview || readOnly || true}
+          readOnly={!!forReview || readOnly || (type === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S)}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
           error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
@@ -377,8 +374,9 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={this.state.data[idx].service?.priceAsked}
+          value={i[type] === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S ? this.state.data[idx].service?.priceAsked : i.priceAsked}
           decimal={true}
+          allowDecimals= {this.isDecimalPrice}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -423,8 +421,8 @@ class ClaimChildPanel extends Component {
               readOnly={!!forReview || readOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact) {
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                if (!i.service.manualPrice) {
+                  if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -432,7 +430,7 @@ class ClaimChildPanel extends Component {
                     }
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                  } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
@@ -480,8 +478,8 @@ class ClaimChildPanel extends Component {
                 readOnly={!!forReview || readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact){
-                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                  if (!i.service.manualPrice) {
+                    if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                           totalApproved: u.qtyProvided,
@@ -489,7 +487,7 @@ class ClaimChildPanel extends Component {
                       }
                       u.qtyDisplayed = v;
                       u.qtyAsked = v;
-                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                    } else if (i.service.packagetype == "P") {
                       if (v == u.qtyProvided) {
                         u.qtyAsked = u.qtyProvided;
                         u.qtyDisplayed = u.qtyProvided;
@@ -498,7 +496,7 @@ class ClaimChildPanel extends Component {
                         u.qtyAsked = 0;
                       }
                     }
-                  }else{
+                  } else {
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   }
@@ -541,8 +539,8 @@ class ClaimChildPanel extends Component {
               readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact){
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                if (!i.service.manualPrice){
+                  if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -550,7 +548,7 @@ class ClaimChildPanel extends Component {
                     }
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                  } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
                       u.qtyDisplayed = u.qtyProvided;
                       u.qtyAsked = u.qtyProvided;
@@ -598,8 +596,8 @@ class ClaimChildPanel extends Component {
                 readOnly={readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact){
-                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                  if (!i.service.manualPrice){
+                    if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                           totalApproved: u.qtyProvided,
@@ -607,7 +605,7 @@ class ClaimChildPanel extends Component {
                       }
                       u.qtyDisplayed = v;
                       u.qtyAsked = v;
-                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                    } else if (i.service.packagetype == "P") {
                       if (v == u.qtyProvided) {
                         u.qtyAsked = u.qtyProvided;
                         u.qtyDisplayed = u.qtyProvided;
@@ -708,7 +706,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={subServicesItemsFormatters}
+          subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}

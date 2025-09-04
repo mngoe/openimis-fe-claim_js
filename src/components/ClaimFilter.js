@@ -289,7 +289,7 @@ class Details extends Component {
   };
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
+    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, } = this.props;
     return (
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
@@ -593,23 +593,24 @@ class Details extends Component {
           <PublishedComponent
             pubRef="claim.CareTypePicker"
             name="careType"
-            value={(filters["careType"] && filters["careType"]["value"]) || null}
-            onChange={(value) => {
+            value={filters["careType"] && filters["careType"]["value"] || null}
+            onChange={(value) =>{
               onChangeFilters([
                 {
                   id: "careType",
                   value: value,
                   filter: !!value ? `careType: "${value}"` : null,
                 },
-              ]);
-            }}
+              ])
+            }
+            }
           />
         </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
-            value={(filters["attachmentStatus"] && filters["attachmentStatus"]["value"]) || null}
+            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"] || null}
             onChange={(value) =>
               onChangeFilters([
                 {
@@ -648,7 +649,7 @@ class Details extends Component {
                   control={
                     <Checkbox
                       color="primary"
-                      checked={(filters["showRestored"] && filters["showRestored"]["value"]) || false}
+                      checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
                       onChange={(event) =>
                         onChangeFilters([
                           {
@@ -666,6 +667,8 @@ class Details extends Component {
             }
           />
         </Grid>
+
+
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}
