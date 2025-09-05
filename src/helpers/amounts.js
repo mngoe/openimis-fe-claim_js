@@ -1,3 +1,5 @@
+import { SERVICE_TYPE_PP_S } from "../constants";
+
 export function claimedAmount(r) {
   let totalPrice = 0;
   if(Object?.keys(r)?.length!=0){
@@ -7,7 +9,7 @@ export function claimedAmount(r) {
       if(r?.service){
         if(Object?.keys(r.service)?.length!=0){
           let currentPackageType = r.service.packagetype;
-          if(currentPackageType=="S"){
+          if(currentPackageType === SERVICE_TYPE_PP_S){
             totalPrice += (r?.qtyProvided * parseFloat(r.priceAsked));
           }else{
             if(r?.service.manualPrice){
