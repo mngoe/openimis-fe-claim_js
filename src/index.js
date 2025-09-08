@@ -8,6 +8,8 @@ import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import CareTypePicker from "./pickers/CareTypePicker"
+import SpecialitiesPage from "./pages/SpecialitiesPage";
+import SpecialityEditPage from "./pages/SpecialityEditPage";
 import AttachmentGeneralTypePicker from "./pickers/AttachmentGeneralTypePicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
 import ServiceFilterPicker from "./pickers/MedicalServiceFilterPicker";
@@ -30,12 +32,21 @@ import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import YesNoPicker from "./pickers/YesNoPicker";
+import PrescribersPage from "./pages/PrescribersPage";
+import StatusPicker from "./pickers/StatusPicker";
+import SpecialityPicker from "./pickers/SpecialityPicker";
+import PrescriberPicker from "./pickers/PrescriberPicker";
+import PrescriberEditPage from "./pages/PrescriberEditPage";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
 const ROUTE_CLAIM_REVIEW = "claim/reviews/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
+const ROUTE_SPECIALITIES = "claim/specialities";
+const ROUTE_SPECIALITY_EDIT = "claim/specialities/speciality";
+const ROUTE_PRESCRIBERS = "claim/prescribers";
+const ROUTE_PRESCRIBER_EDIT = "claim/prescriberEdit"
 
 const DEFAULT_CONFIG = {
   "translations": [
@@ -141,12 +152,18 @@ const DEFAULT_CONFIG = {
     },
   ],
   "refs": [
+    { key: "claim.route.prescriberEdit", ref: ROUTE_PRESCRIBER_EDIT },
+    { key: "claim.route.prescribers", ref: ROUTE_PRESCRIBERS },
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
     { key: "claim.route.claimEdit", ref: ROUTE_CLAIM_EDIT },
+    { key: "claim.route.specialities", ref: ROUTE_SPECIALITIES },
+    { key: "claim.route.specialityEdit", ref: ROUTE_SPECIALITY_EDIT },
     { key: "claim.route.reviews", ref: ROUTE_REVIEWS },
     { key: "claim.route.feedback", ref: ROUTE_CLAIM_FEEDBACK },
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
+    { key: "claim.StatusPicker", ref: StatusPicker },
+    { key: "claim.SpecialityPicker", ref: SpecialityPicker },
     {
       key: "claim.ClaimAdminPicker.projection",
       ref: [
@@ -165,6 +182,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.CareTypePicker", ref: CareTypePicker},
     { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
+    { key: "claim.PrescriberPicker", ref: PrescriberPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
     { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
     { key: "claim.ClaimAttachmentPredefinedTypePicker", ref: ClaimAttachmentPredefinedTypePicker },
@@ -184,7 +202,11 @@ const DEFAULT_CONFIG = {
     { key: "claim.YesNoPicker", ref: YesNoPicker}
   ],
   "core.Router": [
+    { path: ROUTE_PRESCRIBER_EDIT + "/:prescriber_uuid?", component: PrescriberEditPage },
+    { path: ROUTE_PRESCRIBERS, component: PrescribersPage },
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
+    { path: ROUTE_SPECIALITIES, component: SpecialitiesPage },
+    { path: ROUTE_SPECIALITY_EDIT + "/:speciality_uuid?", component: SpecialityEditPage },
     { path: ROUTE_CLAIM_EDIT + "/:claim_uuid?", component: EditPage }, // ? = optional (needed to route new claims)
     { path: ROUTE_REVIEWS, component: ReviewsPage },
     { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid", component: ReviewPage },

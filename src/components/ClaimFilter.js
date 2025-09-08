@@ -91,6 +91,20 @@ class Head extends Component {
     }
   };
 
+  _prescriberFilter = (v) => {
+    if (!!v) {
+      return {
+        id: "prescriber",
+        value: v,
+        filter: `prescriber_Uuid: "${v.uuid}"`,
+      };
+    } else {
+      return { id: "prescriber", value: null, filter: null };
+    }
+  };
+
+  
+
   _claimBatchRunFilter = (v) => {
     if (!!v) {
       return {
@@ -157,7 +171,15 @@ class Head extends Component {
     }));
     this.props.selectClaimAdmin(v);
   };
-
+  _onChangePrescriber = (v, s) => {
+    this.props.onChangeFilters([
+      this._prescriberFilter(v),
+    ]);
+    this.setState((state) => ({
+      reset: this.state.reset + 1,
+    }));
+  };
+  
   render() {
     const { classes, filters, onChangeFilters, userHealthFacilityId } = this.props;
     return (
@@ -222,6 +244,22 @@ class Head extends Component {
                 onChange={this._onChangeClaimAdmin}
                 region={this._filterValue("region")}
                 district={this._filterValue("district")}
+                required={true}
+              />
+            </Grid>
+          }
+        />
+        <ControlledField
+          module="claim"
+          id="ClaimFilter.PrescriberPicker"
+          field={
+            <Grid item xs={2} className={classes.item}>
+              <PublishedComponent
+                pubRef="claim.PrescriberPicker"
+                value={this._filterValue("prescriber")}
+                withNull={true}
+                reset={this.state.reset}
+                onChange={this._onChangePrescriber}
                 required={true}
               />
             </Grid>
