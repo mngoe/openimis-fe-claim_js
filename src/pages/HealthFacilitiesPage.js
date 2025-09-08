@@ -18,8 +18,8 @@ import {
   clearCurrentPaginationPage,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
+import { submit, del, selectHealthFacility, submitAll, fetchUserRoles } from "../actions";
+import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME, ROLE_REJECT } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
@@ -58,7 +58,7 @@ class HealthFacilitiesPage extends Component {
     !!selection &&
     selection.length &&
     selection.filter((s) => s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
-      selection.length;
+    selection.length;
 
   canSubmitAll = (selection) => !selection || selection.length == 0;
 
@@ -125,6 +125,13 @@ class HealthFacilitiesPage extends Component {
     this.setState({ confirmedAction }, confirm);
   };
 
+  rejectSelected = (selection) => {
+
+  }
+
+  canRejectSelected = (selection) =>
+    !!selection && selection.length && selection.filter((s) => s.status === 2).length === selection.length;
+
   onDoubleClick = (c, newTab = false) => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [c.uuid], newTab);
   };
@@ -142,6 +149,7 @@ class HealthFacilitiesPage extends Component {
   componentDidMount = () => {
     const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+    this.props.fetchUserRoles();
   };
 
   componentWillUnmount = () => {
@@ -154,7 +162,7 @@ class HealthFacilitiesPage extends Component {
   };
 
   render() {
-    const { intl, classes, rights, generatingPrint } = this.props;
+    const { intl, classes, rights, generatingPrint, userRoles } = this.props;
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
@@ -171,6 +179,17 @@ class HealthFacilitiesPage extends Component {
         enabled: this.canDeleteSelected,
         action: this.deleteSelected,
       });
+    }
+    if(!!userRoles && userRoles.length > 0){
+      for (let i = 0; i < userRoles.length; i++) {
+        if (userRoles[i].name == ROLE_REJECT) {
+          actions.push({
+            label: "claimSummaries.rejectSelected",
+            enabled: this.canRejectSelected,
+            action: this.rejectSelected,
+          });
+        }
+      }
     }
     return (
       <div className={classes.page}>
@@ -206,6 +225,7 @@ class HealthFacilitiesPage extends Component {
 
 const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
+  userRoles: state.claim.userRoles,
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
@@ -227,6 +247,7 @@ const mapDispatchToProps = (dispatch) => {
       submitAll,
       del,
       clearCurrentPaginationPage,
+      fetchUserRoles
     },
     dispatch,
   );

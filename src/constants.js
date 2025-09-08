@@ -44,6 +44,7 @@ export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
+export const ROLE_REJECT = "District Manager";
 
 export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = 'status_Gt: 2';
 
