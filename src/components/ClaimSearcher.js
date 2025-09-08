@@ -381,7 +381,7 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={this.isDefaultFetchClaimActivated == false  && searchInitiated ? this.fetch : this.isDefaultFetchClaimActivated == true ? this.fetch : () => {}}
+          fetch={this.isDefaultFetchClaimActivated == false && searchInitiated ? this.fetch : this.isDefaultFetchClaimActivated == true ? this.fetch : () => { }}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
