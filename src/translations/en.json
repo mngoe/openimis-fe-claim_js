@@ -310,6 +310,8 @@
   "claim.edit.items.pricevaluated": "Valuated",
   "claim.edit.services.pricevaluated": "Valuated",
   "claim.ClaimPercentageReferralsReport.region": "Region",
+  "claim.PrescriberReport.hf": "Health Facilities",
+  "claim.PrescriberReport.prescriber": "Prescriber",
   "claim.ClaimPercentageReferralsReport.district": "District",
   "claim.ClaimPercentageReferralsReport.dateStart": "Date From",
   "claim.ClaimPercentageReferralsReport.dateEnd": "Date To",

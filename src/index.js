@@ -35,6 +35,7 @@ import StatusPicker from "./pickers/StatusPicker";
 import SpecialityPicker from "./pickers/SpecialityPicker";
 import PrescriberPicker from "./pickers/PrescriberPicker";
 import PrescriberEditPage from "./pages/PrescriberEditPage";
+import PrescriberReport from "./reports/PrescriberReport";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -58,6 +59,19 @@ const DEFAULT_CONFIG = {
         const params = {}
         params.region_id = decodeId(values.region.id);
         params.district_id = decodeId(values.district.id);
+        params.date_start = values.dateStart;
+        params.date_end = values.dateEnd;
+        return params;
+      },
+    },
+    {
+      key: "prescripteur_reporting",
+      component: PrescriberReport,
+      isValid:   (values) => true /*values.prescriber_uuid && values.requested_hf_id && values.dateStart && values.dateEnd*/,
+      getParams: (values) => {
+        const params = {}
+        params.prescriber_uuid = values.prescriber.uuid;
+        params.requested_hf_id = decodeId(values.hf.id);
         params.date_start = values.dateStart;
         params.date_end = values.dateEnd;
         return params;
