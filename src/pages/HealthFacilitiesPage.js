@@ -163,7 +163,6 @@ class HealthFacilitiesPage extends Component {
 
   render() {
     const { intl, classes, rights, generatingPrint, userRoles } = this.props;
-    console.log(userRoles)
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
