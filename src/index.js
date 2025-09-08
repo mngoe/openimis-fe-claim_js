@@ -67,7 +67,7 @@ const DEFAULT_CONFIG = {
     {
       key: "prescripteur_reporting",
       component: PrescriberReport,
-      isValid:   (values) => true /*values.prescriber_uuid && values.requested_hf_id && values.dateStart && values.dateEnd*/,
+      isValid:   (values) => values.prescriber_uuid && values.requested_hf_id && values.dateStart && values.dateEnd,
       getParams: (values) => {
         const params = {}
         params.prescriber_uuid = values.prescriber.uuid;
