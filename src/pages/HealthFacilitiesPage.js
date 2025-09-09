@@ -16,6 +16,7 @@ import {
   coreConfirm,
   Helmet,
   clearCurrentPaginationPage,
+  PublishedComponent
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import { submit, del, selectHealthFacility, submitAll, fetchUserRoles } from "../actions";
@@ -42,6 +43,8 @@ class HealthFacilitiesPage extends Component {
     this.state = {
       defaultFilters,
       confirmedAction: null,
+      showRejectReasonDialog: false,
+      rejectedClaimsSelected: []
     };
   }
 
@@ -126,7 +129,7 @@ class HealthFacilitiesPage extends Component {
   };
 
   rejectSelected = (selection) => {
-
+    this.setState({ showRejectReasonDialog: true, rejectedClaimsSelected: selection })
   }
 
   canRejectSelected = (selection) =>
@@ -180,7 +183,7 @@ class HealthFacilitiesPage extends Component {
         action: this.deleteSelected,
       });
     }
-    if(!!userRoles && userRoles.length > 0){
+    if (!!userRoles && userRoles.length > 0) {
       for (let i = 0; i < userRoles.length; i++) {
         if (userRoles[i].name == ROLE_REJECT) {
           actions.push({
@@ -194,6 +197,12 @@ class HealthFacilitiesPage extends Component {
     return (
       <div className={classes.page}>
         <Helmet title={formatMessage(this.props.intl, "location", "location.healthFacilities.page.title")} />
+        <PublishedComponent
+          pubRef="claim.RejectionReasonDialog"
+          close={(e) => this.setState({ rejectedClaimsSelected: null, showRejectReasonDialog: false })}
+          open={this.state.showRejectReasonDialog}
+          rejetedClaims={this.state.rejectedClaimsSelected}
+        />
         <ClaimSearcher
           defaultFilters={this.state.defaultFilters}
           cacheFiltersKey="claimHealthFacilitiesPageFiltersCache"

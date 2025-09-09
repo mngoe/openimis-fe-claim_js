@@ -383,5 +383,8 @@
   "claim.rejectionCode.17": "17",
   "claim.rejectionCode.18": "18",
   "claim.rejectionCode.19": "19",
-  "claim.rejectionCode.null": ""
+  "claim.rejectionCode.null": "",
+  "claim.rejectReason": "Reject reason",
+  "claim.validate": "Validate",
+  "claim.cancel": "Cancel"
 }
