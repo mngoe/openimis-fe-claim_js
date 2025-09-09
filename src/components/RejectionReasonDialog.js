@@ -5,7 +5,6 @@ import { injectIntl } from "react-intl";
 import {
   Dialog,
   DialogTitle,
-  Divider,
   Button,
   DialogActions,
   DialogContent,
@@ -18,8 +17,10 @@ import {
   TextInput,
   journalize,
   coreConfirm,
-  coreAlert
+  coreAlert,
+  formatMessage
 } from "@openimis/fe-core";
+import { reject } from "../actions"
 
 const styles = (theme) => ({
   dialogTitle: theme.dialog.title,
@@ -32,14 +33,20 @@ class RejectionReasonDialog extends Component {
     reason: null
   }
 
-  validate = (reason) => {
-
+  validate = () => {
+    const { rejectedClaims } = this.props;
+    var rejectReason = this.state.reason;
+    this.setState(
+      { open: false, reason: null }, 
+      (e) => !!this.props.reject && this.props.reject(rejectedClaims, rejectReason, formatMessage(this.props.intl, "claim", "RejectClaim.mutationLabel"))
+    );
+    this.props.close();
   }
 
   onClose = () => this.setState({ open: false, reason: null }, (e) => !!this.props.close && this.props.close());
 
   render() {
-    const { classes, rejectedClaims, readOnly = false, open } = this.props;
+    const { classes, readOnly = false, open } = this.props;
     const { reset, reason } = this.state
     return (
       <Dialog
@@ -49,7 +56,8 @@ class RejectionReasonDialog extends Component {
           style: {
             width: "600px",
             maxWidth: "none",
-            padding: "5px"
+            paddingLeft: "10px",
+            paddingRight: "10px"
           },
         }}
       >
@@ -63,7 +71,7 @@ class RejectionReasonDialog extends Component {
               value={reason}
               reset={reset}
               multiline
-              rows={3}
+              rows={4}
               variant="outlined"
               onChange={(v) => this.setState({ reason: v })}
               readOnly={readOnly}
@@ -88,7 +96,6 @@ class RejectionReasonDialog extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   submittingMutation: state.claim.submittingMutation,
   mutation: state.claim.mutation
 });
@@ -99,6 +106,7 @@ const mapDispatchToProps = (dispatch) => {
       coreConfirm,
       journalize,
       coreAlert,
+      reject
     },
     dispatch,
   );
