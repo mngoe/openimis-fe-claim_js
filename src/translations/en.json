@@ -72,7 +72,7 @@
   "claim.feedbackSex.null": "",
   "claim.feedbackSex.Masculin": "Male",
   "claim.feedbackSex.Feminin": "Female",
-  "claim.feedbackAge":"Age",
+  "claim.feedbackAge": "Age",
   "claim.reviewStatus": "Review Status",
   "claim.reviewStatus.null": "Any",
   "claim.reviewStatus.1": "Idle",
@@ -382,5 +382,10 @@
   "claim.rejectionCode.17": "17",
   "claim.rejectionCode.18": "18",
   "claim.rejectionCode.19": "19",
-  "claim.rejectionCode.null": " "
+  "claim.rejectionCode.null": " ",
+  "claimSummaries.rejectSelected": "Reject Selected",
+  "claim.rejectReason": "Reject reason",
+  "claim.validate": "Validate",
+  "claim.cancel": "Cancel",
+  "claim.RejectClaim.mutationLabel": "Reject claims"
 }

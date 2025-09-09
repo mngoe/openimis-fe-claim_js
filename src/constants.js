@@ -44,6 +44,7 @@ export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
+export const ROLE_REJECT = "District Manager";
 
 export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = 'status_Gt: 2';
 
@@ -79,4 +80,4 @@ export const PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTERS = [
 export const STORAGE_KEY_CLAIM_HEALTH_FACILITY = 'claimHealthFacility';
 export const STORAGE_KEY_ADMIN = 'admin';
 
-export const REJECTION_CODE = [-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
+export const REJECTION_CODE = [-1, -2,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];

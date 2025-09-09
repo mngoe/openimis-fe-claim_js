@@ -55,7 +55,12 @@ function reducer(
     userClaimAdminInfos: null,
     fetchingUserClaimAdminInfos: false,
     fetchedUserClaimAdminInfos: false,
-    errorUserClaimAdminInfos: null
+    errorUserClaimAdminInfos: null,
+    errorUserClaimAdminInfos: null,
+    userRoles: null,
+    fetchingUserRoles: false,
+    fetchedUserRoles: false,
+    errorUserRoles: null
   },
   action,
 ) {
@@ -369,6 +374,29 @@ function reducer(
         fetchedUserClaimAdminInfos: false,
         errorUserClaimAdminInfos: formatGraphQLError(action.payload)
       }
+    case "USER_ROLES_REQ":
+      return {
+        ...state,
+        fetchingUserRoles: true,
+        fetchedUserRoles: false,
+        userRoles: null,
+        errorUserRoles: null
+      }
+    case "USER_ROLES_RESP":
+      return {
+        ...state,
+        fetchingUserRoles: false,
+        fetchedUserRoles: true,
+        userRoles: action.payload.data.user.iUser.roles,
+        errorUserRoles: formatGraphQLError(action.payload)
+      }
+    case "USER_ROLES_ERR":
+      return {
+        ...state,
+        fetchingUserRoles: false,
+        fetchedUserRoles: false,
+        errorUserRoles: formatGraphQLError(action.payload)
+      }
     case "CLAIM_MUTATION_REQ":
       return dispatchMutationReq(state, action);
     case "CLAIM_MUTATION_ERR":
@@ -421,6 +449,8 @@ function reducer(
         ...state,
         generating: false,
       };
+    case "CLAIM_REJECT_CLAIMS_RESP":
+      return dispatchMutationResp(state, "rejectClaims", action);
     default:
       return state;
   }
