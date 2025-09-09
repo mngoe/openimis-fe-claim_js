@@ -386,5 +386,6 @@
   "claim.rejectionCode.null": "",
   "claim.rejectReason": "Reject reason",
   "claim.validate": "Validate",
-  "claim.cancel": "Cancel"
+  "claim.cancel": "Cancel",
+  "claim.RejectClaim.mutationLabel": "Reject claims"
 }

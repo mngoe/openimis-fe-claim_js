@@ -166,6 +166,7 @@ class HealthFacilitiesPage extends Component {
 
   render() {
     const { intl, classes, rights, generatingPrint, userRoles } = this.props;
+    const { showRejectReasonDialog, rejectedClaimsSelected } = this.state;
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
@@ -200,8 +201,8 @@ class HealthFacilitiesPage extends Component {
         <PublishedComponent
           pubRef="claim.RejectionReasonDialog"
           close={(e) => this.setState({ rejectedClaimsSelected: null, showRejectReasonDialog: false })}
-          open={this.state.showRejectReasonDialog}
-          rejetedClaims={this.state.rejectedClaimsSelected}
+          open={showRejectReasonDialog}
+          rejectedClaims={rejectedClaimsSelected}
         />
         <ClaimSearcher
           defaultFilters={this.state.defaultFilters}

@@ -448,6 +448,8 @@ function reducer(
         ...state,
         generating: false,
       };
+    case "CLAIM_REJECT_CLAIMS_RESP":
+      return dispatchMutationResp(state, "rejectClaims", action);
     default:
       return state;
   }
