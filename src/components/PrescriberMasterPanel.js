@@ -17,6 +17,7 @@ const styles = (theme) => ({
 class PrescriberMasterPanel extends FormPanel {
   render() {
     const { classes, edited, readOnly = false } = this.props;
+    console.log(edited);
     return (
       <Grid container>
         <ControlledField
@@ -57,6 +58,7 @@ class PrescriberMasterPanel extends FormPanel {
                     pubRef="location.HealthFacilityPicker"
                     value={edited.mainHealthFacility}
                     region={edited.region}
+                    required={true}
                     district={edited.district}
                     onChange={(v) => this.updateAttribute("mainHealthFacility",v)}
                 />
@@ -69,7 +71,7 @@ class PrescriberMasterPanel extends FormPanel {
             id="prescriber.code"
             field={
                 <Grid item xs={3} className={classes.item}>
-                    <NumberInput
+                    <TextInput
                         module="claim"
                         label="prescriber.code"
                         name="code"
@@ -94,6 +96,7 @@ class PrescriberMasterPanel extends FormPanel {
                 module="claim"
                 label="prescriber.lastName"
                 name="lastName"
+                required={true}
                 value={edited.lastName}
                 onChange={(v) => this.updateAttribute("lastName",v) }
             />
@@ -107,6 +110,7 @@ class PrescriberMasterPanel extends FormPanel {
                 <Grid item xs={3} className={classes.item}>
                     <TextInput
                     module="claim"
+                    required={true}
                     label="prescriber.otherNames"
                     name="otherNames"
                     value={edited.otherNames}
@@ -123,10 +127,27 @@ class PrescriberMasterPanel extends FormPanel {
                 <Grid item xs={3} className={classes.item}>
                     <NumberInput
                     module="claim"
+                    required={true}
                     label="prescriber.nin"
                     name="nin"
                     value={edited.nin}
                     onChange={(v) => this.updateAttribute("nin",v) }
+                    />
+                </Grid>
+            }
+        />
+        <ControlledField
+            module="claim"
+            id="prescrber.phone"
+            field={
+                <Grid item xs={3} className={classes.item}>
+                    <TextInput
+                    module="claim"
+                    required={true}
+                    label="prescriber.phone"
+                    name="phone"
+                    value={edited.phone}
+                    onChange={(v) => this.updateAttribute("phone",v) }
                     />
                 </Grid>
             }
@@ -138,6 +159,7 @@ class PrescriberMasterPanel extends FormPanel {
             field={
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
+                    required={true}
                     pubRef="claim.StatusPicker"
                     value={edited.status}
                     onChange={(v) => this.updateAttribute("status",v)}
@@ -152,6 +174,7 @@ class PrescriberMasterPanel extends FormPanel {
             field={
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
+                    required={true}
                     pubRef="claim.SpecialityPicker"
                     value={edited.speciality}
                     onChange={(v) => this.updateAttribute("speciality",v)}
@@ -169,6 +192,7 @@ class PrescriberMasterPanel extends FormPanel {
                         pubRef="core.DatePicker"
                         value={edited.entryDate}
                         module="claim"
+                        required={true}
                         label="prescriber.entryDate"
                         onChange={(v) => this.updateAttribute("entryDate",v) }
                     />

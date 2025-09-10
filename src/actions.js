@@ -198,6 +198,7 @@ export function fetchPrescriber(uuid) {
             uuid
             code
             lastName,
+            nin,
             otherNames,
             phone,
             entryDate,
@@ -207,7 +208,7 @@ export function fetchPrescriber(uuid) {
             mainHealthFacility { uuid name code },
             authorizedHealthFacilities { uuid name code },
             speciality { uuid speciality code },
-            status { code status }
+            status { code status altLanguage }
           }
         }
       }
@@ -248,7 +249,7 @@ export function formatPrescriber(prescriber) {
     ${!!prescriber.mainHealthFacility ? `mainHealthFacilityUuid: "${prescriber.mainHealthFacility.uuid}"` : ""}
     ${!!prescriber.authorizedHealthFacilities ? formatAuthorizedHealthFacilitiesUuids(prescriber.authorizedHealthFacilities) : ""}
     ${!!prescriber.speciality ? `specialityUuid: "${prescriber.speciality.uuid}"` : ""}
-    ${!!prescriber.status ? `statusId: ${prescriber.status}` : ""}
+    ${!!prescriber.status ? `statusId: ${prescriber.status.code}` : ""}
     ${!!prescriber.entryDate ? `entryDate: "${prescriber.entryDate}"` : ""}
     ${!!prescriber.releaseDate ? `releaseDate: "${prescriber.releaseDate}"` : ""}
     ${!!prescriber.jsonExt ? `jsonExt: "${formatGQLString(prescriber.jsonExt)}"` : ""}

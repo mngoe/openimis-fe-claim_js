@@ -58,7 +58,7 @@ class PrescriberFilter extends Component {
       return {
         id: "status",
         value: v,
-        filter: `status_Code: ${v}`,
+        filter: `status_Code: ${v.code}`,
       };
     } else {
       return { id: "status", value: null, filter: null };
@@ -206,7 +206,7 @@ class PrescriberFilter extends Component {
           }
         />
         <Grid item xs={3} className={classes.item}>
-          <NumberInput
+          <TextInput
             module="claim"
             label="prescriber.code"
             name="code"
@@ -270,6 +270,24 @@ class PrescriberFilter extends Component {
                     id: "nin",
                     value: v,
                     filter: !!v ? `nin_Istartswith: "${v}"` : null,
+                  },
+                ]);
+              }
+            }
+          />
+        </Grid>
+        <Grid item xs={3} className={classes.item}>
+          <TextInput
+            module="claim"
+            label="prescriber.phone"
+            name="phone"
+            value={this._filterTextFieldValue("phone")}
+            onChange={(v) => {
+                this.debouncedOnChangeFilter([
+                  {
+                    id: "phone",
+                    value: v,
+                    filter: !!v ? `phone_Istartswith: "${v}"` : null,
                   },
                 ]);
               }

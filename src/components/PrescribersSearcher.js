@@ -54,6 +54,7 @@ class PrescribersSearcher extends Component {
   headers = () => {
     let headers = [
       "prescriber.code",
+      "prescriber.phone",
       "prescriber.nin",
       "prescriber.lastName",
       "prescriber.otherNames",
@@ -72,6 +73,7 @@ class PrescribersSearcher extends Component {
 
   sorts = () => [
     ["code", true],
+    ["phone",false]
     ["nin", true],
     ["last_name", true],
     ["other_names", true],
@@ -86,6 +88,7 @@ class PrescribersSearcher extends Component {
   itemFormatters = () => {
     let formatters = [
       (prescriber) => prescriber.code,
+      (prescriber) => prescriber.phone,
       (prescriber) => prescriber.nin,
       (prescriber) => prescriber.lastName,
       (prescriber) => prescriber.otherNames,
