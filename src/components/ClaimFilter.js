@@ -260,7 +260,6 @@ class Head extends Component {
                 withNull={true}
                 reset={this.state.reset}
                 onChange={this._onChangePrescriber}
-                required={true}
               />
             </Grid>
           }

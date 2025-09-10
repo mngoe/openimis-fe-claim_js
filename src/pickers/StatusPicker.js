@@ -33,10 +33,12 @@ class StatusPicker extends Component {
       required = false,
       withNull = true,
     } = this.props;
-    
+  
+    console.log("PROPS",value)
+
     const options = !!status ? 
       status.map((v) => ({
-        value: v.code, 
+        value: v, 
         label: v.status,
         status: v
       })) : [];
