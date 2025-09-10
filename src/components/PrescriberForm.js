@@ -103,6 +103,10 @@ class PrescriberForm extends Component {
   };
 
   canSave = () => {
+    if (!this.state.prescriber.code||!this.state.prescriber.lastName||!this.state.prescriber.otherNames||!this.state.prescriber.nin||
+      !this.state.prescriber.status||!this.state.prescriber.speciality||!this.state.prescriber.mainHealthFacility||
+      !this.state.prescriber.entryDate) return false;
+    
     return true;
   };
 
