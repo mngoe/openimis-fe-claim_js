@@ -361,6 +361,7 @@
   "claim.programPicker.placeholder": "program",
   "claim.edit.multipleCsPolicies": "An error occured with this insuree. Please contact the administrator",
   "claim.rejectionCode": "Rejection code",
+  "claim.rejectionCode.-2": "-2",
   "claim.rejectionCode.-1": "-1",
   "claim.rejectionCode.0": "0",
   "claim.rejectionCode.1": "1",
