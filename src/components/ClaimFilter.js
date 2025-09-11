@@ -48,7 +48,6 @@ class Head extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    document.addEventListener('keydown', this.props.handleEnter)
     if(!prevProps.userClaimAdminInfos && !!this.props.userClaimAdminInfos){
       this.props.selectClaimAdmin(this.props.userClaimAdminInfos)
     }

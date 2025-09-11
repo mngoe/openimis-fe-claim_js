@@ -16,10 +16,11 @@ import {
   coreConfirm,
   Helmet,
   clearCurrentPaginationPage,
+  PublishedComponent
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
+import { submit, del, selectHealthFacility, submitAll, fetchUserRoles } from "../actions";
+import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME, ROLE_REJECT } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
@@ -42,6 +43,8 @@ class HealthFacilitiesPage extends Component {
     this.state = {
       defaultFilters,
       confirmedAction: null,
+      showRejectReasonDialog: false,
+      rejectedClaimsSelected: []
     };
   }
 
@@ -125,6 +128,13 @@ class HealthFacilitiesPage extends Component {
     this.setState({ confirmedAction }, confirm);
   };
 
+  canRejectSelected = (selection) =>
+    !!selection && selection.length && selection.filter((s) => s.status === 2).length === selection.length;
+
+  rejectSelected = (selection) => {
+    this.setState({ showRejectReasonDialog: true, rejectedClaimsSelected: selection });
+  }
+
   onDoubleClick = (c, newTab = false) => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [c.uuid], newTab);
   };
@@ -142,6 +152,7 @@ class HealthFacilitiesPage extends Component {
   componentDidMount = () => {
     const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+    this.props.fetchUserRoles();
   };
 
   componentWillUnmount = () => {
@@ -154,7 +165,8 @@ class HealthFacilitiesPage extends Component {
   };
 
   render() {
-    const { intl, classes, rights, generatingPrint } = this.props;
+    const { intl, classes, rights, generatingPrint, userRoles } = this.props;
+    const { showRejectReasonDialog, rejectedClaimsSelected } = this.state;
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
@@ -172,9 +184,26 @@ class HealthFacilitiesPage extends Component {
         action: this.deleteSelected,
       });
     }
+    if(!!userRoles && userRoles.length > 0){
+      for (let i = 0; i < userRoles.length; i++) {
+        if (userRoles[i].name == ROLE_REJECT) {
+          actions.push({
+            label: "claimSummaries.rejectSelected",
+            enabled: this.canRejectSelected,
+            action: this.rejectSelected,
+          });
+        }
+      }
+    }
     return (
       <div className={classes.page}>
         <Helmet title={formatMessage(this.props.intl, "location", "location.healthFacilities.page.title")} />
+        <PublishedComponent
+          pubRef="claim.RejectionReasonDialog"
+          close={(e) => this.setState({ rejectedClaimsSelected: null, showRejectReasonDialog: false })}
+          open={showRejectReasonDialog}
+          rejectedClaims={rejectedClaimsSelected}
+        />
         <ClaimSearcher
           defaultFilters={this.state.defaultFilters}
           cacheFiltersKey="claimHealthFacilitiesPageFiltersCache"
@@ -215,6 +244,7 @@ const mapStateToProps = (state) => ({
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
+  userRoles: state.claim.userRoles
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -227,6 +257,7 @@ const mapDispatchToProps = (dispatch) => {
       submitAll,
       del,
       clearCurrentPaginationPage,
+      fetchUserRoles
     },
     dispatch,
   );
