@@ -337,7 +337,6 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
                 action={claimCodeValidationCheck}
-                autoFocus={true}
                 clearAction={claimCodeValidationClear}
                 codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
