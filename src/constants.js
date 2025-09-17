@@ -81,3 +81,4 @@ export const STORAGE_KEY_CLAIM_HEALTH_FACILITY = 'claimHealthFacility';
 export const STORAGE_KEY_ADMIN = 'admin';
 
 export const REJECTION_CODE = _.range(-2, 19);
+export const STATUS_DONE = 8;
