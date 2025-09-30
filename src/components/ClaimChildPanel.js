@@ -59,6 +59,7 @@ class ClaimChildPanel extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
+    this.isDecimalPrice = props.modulesManager.getConf("fe-claim","isDecimalPrice", false);
   }
 
   initData = () => {
@@ -122,35 +123,35 @@ class ClaimChildPanel extends Component {
   };
 
   _price = (v) => {
-    let id = decodeId(v.id)
-    return this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][id] || v.price;
-}
+    const id = decodeId(v.id);
+    const { type, edited, [`${type}sPricelists`]: pricelists } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (pricelists[pricelistId]?.[id] || v.price);
+  }
 
   _code = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.code
-    );
+    const id = decodeId(v.id);
+    const { type, edited, [`${type}sPricelists`]: pricelists } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (pricelists[pricelistId]?.[id] || v.code);
   };
 
   _serviceSet = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.serviceserviceSet
-    );
+    const id = decodeId(v.id);
+    const { servicesPricelists, edited, type } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (servicesPricelists[pricelistId]?.[id] || v.serviceserviceSet);
   };
 
   _serviceLinked = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.servicesLinked
-    );
+    const id = decodeId(v.id);
+    const { servicesPricelists, edited, type } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (servicesPricelists[pricelistId]?.[id] || v.servicesLinked);
   };
 
   _onChangeItem = (idx, attr, v) => {
@@ -375,6 +376,7 @@ class ClaimChildPanel extends Component {
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
           value={i[type] === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S ? this.state.data[idx].service?.priceAsked : i.priceAsked}
           decimal={true}
+          allowDecimals= {this.isDecimalPrice}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),

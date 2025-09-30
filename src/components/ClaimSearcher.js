@@ -174,6 +174,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.code",
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
+      "claimSummaries.prescriber",
       "claimSummaries.claimedDate",
       "claimSummaries.processedDate",
       "claimSummaries.feedbackStatus",
@@ -243,6 +244,7 @@ class ClaimSearcher extends Component {
         />
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
+      (c) => `${c.prescriber?.code || ""} ${c.prescriber?.lastName || ""} ${c.prescriber?.otherNames || ""}`,
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
       (c) => this.feedbackColFormatter(c),
