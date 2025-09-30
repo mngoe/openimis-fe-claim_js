@@ -38,7 +38,6 @@ import SpecialityPicker from "./pickers/SpecialityPicker";
 import PrescriberPicker from "./pickers/PrescriberPicker";
 import PrescriberEditPage from "./pages/PrescriberEditPage";
 import PrescriberReport from "./reports/PrescriberReport";
-
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
