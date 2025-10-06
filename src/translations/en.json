@@ -146,6 +146,7 @@
   "claim.edit.items.totalApproved": "Total Approved: {totalApproved}",
   "claim.edit.items.item": "Item",
   "claim.edit.items.quantity": "Quantity",
+  "claim.edit.items.qtyAdjusted": "Qty Adjusted",
   "claim.edit.items.price": "Price",
   "claim.edit.items.explanation": "Explanation",
   "claim.edit.items.justification": "Justification",

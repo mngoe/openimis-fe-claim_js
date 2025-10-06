@@ -430,7 +430,6 @@ class ClaimForm extends Component {
   };
 
   _deliverReview = (claim) => {
-    console.log(claim);
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
 
@@ -485,8 +484,6 @@ class ClaimForm extends Component {
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
-
-    console.log(rights);
 
     var actions = [];
     if (!!claim_uuid) {

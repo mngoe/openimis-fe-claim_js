@@ -194,7 +194,12 @@ class ClaimMasterPanel extends FormPanel {
           parseFloat(currentItem.priceApproved) ||
           parseFloat(currentItem.priceAsked) ||
           0;
-        const priceTimesQty = price * (parseInt(currentItem?.qtyApproved) || parseInt(currentItem?.qtyProvided) || 0);
+        const priceTimesQty = price * (
+          parseInt(currentItem?.qtyAdjusted) || 
+          parseInt(currentItem?.qtyDisplayed) || 
+          parseInt(currentItem?.qtyApproved) || 
+          parseInt(currentItem?.qtyProvided) || 0
+        );
         return total + priceTimesQty;
       }, 0);
     };

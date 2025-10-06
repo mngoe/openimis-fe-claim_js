@@ -364,8 +364,7 @@ class ClaimChildPanel extends Component {
     let subServiceHeaders = [
       `medical.service.code`,
       `medical.service.name`,
-      `edit.${type}s.quantity`,
-      `claim.edit.items.appPrice`,
+      `edit.${type}s.quantity`
     ];
 
     let filterItemsOptions = (options) => {
@@ -475,6 +474,19 @@ class ClaimChildPanel extends Component {
               }
             />
           </TableCell>
+          {(!!forReview || edited.status !== 2) && (
+            <TableCell>
+              <NumberInput
+                readOnly={readOnly}
+                value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                onChange={(v) => {
+                  u.qtyAdjusted = v;
+                  this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
+                }}
+                displayZero={true}
+              />
+            </TableCell>
+          )}
           <TableCell>
             <AmountInput
               readOnly={true}
@@ -527,6 +539,18 @@ class ClaimChildPanel extends Component {
                 }
               />
             </TableCell>
+            {(!!forReview || edited.status !== 2) && (
+              <TableCell>
+                <NumberInput
+                  readOnly={readOnly}
+                  value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed? u.qtyDisplayed : "0"}
+                  onChange={(v) => {
+                    u.qtyAdjusted = v;
+                    this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
+                  }}
+                />
+              </TableCell>
+            )}
             <TableCell>
               <AmountInput
                 readOnly={true}
@@ -700,6 +724,7 @@ class ClaimChildPanel extends Component {
     }
     if (!!forReview || edited.status !== 2) {
       headers.push(`edit.${type}s.status`, `edit.${type}s.rejectionReason`);
+      subServiceHeaders.push(`edit.items.qtyAdjusted`,`edit.items.appPrice`)
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
@@ -713,6 +738,8 @@ class ClaimChildPanel extends Component {
         ),
         (i, idx) => this.formatRejectedReason(i, idx),
       );
+    } else {
+      subServiceHeaders.push(`edit.items.appPrice`)
     }
     let header = formatMessage(intl, "claim", `edit.${this.props.type}s.title`);
     if (fetchingPricelist) {
@@ -726,7 +753,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={!!forReview || isRestored ? subServicesItemsFormattersReview : subServicesItemsFormatters}
+          subServicesItemsFormatters={subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
