@@ -177,10 +177,29 @@ class ClaimMasterPanel extends FormPanel {
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
                 readOnly={ro}
                 required={true}
+                autoFocus={true}
               />
             </Grid>
           }
         />
+        <ControlledField
+            module="claim"
+            id="ClaimFilter.PrescriberPicker"
+            field={
+              <Grid item xs={3} className={classes.item}>
+                <PublishedComponent
+                  pubRef="claim.PrescriberPicker"
+                  name="prescriber"
+                  label={formatMessage(intl, "claim", "prescriber")}
+                  value={edited.prescriber}
+                  reset={reset}
+                  hf_uuid={edited.healthFacility?.uuid}
+                  onChange={(v, s) => this.updateAttribute("prescriber", v)}
+                  required
+                />
+              </Grid>
+            }
+          />
         <ControlledField
           module="claim"
           id="Claim.visitDateFrom"
@@ -329,7 +348,6 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
                 action={claimCodeValidationCheck}
-                autoFocus={true}
                 clearAction={claimCodeValidationClear}
                 codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
