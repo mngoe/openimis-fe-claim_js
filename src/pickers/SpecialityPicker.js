@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useModulesManager, useTranslations, Autocomplete, useGraphqlQuery } from "@openimis/fe-core";
-import _debounce from "lodash/debounce";
 
 const SpecialityPicker = (props) => {
   const {
@@ -18,8 +17,9 @@ const SpecialityPicker = (props) => {
   } = props;
 
   const modulesManager = useModulesManager();
-  const { formatMessage } = useTranslations("claim", modulesManager);
+  const { formatMessage } = useTranslations("location", modulesManager);
   const [searchString, setSearchString] = useState("");
+
   const { data, isLoading, error } = useGraphqlQuery(
     `
     query SpecialityPicker ($str: String) {
@@ -38,15 +38,15 @@ const SpecialityPicker = (props) => {
     { skip: true },
   );
 
-  const specialityLabel= (option)=>{
-    return option.code+" "+option.speciality;
-  }
+  const specialityLabel = (option) => {
+    if (!option) return "";
+    return `${option?.code} - ${option?.speciality}`;
+  };
 
   return (
     <Autocomplete
       multiple={multiple}
       required={required}
-      placeholder={placeholder ?? formatMessage("specialityPicker.placeholder")}
       label={label ?? formatMessage("specialityPicker.label")}
       error={error}
       withLabel={withLabel}
@@ -54,7 +54,7 @@ const SpecialityPicker = (props) => {
       readOnly={readOnly}
       options={data?.specialities?.edges.map((edge) => edge.node) ?? []}
       isLoading={isLoading}
-      value={value}
+      value={value ?? (multiple ? [] : null)}  
       getOptionLabel={specialityLabel}
       onChange={(option) => onChange(option, specialityLabel(option))}
       filterOptions={filterOptions}
