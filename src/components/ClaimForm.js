@@ -13,6 +13,7 @@ import AttachIcon from "@material-ui/icons/AttachFile";
 import RestorePageIcon from "@material-ui/icons/RestorePage";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import CachedIcon from "@material-ui/icons/Cached";
+import ClaimHistoryPanel from "./ClaimHistoryPanel";
 
 import {
   Contributions,
@@ -574,37 +575,45 @@ class ClaimForm extends Component {
       onEditedChanged: this.onEditedChanged,
     };
     return (
-      <div className={readOnly ? classes.lockedPage : null}>
-        <Helmet
-          title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
-            code: this.state.claim?.code,
-          })}
-        />
-        <ProgressOrError progress={fetchingClaim} error={errorClaim} />
-        {(!!fetchedClaim || !claim_uuid) && (
-          <Fragment>
-            <PublishedComponent
-              pubRef="claim.AttachmentsDialog"
-              readOnly={!rights.includes(RIGHT_ADD) || readOnly}
-              claim={this.state.attachmentsClaim}
-              close={(e) => this.setState({ attachmentsClaim: null })}
-              onUpdated={() => this.setState({ forcedDirty: true })}
-            />
-            <Form
-              module="claim"
-              title="edit.title"
-              titleParams={{ code: this.state.claim.code }}
-              HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram ==  this.NAME_PROGRAM.Chèque_Sante ) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
-              openDirty={save || forReview}
-              additionalTooltips={tooltips}
-              resetServices={this.state.resetServices}
-              changeProgram= {this.changeProgram}
-              {...editingProps}
-            />
-            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
-          </Fragment>
-        )}
+      <div>
+        <div className={readOnly ? classes.lockedPage : null}>
+          <Helmet
+            title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
+              code: this.state.claim?.code,
+            })}
+          />
+          <ProgressOrError progress={fetchingClaim} error={errorClaim} />
+          {(!!fetchedClaim || !claim_uuid) && (
+            <Fragment>
+              <PublishedComponent
+                pubRef="claim.AttachmentsDialog"
+                readOnly={!rights.includes(RIGHT_ADD) || readOnly}
+                claim={this.state.attachmentsClaim}
+                close={(e) => this.setState({ attachmentsClaim: null })}
+                onUpdated={() => this.setState({ forcedDirty: true })}
+              />
+              <Form
+                module="claim"
+                title="edit.title"
+                titleParams={{ code: this.state.claim.code }}
+                HeadPanel={ClaimMasterPanel}
+                Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram ==  this.NAME_PROGRAM.Chèque_Sante ) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+                openDirty={save || forReview}
+                additionalTooltips={tooltips}
+                resetServices={this.state.resetServices}
+                changeProgram= {this.changeProgram}
+                {...editingProps}
+              />
+              <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
+            </Fragment>
+          )}
+        </div>
+        <div>
+          <ClaimHistoryPanel
+            claim={this.state.claim}
+            claimUuid={claim_uuid}
+          />
+        </div>
       </div>
     );
   }

@@ -785,3 +785,28 @@ export function fetchUserRoles() {
   );
   return graphql(payload, "USER_ROLES");
 }
+
+export function fetchClaimHistory(claimUuid) {
+  return graphqlWithVariables(
+    `
+    query ($claimUuid: String!) {
+      claimHistory(claimUuid: $claimUuid) {
+        uuid
+        validityTo
+        code
+        jsonExt
+        dateClaimed
+        dateProcessed
+        feedbackStatus
+        reviewStatus
+        claimed
+        approved
+        status
+        restoreId
+      }
+    }
+    `,
+    { claimUuid },
+    "CLAIM_HISTORY_FETCH",
+  );
+}

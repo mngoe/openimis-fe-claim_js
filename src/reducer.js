@@ -59,7 +59,11 @@ function reducer(
     userRoles: null,
     fetchingUserRoles: false,
     fetchedUserRoles: false,
-    errorUserRoles: null
+    errorUserRoles: null,
+    fetchingHistory: false,
+    fetchedHistory: false,
+    errorHistory: null,
+    history: null,
   },
   action,
 ) {
@@ -450,6 +454,28 @@ function reducer(
       };
     case "CLAIM_REJECT_CLAIMS_RESP":
       return dispatchMutationResp(state, "rejectClaims", action);
+      case "CLAIM_HISTORY_FETCH_REQ":
+        return {
+          ...state,
+          fetchingHistory: true,
+          fetchedHistory: false,
+          errorHistory: null,
+          history: null,
+        };
+    case "CLAIM_HISTORY_FETCH_RESP":
+      return {
+        ...state,
+        fetchingHistory: false,
+        fetchedHistory: true,
+        history: parseData(action.payload.data.claimHistory),
+        pageInfo: null,
+      };
+    case "CLAIM_HISTORY_FETCH_ERR":
+      return {
+        ...state,
+        fetchingHistory: false,
+        errorHistory: formatGraphQLError(action.payload),
+      };
     default:
       return state;
   }
