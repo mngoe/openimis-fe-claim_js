@@ -89,7 +89,6 @@ const DEFAULT_CONFIG = {
             .filter(hf => hf?.id) // Filtrer les valeurs nulles
             .map(hf => decodeId(hf.id));
         }      
-        console.log(params);
         return params;
       },
     },
