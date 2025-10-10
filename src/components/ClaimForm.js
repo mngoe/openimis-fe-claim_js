@@ -284,6 +284,7 @@ class ClaimForm extends Component {
       return false;
     if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
     if (!this.state.claim.insuree) return false;
+    if (!this.state.claim.prescriber) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
