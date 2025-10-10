@@ -389,5 +389,15 @@
   "claim.rejectReason": "Reject reason",
   "claim.validate": "Validate",
   "claim.cancel": "Cancel",
-  "claim.RejectClaim.mutationLabel": "Reject claims"
+  "claim.RejectClaim.mutationLabel": "Reject claims",
+  "claim.ClaimHistoryModal.title": "History of Claim {code}",
+  "claimHistory.code": "Code",
+  "claimHistory.dateClaimed": "Date Claimed",
+  "claimHistory.dateProcessed": "Date Processed",
+  "claimHistory.feedbackStatus": "Feedback Status",
+  "claimHistory.reviewStatus": "Review Status",
+  "claimHistory.claimed": "Claimed",
+  "claimHistory.approved": "Approved",
+  "claimHistory.status": "Status",
+  "claimHistory.restoreId": "Restore ID"
 }
