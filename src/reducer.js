@@ -468,13 +468,13 @@ function reducer(
         fetchingHistory: false,
         fetchedHistory: true,
         history: parseData(action.payload.data.claimHistory),
-        pageInfo: null,
+        pageInfo: pageInfo(action.payload.data.claimHistory.pageInfo),
       };
     case "CLAIM_HISTORY_FETCH_ERR":
       return {
         ...state,
         fetchingHistory: false,
-        errorHistory: formatGraphQLError(action.payload),
+        errorHistory: formatGraphQLError(action.payload.data.errors),
       };
     default:
       return state;

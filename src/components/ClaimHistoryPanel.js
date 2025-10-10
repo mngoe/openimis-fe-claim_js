@@ -74,10 +74,8 @@ const ClaimHistoryPanel = ({ claim, claimUuid, onViewVersion, classes }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
-    if (expanded && claimUuid && !history) {
-      dispatch(fetchClaimHistory(claimUuid));
-    }
-  }, [expanded, claimUuid, dispatch, history]);
+    dispatch(fetchClaimHistory(claimUuid));
+  }, [claimUuid, dispatch]);
 
   const handleChange = (event, isExpanded) => {
     setExpanded(isExpanded);
@@ -99,11 +97,11 @@ const ClaimHistoryPanel = ({ claim, claimUuid, onViewVersion, classes }) => {
     (claim) => claim.code || '—',
     (claim) => formatDateFromISO(claim.dateClaimed) || '—',
     (claim) => formatDateFromISO(claim.dateProcessed) || '—',
-    (claim) => claim.feedbackStatus ? formatMessage(`claim.feedbackStatus.${claim.feedbackStatus}`) : '—',
-    (claim) => claim.reviewStatus ? formatMessage(`claim.reviewStatus.${claim.reviewStatus}`) : '—',
+    (claim) => claim.feedbackStatus || '—',
+    (claim) => claim.reviewStatus || '—',
     (claim) => claim.claimed ? formatAmount(claim.claimed) : '—',
     (claim) => claim.approved ? formatAmount(claim.approved) : '—',
-    (claim) => claim.status ? formatMessage(`claim.status.${claim.status}`) : '—',
+    (claim) => claim.status || '—',
     (claim) => claim.restoreId || '—'
   ];
 
