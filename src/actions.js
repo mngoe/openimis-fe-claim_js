@@ -514,7 +514,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
     ${
-      !!claim.attachments && !!claim.attachments.length
+      (claim.uuid === undefined || claim.uuid === null) && !!claim.attachments && !!claim.attachments.length
         ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
         : ""
     }
