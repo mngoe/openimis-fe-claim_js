@@ -46,7 +46,7 @@ const PrescriberPicker = (props) => {
   );
 
   const prescriberLabel= (option)=>{
-    return option.code+" "+option.lastName+" "+option.otherNames;
+    return option?.code+" "+option?.lastName+" "+option?.otherNames;
   }
 
   return (

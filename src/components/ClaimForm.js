@@ -282,7 +282,7 @@ class ClaimForm extends Component {
       !this.state.claim.referHF
     )
       return false;
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
+    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.prescriber) return false;
     if (!this.state.claim.admin) return false;
@@ -336,12 +336,11 @@ class ClaimForm extends Component {
             isUnderMaximumAmount = false;
           }
         });
-
         if (!isUnderMaximumAmount) {
           return false;
         }
-
         if (!this.props.forReview) items.pop();
+        
         if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview)).length) {
           return false;
         }
@@ -351,7 +350,6 @@ class ClaimForm extends Component {
         services = [...this.state.claim.services];
 
         let isUnderMaximumAmount = true;
-
         services.forEach((item) => {
           if (parseFloat(item.qtyProvided) > parseFloat(item?.service?.maximumAmount ?? this.quantityMaxValue)) {
             isUnderMaximumAmount = false;
@@ -361,7 +359,6 @@ class ClaimForm extends Component {
         if (!isUnderMaximumAmount) {
           return false;
         }
-
         if (!this.props.forReview) services.pop();
         if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length) {
           return false;
@@ -488,7 +485,7 @@ class ClaimForm extends Component {
       isSaved ||
       (!forReview && !forFeedback && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
-      (forFeedback && claim.status !== 4) //||
+      (forFeedback && claim.status !== 4); //||
       //!rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
 
     var actions = [];

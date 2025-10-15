@@ -40,7 +40,6 @@ import PrescriberEditPage from "./pages/PrescriberEditPage";
 import PrescriberReport from "./reports/PrescriberReport";
 import PrescriberFosaReport from "./reports/PrescriberFosaReport";
 import ClaimActTypePicker from "./pickers/ClaimActTypePicker";
-
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
