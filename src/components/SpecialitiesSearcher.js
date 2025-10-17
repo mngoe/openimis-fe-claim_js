@@ -56,9 +56,7 @@ class SpecialitiesSearcher extends Component {
       "speciality.code",
       "speciality.speciality",
     ];
-    if (this.props.rights.includes(RIGHT_DELETE)) {
-      headers.push(null);
-    }
+    headers.push(null);
     return headers;
   };
 
@@ -72,15 +70,13 @@ class SpecialitiesSearcher extends Component {
       (speciality) => speciality.code,
       (speciality) => speciality.speciality,
     ];
-    if (this.props.rights.includes(RIGHT_DELETE)) {
-      formatters.push((speciality) =>
-        speciality.validityTo ? null : (
-          <IconButton  onClick={(e) => this.onDelete(speciality)}>
-            <DeleteIcon />
-          </IconButton>
-        ),
-      );
-    }
+    formatters.push((speciality) =>
+      speciality.validityTo ? null : (
+        <IconButton  onClick={(e) => this.onDelete(speciality)}>
+          <DeleteIcon />
+        </IconButton>
+      ),
+    );
     return formatters;
   };
 
