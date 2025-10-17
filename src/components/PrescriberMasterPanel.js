@@ -17,7 +17,6 @@ const styles = (theme) => ({
 class PrescriberMasterPanel extends FormPanel {
   render() {
     const { classes, edited, readOnly = false } = this.props;
-    console.log(edited);
     return (
       <Grid container>
         <ControlledField
@@ -29,6 +28,7 @@ class PrescriberMasterPanel extends FormPanel {
                 pubRef="location.RegionPicker"
                 value={edited.region}
                 withNull={true}
+                readOnly={readOnly}
                 onChange={(v) => this.updateAttribute("region",v)}
                 />
             </Grid>
@@ -43,6 +43,7 @@ class PrescriberMasterPanel extends FormPanel {
                 pubRef="location.DistrictPicker"
                 value={edited.district}
                 region={edited.region}
+                readOnly={readOnly}
                 withNull={true}
                 onChange={(v) => this.updateAttribute("district",v)}
                 />
@@ -60,7 +61,18 @@ class PrescriberMasterPanel extends FormPanel {
                     region={edited.region}
                     required={true}
                     district={edited.district}
-                    onChange={(v) => this.updateAttribute("mainHealthFacility",v)}
+                    readOnly={readOnly}
+                    onChange={(v) => {
+                      this.updateAttribute("mainHealthFacility",v)
+                      
+                      setTimeout(()=>{
+                        if(v != null){
+                          this.updateAttribute("region",v.location.parent);
+                          this.updateAttribute("district",v.location);
+                        }
+                      }
+                        ,0)
+                    }}
                 />
             </Grid>
             }
@@ -98,6 +110,7 @@ class PrescriberMasterPanel extends FormPanel {
                 name="lastName"
                 required={true}
                 value={edited.lastName}
+                readOnly={readOnly}
                 onChange={(v) => this.updateAttribute("lastName",v) }
             />
             </Grid>
@@ -114,6 +127,7 @@ class PrescriberMasterPanel extends FormPanel {
                     label="prescriber.otherNames"
                     name="otherNames"
                     value={edited.otherNames}
+                    readOnly={readOnly}
                     onChange={(v) => this.updateAttribute("otherNames",v) }
                     />
                 </Grid>
@@ -131,6 +145,7 @@ class PrescriberMasterPanel extends FormPanel {
                     label="prescriber.nin"
                     name="nin"
                     value={edited.nin}
+                    readOnly={readOnly}
                     onChange={(v) => this.updateAttribute("nin",v) }
                     />
                 </Grid>
@@ -147,6 +162,7 @@ class PrescriberMasterPanel extends FormPanel {
                     label="prescriber.phone"
                     name="phone"
                     value={edited.phone}
+                    readOnly={readOnly}
                     onChange={(v) => this.updateAttribute("phone",v) }
                     />
                 </Grid>
@@ -162,6 +178,7 @@ class PrescriberMasterPanel extends FormPanel {
                     required={true}
                     pubRef="claim.StatusPicker"
                     value={edited.status}
+                    readOnly={readOnly}
                     onChange={(v) => this.updateAttribute("status",v)}
                     />
                 </Grid>
@@ -177,6 +194,7 @@ class PrescriberMasterPanel extends FormPanel {
                     required={true}
                     pubRef="claim.SpecialityPicker"
                     value={edited.speciality}
+                    readOnly={readOnly}
                     onChange={(v) => this.updateAttribute("speciality",v)}
                     />
                 </Grid>
@@ -194,6 +212,7 @@ class PrescriberMasterPanel extends FormPanel {
                         module="claim"
                         required={true}
                         label="prescriber.entryDate"
+                        readOnly={readOnly}
                         onChange={(v) => this.updateAttribute("entryDate",v) }
                     />
                 </Grid>
@@ -210,6 +229,7 @@ class PrescriberMasterPanel extends FormPanel {
                         value={edited.releaseDate}
                         module="claim"
                         label="prescriber.releaseDate"
+                        readOnly={readOnly}
                         onChange={(v) => this.updateAttribute("releaseDate",v) }
                     />
                 </Grid>
