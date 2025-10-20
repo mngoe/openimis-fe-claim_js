@@ -69,6 +69,7 @@ const PrescriberReport = (props) => {
                     pubRef="location.HealthFacilityPicker"
                     value={hf}
                     withNull={true}
+                    prescriber={values?.prescriber}
                     onChange={(v) => handleHealthFacilityChange(index, v)}
                   />
                 </Grid>
