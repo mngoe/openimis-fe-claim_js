@@ -15,7 +15,6 @@ import {
 } from "@openimis/fe-core";
 import { fetchPrescribers, deletePrescriber } from "../actions";
 import { IconButton } from "@material-ui/core";
-import { RIGHT_DELETE } from "../constants";
 import PrescriberFilter from "./PrescriberFilter";
 
 class PrescribersSearcher extends Component {
@@ -65,9 +64,7 @@ class PrescribersSearcher extends Component {
       "prescriber.entryDate",
       "prescriber.releaseDate",
     ];
-    if (this.props.rights.includes(RIGHT_DELETE)) {
-      headers.push(null);
-    }
+    headers.push(null);
     return headers;
   };
 
@@ -99,15 +96,13 @@ class PrescribersSearcher extends Component {
       (prescriber) => prescriber.entryDate,
       (prescriber) => prescriber.releaseDate,
     ];
-    if (this.props.rights.includes(RIGHT_DELETE)) {
-      formatters.push((prescriber) =>
-        prescriber.validityTo ? null : (
-          <IconButton  onClick={(e) => this.onDelete(prescriber)}>
-            <DeleteIcon />
-          </IconButton>
-        ),
-      );
-    }
+    formatters.push((prescriber) =>
+      prescriber.validityTo ? null : (
+        <IconButton  onClick={(e) => this.onDelete(prescriber)}>
+          <DeleteIcon />
+        </IconButton>
+      ),
+    );
     return formatters;
   };
 
