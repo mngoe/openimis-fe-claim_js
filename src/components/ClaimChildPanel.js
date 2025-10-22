@@ -68,6 +68,7 @@ class ClaimChildPanel extends Component {
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
     }
+    console.log(data);
     if(!!this.props.edited[`services`]){
       data.forEach((d) => !!d.services && (d.subServices = d.services));
       data.forEach((d) => !!d.items && (d.subItems = d.items));
@@ -583,7 +584,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={readOnly}
-              value={ u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed }
+              value={ !!u.qtyDisplayed ? u.qtyDisplayed : "0" }
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                   if (u.qtyProvided < v) {
@@ -591,14 +592,14 @@ class ClaimChildPanel extends Component {
                       totalApproved: u.qtyProvided,
                     }));
                   } 
-                  u.qtyAdjusted = v;
+                  u.qtyDisplayed = v;
                   u.qtyApproved = v;
                 } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                   if (v == u.qtyProvided) {
-                    u.qtyAdjusted = u.qtyProvided;
+                    u.qtyDisplayed = u.qtyProvided;
                     u.qtyApproved = u.qtyProvided;
                   } else {
-                    u.qtyAdjusted = v;
+                    u.qtyDisplayed = v;
                     u.qtyApproved = 0;
                   }
                 }
@@ -634,7 +635,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={readOnly}
-                value={ u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed }
+                value={ !!u.qtyDisplayed ? u.qtyDisplayed : "0" }
                 onChange={(v) => {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                     if (u.qtyProvided < v) {
@@ -642,14 +643,14 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
-                    u.qtyAdjusted = v;
+                    u.qtyDisplayed = v;
                     u.qtyApproved = v;
                   } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                     if (v == u.qtyProvided) {
                       u.qtyApproved = u.qtyProvided;
-                      u.qtyAdjusted = u.qtyProvided;
+                      u.qtyDisplayed = u.qtyProvided;
                     } else {
-                      u.qtyAdjusted = v;
+                      u.qtyDisplayed = v;
                       u.qtyApproved = 0;
                     }
                   }
@@ -753,7 +754,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={subServicesItemsFormatters}
+          subServicesItemsFormatters={isRestored ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
