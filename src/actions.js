@@ -51,15 +51,39 @@ export function claimCodeValidationCheck(mm, variables) {
   );
 }
 
+export function specialityCodeValidationCheck(mm, variables) {
+  return graphqlWithVariables(
+    `
+    query ($specialityCode: String!) {
+      isValid: validateSpecialityCode(specialityCode: $specialityCode)
+ }
+    `,
+    variables,
+    `SPECIALITY_CODE_FIELDS_VALIDATION`,
+  );
+}
+
 export function claimCodeValidationClear() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_CLEAR` });
   };
 }
 
+export function specialityCodeValidationClear() {
+  return (dispatch) => {
+    dispatch({ type: `SPECIALITY_CODE_FIELDS_VALIDATION_CLEAR` });
+  };
+}
+
 export function claimCodeSetValid() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_SET_VALID` });
+  };
+}
+
+export function specialityCodeSetValid() {
+  return (dispatch) => {
+    dispatch({ type: `SPECIALITY_CODE_FIELDS_VALIDATION_SET_VALID` });
   };
 }
 
