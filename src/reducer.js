@@ -460,6 +460,18 @@ function reducer(
             },
           },
         };
+        case "PRESCRIBER_CODE_FIELDS_VALIDATION_REQ":
+        return {
+          ...state,
+          validationFields: {
+            ...state.validationFields,
+            prescriberCode: {
+              isValidating: true,
+              isValid: false,
+              validationError: null,
+            },
+          },
+        };
     case "CLAIM_CODE_FIELDS_VALIDATION_RESP":
       return {
         ...state,
@@ -478,6 +490,18 @@ function reducer(
         validationFields: {
           ...state.validationFields,
           specialityCode: {
+            isValidating: false,
+            isValid: action.payload?.data.isValid,
+            validationError: formatGraphQLError(action.payload),
+          },
+        },
+      };
+      case "PRESCRIBER_CODE_FIELDS_VALIDATION_RESP":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          prescriberCode: {
             isValidating: false,
             isValid: action.payload?.data.isValid,
             validationError: formatGraphQLError(action.payload),
@@ -508,6 +532,18 @@ function reducer(
             },
           },
         };
+        case "PRESCRIBER_CODE_FIELDS_VALIDATION_ERR":
+        return {
+          ...state,
+          validationFields: {
+            ...state.validationFields,
+            prescriberCode: {
+              isValidating: false,
+              isValid: false,
+              validationError: formatServerError(action.payload),
+            },
+          },
+        };
     case "CLAIM_CODE_FIELDS_VALIDATION_CLEAR":
       return {
         ...state,
@@ -532,6 +568,18 @@ function reducer(
           },
         },
       };
+      case "PRESCRIBER_CODE_FIELDS_VALIDATION_CLEAR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          prescriberCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
+          },
+        },
+      };
     case "CLAIM_CODE_FIELDS_VALIDATION_SET_VALID":
       return {
         ...state,
@@ -550,6 +598,18 @@ function reducer(
         validationFields: {
           ...state.validationFields,
           specialityCode: {
+            isValidating: false,
+            isValid: true,
+            validationError: null,
+          },
+        },
+      };
+      case "PRESCRIBER_CODE_FIELDS_VALIDATION_SET_VALID":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          prescriberCode: {
             isValidating: false,
             isValid: true,
             validationError: null,
