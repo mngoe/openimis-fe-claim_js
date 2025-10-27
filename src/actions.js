@@ -189,7 +189,7 @@ export function clearPrescriber(){
   return { type: "PRESCRIBER_CLEAR" };
 }
 
-export function fetchPrescriber(uuid) {
+export function fetchPrescriber(mm,uuid) {
   const query = `
     query {
       prescribers(uuid: "${uuid}") {
@@ -205,7 +205,7 @@ export function fetchPrescriber(uuid) {
             releaseDate,
             validityTo,
             validityFrom,
-            mainHealthFacility { uuid name code },
+            mainHealthFacility ${mm.getProjection("location.HealthFacilityPicker.projection")},
             authorizedHealthFacilities { uuid name code },
             speciality { uuid speciality code },
             status { code status altLanguage }
@@ -214,6 +214,7 @@ export function fetchPrescriber(uuid) {
       }
     }
   `;
+  console.log(query);
   return graphql(query , "PRESCRIBER_FETCH_ONE");
 }
 
