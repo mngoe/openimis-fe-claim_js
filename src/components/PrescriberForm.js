@@ -70,7 +70,7 @@ class PrescriberForm extends Component {
         newPrescriber: false,
       }));
     } else if (prevState.prescriber_uuid !== this.state.prescriber_uuid) {
-      this.props.fetchPrescriber(this.state.prescriber_uuid);
+      this.props.fetchPrescriber(this.props.modulesManager,this.state.prescriber_uuid);
     } else if (prevProps.prescriber_uuid && !this.props.prescriber_uuid) {
       this.setState({ prescriber: this._newPrescriber(), lockNew: false, prescriber_uuid: null });
     } else if (prevProps.submittingMutation && !this.props.submittingMutation) {

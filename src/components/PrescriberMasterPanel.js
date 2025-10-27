@@ -26,7 +26,7 @@ class PrescriberMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
                 <PublishedComponent
                 pubRef="location.RegionPicker"
-                value={edited.region}
+                value={edited.region || edited.mainHealthFacility?.location?.parent}
                 withNull={true}
                 readOnly={readOnly}
                 onChange={(v) => this.updateAttribute("region",v)}
@@ -41,8 +41,8 @@ class PrescriberMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
                 <PublishedComponent
                 pubRef="location.DistrictPicker"
-                value={edited.district}
-                region={edited.region}
+                value={edited.district || edited.mainHealthFacility?.location}
+                region={edited.region || edited.mainHealthFacility?.location?.parent}
                 readOnly={readOnly}
                 withNull={true}
                 onChange={(v) => this.updateAttribute("district",v)}
