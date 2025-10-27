@@ -121,7 +121,7 @@ class PrescribersSearcher extends Component {
     let confirmedAction = () =>
       this.props.deletePrescriber(
         prescriber,
-        formatMessageWithValues(this.props.intl, "claim", "deletePrescriber.mutationLabel", {
+        formatMessageWithValues(this.props.intl, "claim", "DeletePrescriber.mutationLabel", {
           code: prescriber.code || prescriber.uuid,
         }),
       );
