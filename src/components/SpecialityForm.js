@@ -99,7 +99,7 @@ class SpecialityForm extends Component {
     if (this.state.isSaved) return false;
     if (!this.state.speciality.code) return false;
     if (!!this.state.speciality.codeError) return false;
-    if (!this.props.isClaimCodeValid) return false;
+    if (!this.props.isSpecialityCodeValid) return false;
     if (!this.state.speciality.speciality) return false;
     if (!this.state.speciality.speciality) return false;
     if (this.state.speciality.speciality.length > 150) return false;
@@ -181,7 +181,7 @@ const mapStateToProps = (state, props) => ({
   errorSpeciality: state.claim.errorSpeciality,
   submittingMutation: state.claim.submittingMutation,
   mutation: state.claim.mutation,
-  isClaimCodeValid: state.claim.validationFields?.specialityCode?.isValid,
+  isSpecialityCodeValid: state.claim.validationFields?.specialityCode?.isValid,
 });
 
 const mapDispatchToProps = (dispatch) => {

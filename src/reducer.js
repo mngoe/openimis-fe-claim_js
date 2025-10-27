@@ -200,6 +200,14 @@ function reducer(
         speciality: {},
         errorSpeciality: null,
       };
+      case "PRESCRIBER_CLEAR":
+        return {
+          ...state,
+          fetchingPrescriber: false,
+          fetchedPfetchingPrescriber: false,
+          prescriber: {},
+          errorPrescriber: null,
+        };
     case "SPECIALITY_MUTATION_REQ":
       return dispatchMutationReq(state, action);
     case "SPECIALITY_MUTATION_ERR":

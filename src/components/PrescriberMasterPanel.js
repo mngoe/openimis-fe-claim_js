@@ -311,7 +311,7 @@ const mapStateToProps = (state) => ({
     isCodeValid: state.claim.validationFields?.prescriberCode?.isValid,
     isCodeValidating: state.claim.validationFields?.prescriberCode?.isValidating,
     codeValidationError: state.claim.validationFields?.prescriberCode?.validationError,
-    savedSpecialityCode: state.claim.prescriber?.code
+    savedPrescriberCode: state.claim.prescriber?.code
   });
 
   export default connect(mapStateToProps)(
