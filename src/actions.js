@@ -51,9 +51,45 @@ export function claimCodeValidationCheck(mm, variables) {
   );
 }
 
+export function specialityCodeValidationCheck(mm, variables) {
+  return graphqlWithVariables(
+    `
+    query ($specialityCode: String!) {
+      isValid: validateSpecialityCode(specialityCode: $specialityCode)
+ }
+    `,
+    variables,
+    `SPECIALITY_CODE_FIELDS_VALIDATION`,
+  );
+}
+
+export function prescriberCodeValidationCheck(mm, variables) {
+  return graphqlWithVariables(
+    `
+    query ($prescriberCode: String!) {
+      isValid: validatePrescriberCode(prescriberCode: $prescriberCode)
+ }
+    `,
+    variables,
+    `PRESCRIBER_CODE_FIELDS_VALIDATION`,
+  );
+}
+
 export function claimCodeValidationClear() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_CLEAR` });
+  };
+}
+
+export function specialityCodeValidationClear() {
+  return (dispatch) => {
+    dispatch({ type: `SPECIALITY_CODE_FIELDS_VALIDATION_CLEAR` });
+  };
+}
+
+export function prescriberCodeValidationClear() {
+  return (dispatch) => {
+    dispatch({ type: `PRESCRIBER_CODE_FIELDS_VALIDATION_CLEAR` });
   };
 }
 
@@ -62,6 +98,19 @@ export function claimCodeSetValid() {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_SET_VALID` });
   };
 }
+
+export function specialityCodeSetValid() {
+  return (dispatch) => {
+    dispatch({ type: `SPECIALITY_CODE_FIELDS_VALIDATION_SET_VALID` });
+  };
+}
+
+export function prescriberCodeSetValid() {
+  return (dispatch) => {
+    dispatch({ type: `PRESCRIBER_CODE_FIELDS_VALIDATION_SET_VALID` });
+  };
+}
+
 
 export function clearClaim() {
   return (dispatch) => {
