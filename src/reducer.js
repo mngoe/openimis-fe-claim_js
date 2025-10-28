@@ -200,6 +200,14 @@ function reducer(
         speciality: {},
         errorSpeciality: null,
       };
+      case "PRESCRIBER_CLEAR":
+        return {
+          ...state,
+          fetchingPrescriber: false,
+          fetchedPfetchingPrescriber: false,
+          prescriber: {},
+          errorPrescriber: null,
+        };
     case "SPECIALITY_MUTATION_REQ":
       return dispatchMutationReq(state, action);
     case "SPECIALITY_MUTATION_ERR":
@@ -448,12 +456,60 @@ function reducer(
           },
         },
       };
+      case "SPECIALITY_CODE_FIELDS_VALIDATION_REQ":
+        return {
+          ...state,
+          validationFields: {
+            ...state.validationFields,
+            specialityCode: {
+              isValidating: true,
+              isValid: false,
+              validationError: null,
+            },
+          },
+        };
+        case "PRESCRIBER_CODE_FIELDS_VALIDATION_REQ":
+        return {
+          ...state,
+          validationFields: {
+            ...state.validationFields,
+            prescriberCode: {
+              isValidating: true,
+              isValid: false,
+              validationError: null,
+            },
+          },
+        };
     case "CLAIM_CODE_FIELDS_VALIDATION_RESP":
       return {
         ...state,
         validationFields: {
           ...state.validationFields,
           claimCode: {
+            isValidating: false,
+            isValid: action.payload?.data.isValid,
+            validationError: formatGraphQLError(action.payload),
+          },
+        },
+      };
+      case "SPECIALITY_CODE_FIELDS_VALIDATION_RESP":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          specialityCode: {
+            isValidating: false,
+            isValid: action.payload?.data.isValid,
+            validationError: formatGraphQLError(action.payload),
+          },
+        },
+      };
+      case "PRESCRIBER_CODE_FIELDS_VALIDATION_RESP":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          prescriberCode: {
             isValidating: false,
             isValid: action.payload?.data.isValid,
             validationError: formatGraphQLError(action.payload),
@@ -472,6 +528,30 @@ function reducer(
           },
         },
       };
+      case "SPECIALITY_CODE_FIELDS_VALIDATION_ERR":
+        return {
+          ...state,
+          validationFields: {
+            ...state.validationFields,
+            specialityCode: {
+              isValidating: false,
+              isValid: false,
+              validationError: formatServerError(action.payload),
+            },
+          },
+        };
+        case "PRESCRIBER_CODE_FIELDS_VALIDATION_ERR":
+        return {
+          ...state,
+          validationFields: {
+            ...state.validationFields,
+            prescriberCode: {
+              isValidating: false,
+              isValid: false,
+              validationError: formatServerError(action.payload),
+            },
+          },
+        };
     case "CLAIM_CODE_FIELDS_VALIDATION_CLEAR":
       return {
         ...state,
@@ -484,12 +564,60 @@ function reducer(
           },
         },
       };
+      case "SPECIALITY_CODE_FIELDS_VALIDATION_CLEAR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          specialityCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
+          },
+        },
+      };
+      case "PRESCRIBER_CODE_FIELDS_VALIDATION_CLEAR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          prescriberCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
+          },
+        },
+      };
     case "CLAIM_CODE_FIELDS_VALIDATION_SET_VALID":
       return {
         ...state,
         validationFields: {
           ...state.validationFields,
           claimCode: {
+            isValidating: false,
+            isValid: true,
+            validationError: null,
+          },
+        },
+      };
+      case "SPECIALITY_CODE_FIELDS_VALIDATION_SET_VALID":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          specialityCode: {
+            isValidating: false,
+            isValid: true,
+            validationError: null,
+          },
+        },
+      };
+      case "PRESCRIBER_CODE_FIELDS_VALIDATION_SET_VALID":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          prescriberCode: {
             isValidating: false,
             isValid: true,
             validationError: null,
