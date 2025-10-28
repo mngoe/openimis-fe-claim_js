@@ -1,22 +1,30 @@
 import React from "react";
+import { connect } from "react-redux";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import {
   ControlledField,
   FormPanel,
   TextInput,
   PublishedComponent,
-  NumberInput
+  NumberInput,
+  ValidatedTextInput
 } from "@openimis/fe-core";
 import { Grid, IconButton } from "@material-ui/core";
 import { AddCircle, RemoveCircle } from "@material-ui/icons";
+import { prescriberCodeValidationCheck, prescriberCodeValidationClear, prescriberCodeSetValid } from "../actions";
 
 const styles = (theme) => ({
   item: theme.paper.item,
 });
 
 class PrescriberMasterPanel extends FormPanel {
+    shouldValidate = (inputValue) => {
+        const { savedPrescriberCode } = this.props;
+        const shouldValidate = inputValue !== savedPrescriberCode;
+        return shouldValidate;
+      };
   render() {
-    const { classes, edited, readOnly = false } = this.props;
+    const { classes, edited, readOnly = false, isCodeValid, isCodeValidating, codeValidationError } = this.props;
     return (
       <Grid container>
         <ControlledField
@@ -26,7 +34,7 @@ class PrescriberMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
                 <PublishedComponent
                 pubRef="location.RegionPicker"
-                value={edited.region}
+                value={edited.region || edited.mainHealthFacility?.location?.parent}
                 withNull={true}
                 readOnly={readOnly}
                 onChange={(v) => this.updateAttribute("region",v)}
@@ -41,8 +49,8 @@ class PrescriberMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
                 <PublishedComponent
                 pubRef="location.DistrictPicker"
-                value={edited.district}
-                region={edited.region}
+                value={edited.district || edited.mainHealthFacility?.location}
+                region={edited.region || edited.mainHealthFacility?.location?.parent}
                 readOnly={readOnly}
                 withNull={true}
                 onChange={(v) => this.updateAttribute("district",v)}
@@ -78,26 +86,29 @@ class PrescriberMasterPanel extends FormPanel {
             }
         />
 
-        <ControlledField
-            module="claim"
-            id="prescriber.code"
-            field={
-                <Grid item xs={3} className={classes.item}>
-                    <TextInput
-                        module="claim"
-                        label="prescriber.code"
-                        name="code"
-                        value={edited.code}
-                        readOnly={readOnly}
-                        required={true}
-                        onChange={(v) => this.updateAttribute("code", v)}
-                        inputProps={{
-                        maxLength: 50,
-                        }}
-                    />
-                </Grid>
-            }
-        />
+        <Grid item xs={4} className={classes.item}>
+            <ValidatedTextInput
+                action={prescriberCodeValidationCheck}
+                clearAction={prescriberCodeValidationClear}
+                codeTakenLabel="claim.prescriberTaken"
+                isValid={isCodeValid}
+                isValidating={isCodeValidating}
+                itemQueryIdentifier="prescriberCode"
+                label="SpecialityForm.code"
+                module="claim"
+                onChange={(code) => this.updateAttribute("code", code)}
+                readOnly={readOnly}
+                required={true}
+                setValidAction={prescriberCodeSetValid}
+                shouldValidate={this.shouldValidate}
+                validationError={codeValidationError}
+                value={edited?.code || ""}
+                inputProps={{
+                maxLength: 50,
+                }}
+            />
+        </Grid>
+                
 
         <ControlledField
         module="claim"
@@ -143,7 +154,15 @@ class PrescriberMasterPanel extends FormPanel {
                     module="claim"
                     required={true}
                     label="prescriber.nin"
+                    placeholder="prescriber.nin.placeholder"
                     name="nin"
+                    error={
+                        edited &&
+                          edited.nin &&
+                          (edited.nin.length !== 7 && edited.nin.length !== 9)
+                          ? true
+                          : false
+                      }
                     value={edited.nin}
                     readOnly={readOnly}
                     onChange={(v) => this.updateAttribute("nin",v) }
@@ -288,4 +307,13 @@ class PrescriberMasterPanel extends FormPanel {
   }
 }
 
-export default withTheme(withStyles(styles)(PrescriberMasterPanel));
+const mapStateToProps = (state) => ({
+    isCodeValid: state.claim.validationFields?.prescriberCode?.isValid,
+    isCodeValidating: state.claim.validationFields?.prescriberCode?.isValidating,
+    codeValidationError: state.claim.validationFields?.prescriberCode?.validationError,
+    savedPrescriberCode: state.claim.prescriber?.code
+  });
+
+  export default connect(mapStateToProps)(
+    withTheme(withStyles(styles)(PrescriberMasterPanel))
+  );
