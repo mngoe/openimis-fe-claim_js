@@ -142,7 +142,8 @@ class PreauthorizationForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
-    claim.preAuthorization = false;
+    claim.preAuthorization = true;
+    claim.isPreAuthorization = true;
     claim.jsonExt = {};
     return claim;
   }

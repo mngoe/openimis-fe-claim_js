@@ -82,7 +82,6 @@ class ClaimMasterPanel extends FormPanel {
       false,
     );
     this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", true);
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", true);
   }
 
   shouldValidate = (inputValue) => {
@@ -557,19 +556,6 @@ class ClaimMasterPanel extends FormPanel {
               onChange={(v) => this.updateAttribute("referralCode", v)}
             />
           </Grid>
-        )}
-        {this.showPreAuthorization && (
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="Claim.preAuthorization"
-                color="primary"
-                checked={edited?.preAuthorization}
-                onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
-              />
-            }
-            label={formatMessage(intl, "claim", "pre-authorization")}
-          />
         )}
         <Contributions
           claim={edited}
