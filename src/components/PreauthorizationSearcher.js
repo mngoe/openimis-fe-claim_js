@@ -64,7 +64,13 @@ class PreauthorizationSearcher extends Component {
     let prms = Object.keys(state.filters)
       .filter((f) => !!state.filters[f]["filter"])
       .map((f) => state.filters[f]["filter"]);
-    let forced = this.forcedFilters();    
+    let forced = this.forcedFilters();
+
+    forced.push({
+      id: "isPreAuthorization",
+      filter: 'isPreAuthorization: true',
+    });
+    
     let random = state.filters["random"];
     if (forced.length > 0) {
       prms.push(...forced.map((f) => f.filter));
