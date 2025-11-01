@@ -39,7 +39,7 @@ const styles = (theme) => ({
   item: theme.paper.item,
 });
 
-class ClaimMasterPanel extends FormPanel {
+class PreauthorizationMasterPanel extends FormPanel {
   state = {
     claimCode: null,
     claimCodeError: null,
@@ -599,5 +599,5 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default withModulesManager(
-  injectIntl(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(ClaimMasterPanel)))),
+  injectIntl(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(PreauthorizationMasterPanel)))),
 );

@@ -40,12 +40,11 @@ import {
   STORAGE_KEY_ADMIN,
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
-  RIGHT_CLAIMREVIEW,
   REFERRAL,
 } from "../constants";
-import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
+import PreauthorizationMasterPanel from "./PreauthorizationMasterPanel";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.PreauthorizationForm";
 
@@ -102,24 +101,24 @@ class PreauthorizationForm extends Component {
       true,
     );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
-    this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "PreauthorizationForm.claimTypeReferSymbol", "R");
+    this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "ClaimForm.claimTypeReferSymbol", "R");
     this.autoGenerateClaimCode = props.modulesManager.getConf(
       "fe-claim",
-      "PreauthorizationForm.autoGenerateClaimCode",
+      "ClaimForm.autoGenerateClaimCode",
       DEFAULT.AUTOGENERATE_CLAIM_CODE,
     );
     this.isExplanationMandatoryForIPD = props.modulesManager.getConf(
       "fe-claim",
-      "PreauthorizationForm.isExplanationMandatoryForIPD",
+      "ClaimForm.isExplanationMandatoryForIPD",
       false,
     );
-    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "PreauthorizationForm.isCareTypeMandatory", false);
+    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "ClaimForm.isCareTypeMandatory", false);
     this.quantityMaxValue = props.modulesManager.getConf(
       "fe-claim",
-      "PreauthorizationForm.quantityMaxValue",
+      "ClaimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "PreauthorizationForm.isReferHFMandatory", false);
+    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "ClaimForm.isReferHFMandatory", false);
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
     this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
@@ -598,7 +597,7 @@ class PreauthorizationForm extends Component {
               module="claim"
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
-              HeadPanel={ClaimMasterPanel}
+              HeadPanel={PreauthorizationMasterPanel}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}
