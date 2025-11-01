@@ -126,11 +126,11 @@ class PreAuthorizationsPage extends Component {
   };
 
   onDoubleClick = (c, newTab = false) => {
-    historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [c.uuid], newTab);
+    historyPush(this.props.modulesManager, this.props.history, "claim.route.preauthorizationEdit", [c.uuid], newTab);
   };
 
   onAdd = () => {
-    historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
+    historyPush(this.props.modulesManager, this.props.history, "claim.route.preauthorizationEdit");
   };
 
   canAdd = () => {
