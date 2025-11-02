@@ -141,6 +141,7 @@ class PreauthorizationForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
+    claim.codePreAuthorization = "";
     claim.preAuthorization = true;
     claim.isPreAuthorization = true;
     claim.jsonExt = {};
@@ -271,9 +272,9 @@ class PreauthorizationForm extends Component {
   };
 
   canSave = (forFeedback, forReview) => {
-    if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
+    if (!this.autoGenerateClaimPreAuthorizationCode && !this.state.claim.codePreAuthorization) return false;
     if (this.state.lockNew) return false;
-    if (!this.props.isClaimCodeValid) return false;
+    if (!this.props.isClaimCodePreAuthorizationValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     if (
@@ -281,25 +282,25 @@ class PreauthorizationForm extends Component {
       this.state.claim.visitType === this.claimTypeReferSymbol &&
       !this.state.claim.referHF
     )
-      return false;
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
+    return false;
+    // if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.prescriber) return false;
     if (!this.state.claim.admin) return false;
-    if (!this.state.claim.dateClaimed) return false;
-    if (!this.state.claim.dateFrom) return false;
-    if (this.fields.visitDateTo == "M"){
-      if( !this.state.claim.dateTo) return false;
-    }
-    if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
-    if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
+    // if (!this.state.claim.dateClaimed) return false;
+    // if (!this.state.claim.dateFrom) return false;
+    // if (this.fields.visitDateTo == "M"){
+    //   if( !this.state.claim.dateTo) return false;
+    // }
+    // if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
+    // if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (
-      (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
-      (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
-    ){
-      return false
-    } 
+    // if (
+    //   (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
+    //   (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
+    // ){
+    //   return false
+    // } 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
@@ -314,12 +315,13 @@ class PreauthorizationForm extends Component {
     }
 
 
-    if (this.isCareTypeMandatory){
-      if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
-    }
-    if (this.isExplanationMandatoryForIPD) {
-      if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
-    }
+    // if (this.isCareTypeMandatory){
+    //   if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
+    // }
+    // if (this.isExplanationMandatoryForIPD) {
+    //   if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
+    // }
+
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
@@ -623,7 +625,7 @@ const mapStateToProps = (state, props) => ({
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   generating: state.claim.generating,
-  isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid,
+  isClaimCodePreAuthorizationValid: state.claim.validationFields?.claimPreAuthorizationCode?.isValid,
 });
 
 const mapDispatchToProps = (dispatch) => {

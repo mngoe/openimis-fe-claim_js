@@ -51,6 +51,20 @@ export function claimCodeValidationCheck(mm, variables) {
   );
 }
 
+
+export function claimPreAuthorizationCodeValidationCheck(mm, variables) {
+  return graphqlWithVariables(
+    `
+    query ($claimPreAuthorizationCode: String!) {
+      isValid: validateClaimPreAuthorizationCode(claimPreAuthorizationCode: $claimPreAuthorizationCode)
+ }
+    `,
+    variables,
+    `CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION`,
+  );
+}
+
+
 export function specialityCodeValidationCheck(mm, variables) {
   return graphqlWithVariables(
     `
@@ -81,6 +95,13 @@ export function claimCodeValidationClear() {
   };
 }
 
+
+export function claimPreAuthorizationCodeValidationClear() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION_CLEAR` });
+  };
+}
+
 export function specialityCodeValidationClear() {
   return (dispatch) => {
     dispatch({ type: `SPECIALITY_CODE_FIELDS_VALIDATION_CLEAR` });
@@ -96,6 +117,12 @@ export function prescriberCodeValidationClear() {
 export function claimCodeSetValid() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_SET_VALID` });
+  };
+}
+
+export function claimPreAuthorizationCodeSetValid() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION_SET_VALID` });
   };
 }
 
@@ -157,7 +184,6 @@ export function fetchSpecialities(filters) {
 }
 
 export function fetchSpeciality(uuid) {
-  console.log("fetchSpeciality", uuid);
   const query = `
     query {
       specialities(uuid: "${uuid}") {
@@ -263,7 +289,6 @@ export function fetchPrescriber(mm,uuid) {
       }
     }
   `;
-  console.log(query);
   return graphql(query , "PRESCRIBER_FETCH_ONE");
 }
 
@@ -308,9 +333,6 @@ export function formatPrescriber(prescriber) {
 export function createOrUpdatePrescriber(prescriber, clientMutationLabel) {
   const mutationName = prescriber.uuid ? "updatePrescriber" : "createPrescriber";
   const inputFields = formatPrescriber(prescriber);
-  
-  console.log("inputFields=",inputFields);
-
   const mutation = formatMutation(
     mutationName,
     inputFields,
@@ -433,6 +455,8 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
   var projections = [
     "uuid",
     "code",
+    "codePreAuthorization",
+    "datePreAuthorization",
     "jsonExt",
     "dateClaimed",
     "dateProcessed",
@@ -537,7 +561,8 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
   const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    code: "${isAutogenerateEnabled ? claimCodePlaceholder : claim.code}"
+    ${isAutogenerateEnabled ? `code : "${claimCodePlaceholder}" ` : claim.code?`code : "${claimCodePlaceholder}" `:""}
+    ${claim.codePreAuthorization? `codePreAuthorization: "${claim.codePreAuthorization}" `: ""}
     autogenerate: ${!!isAutogenerateEnabled}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
@@ -571,6 +596,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     ${!!claim.patientCondition ? `patientCondition: "${formatGQLString(claim.patientCondition)}"` : ""}
     ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
     preAuthorization: ${claim.preAuthorization}
+    isPreAuthorization: ${claim.isPreAuthorization}
  `;
 }
 
@@ -634,6 +660,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "patientCondition",
     "referralCode",
     "preAuthorization",
+    "isPreAuthorization",
+    "codePreAuthorization",
     "jsonExt",
   ];
   if (!!forFeedback) {
@@ -737,6 +765,20 @@ export function fetchClaimOfficers(mm, extraFragment, variables) {
 export function submit(claims, clientMutationLabel, clientMutationDetails = null) {
   let claimUuids = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]`;
   let mutation = formatMutation("submitClaims", claimUuids, clientMutationLabel, clientMutationDetails);
+  var requestedDateTime = new Date();
+  claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_SUBMIT_CLAIMS_RESP", "CLAIM_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
+    requestedDateTime,
+  });
+}
+
+
+export function submitPreAuthorization(claims, clientMutationLabel, clientMutationDetails = null) {
+  let claimUuids = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]`;
+  let mutation = formatMutation("submitClaimsPreAuthorization", claimUuids, clientMutationLabel, clientMutationDetails);
   var requestedDateTime = new Date();
   claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_SUBMIT_CLAIMS_RESP", "CLAIM_MUTATION_ERR"], {
