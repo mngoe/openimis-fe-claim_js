@@ -14,7 +14,6 @@ import {
   withModulesManager,
   formatMessageWithValues,
   formatMessage,
-  formatDateFromISO,
   formatDateTimeFromISO,
   formatAmount,
   FormattedMessage,
@@ -71,6 +70,12 @@ class PreauthorizationSearcher extends Component {
       id: "isPreAuthorization",
       filter: 'isPreAuthorization: true',
     });
+
+    forced.push({
+      id: "statusPreAuthorization",
+      filter: "statusPreAuthorization_In: [2, 4, 8]",
+    });
+    
     
     let random = state.filters["random"];
     if (forced.length > 0) {

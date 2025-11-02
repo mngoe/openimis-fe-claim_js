@@ -17,7 +17,7 @@ import {
   Helmet,
   clearCurrentPaginationPage,
 } from "@openimis/fe-core";
-import { submit, del, selectHealthFacility, submitAll } from "../actions";
+import { submitPreAuthorization, del, selectHealthFacility, submitAll } from "../actions";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
 import PreauthorizationSearcher from "../components/PreauthorizationSearcher";
 
@@ -64,12 +64,12 @@ class PreAuthorizationsPage extends Component {
 
   submitSelected = (selection) => {
     if (selection.length === 1) {
-      this.props.submit(
+      this.props.submitPreAuthorization(
         selection,
         formatMessageWithValues(this.props.intl, "claim", "SubmitClaim.mutationLabel", { code: selection[0].code }),
       );
     } else {
-      this.props.submit(
+      this.props.submitPreAuthorization(
         selection,
         formatMessageWithValues(this.props.intl, "claim", "SubmitClaims.mutationLabel", { count: selection.length }),
         selection.map((c) => c.code),
@@ -223,7 +223,7 @@ const mapDispatchToProps = (dispatch) => {
       selectHealthFacility,
       journalize,
       coreConfirm,
-      submit,
+      submitPreAuthorization,
       submitAll,
       del,
       clearCurrentPaginationPage,
