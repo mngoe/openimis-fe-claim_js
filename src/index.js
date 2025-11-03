@@ -21,6 +21,7 @@ import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
 import PatientConditionPicker from "./pickers/PatientConditionPicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
+import RejectionDialog from "./components/RejectionDialog";
 import messages_en from "./translations/en.json";
 import messages_km from "./translations/km.json";
 import messages_fr from "./translations/fr.json";
@@ -225,6 +226,7 @@ const DEFAULT_CONFIG = {
       ],
     },
     { key: "claim.ClaimOfficerPicker", ref: ClaimOfficerPicker },
+    { key: "claim.RejectionDialog", ref: RejectionDialog },
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },

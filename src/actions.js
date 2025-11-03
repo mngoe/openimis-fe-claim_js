@@ -353,6 +353,7 @@ export function createOrUpdatePrescriber(prescriber, clientMutationLabel) {
   );
 }
 
+
 export function fetchPrescribers(filters) {
   const projections = [
     "uuid",
@@ -469,7 +470,8 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "prescriber { uuid code lastName otherNames }",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
-    "preAuthorization"
+    "preAuthorization",
+    "statusPreAuthorization"
   ];
   if (withAttachmentsCount) {
     projections.push("attachmentsCount");
@@ -663,6 +665,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "isPreAuthorization",
     "codePreAuthorization",
     "jsonExt",
+    "statusPreAuthorization"
   ];
   if (!!forFeedback) {
     projections.push(
@@ -776,12 +779,54 @@ export function submit(claims, clientMutationLabel, clientMutationDetails = null
 }
 
 
+
+export function submitToMedical(claim, clientMutationLabel) {
+  let claimUuid = `uuid: "${claim.uuid}"`;
+  let mutation = formatMutation("submitClaimsToMedical", claimUuid, clientMutationLabel);
+  var requestedDateTime = new Date();
+  claim.clientMutationId = mutation.clientMutationId;
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_SUBMIT_CLAIMS_TO_MEDICAL_RESP", "CLAIM_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    requestedDateTime,
+  });
+}
+
+
+export function submitToNormalClaim(claim, clientMutationLabel) {
+  let claimUuid = `uuid: "${claim.uuid}"`;
+  let mutation = formatMutation("submitToNormalClaim", claimUuid, clientMutationLabel);
+  var requestedDateTime = new Date();
+  claim.clientMutationId = mutation.clientMutationId;
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_SUBMIT_CLAIMS_TO_NORMAL_RESP", "CLAIM_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    requestedDateTime,
+  });
+}
+
+
+
+export function rejectClaimPreAuthorization(claim,reasonPre, clientMutationLabel) {
+  let claimUuid = `uuid: "${claim.uuid}" \n  reason: "${reasonPre}"`;
+  let mutation = formatMutation("rejectClaimPreAuthorization", claimUuid ,clientMutationLabel);
+  var requestedDateTime = new Date();
+  claim.clientMutationId = mutation.clientMutationId;
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_REJECT_CLAIMS_PRE_AUTHORIZATION_RESP", "CLAIM_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    requestedDateTime,
+  });
+}
+
+
+
 export function submitPreAuthorization(claims, clientMutationLabel, clientMutationDetails = null) {
   let claimUuids = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]`;
   let mutation = formatMutation("submitClaimsPreAuthorization", claimUuids, clientMutationLabel, clientMutationDetails);
   var requestedDateTime = new Date();
   claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
-  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_SUBMIT_CLAIMS_RESP", "CLAIM_MUTATION_ERR"], {
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_SUBMIT_CLAIMS_PRE_AUTHORIZATION_RESP", "CLAIM_MUTATION_ERR"], {
     clientMutationId: mutation.clientMutationId,
     clientMutationLabel,
     clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,

@@ -1,10 +1,11 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment  } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
+import CancelIcon from "@material-ui/icons/Cancel";
 import CheckIcon from "@material-ui/icons/Check";
 import ReplayIcon from "@material-ui/icons/Replay";
 import PrintIcon from "@material-ui/icons/ListAlt";
@@ -45,6 +46,8 @@ import {
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 import PreauthorizationMasterPanel from "./PreauthorizationMasterPanel";
+import { submitToMedical } from "../actions";
+import { submitToNormalClaim,rejectClaimPreAuthorization } from "../actions";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.PreauthorizationForm";
 
@@ -81,6 +84,7 @@ class PreauthorizationForm extends Component {
     isDuplicate: false,
     isRestored: false,
     isSaved: false,
+    rejectionClaim: null,
   };
 
   constructor(props) {
@@ -144,6 +148,7 @@ class PreauthorizationForm extends Component {
     claim.codePreAuthorization = "";
     claim.preAuthorization = true;
     claim.isPreAuthorization = true;
+    claim.statusPreAuthorization = null;
     claim.jsonExt = {};
     return claim;
   }
@@ -451,6 +456,26 @@ class PreauthorizationForm extends Component {
     this.setState({ isRestored: true });
   };
 
+  sendToMedical= (claim,label) =>{
+    console.log("Send to medical clicked");
+    this.props.submitToMedical(claim,label);
+  }
+
+  sendToNormalClaim= (claim,label) =>{
+    console.log("Send to medical clicked");
+    this.props.submitToNormalClaim(claim,label);
+  }
+
+ handleRejectionSubmit = (claim, rejectionReason) => {
+  console.log("Rejecting claim:", claim.uuid, "Reason:", rejectionReason);
+    // TODO: Call your rejection mutation here
+    this.props.rejectClaimPreAuthorization(claim, rejectionReason,"RejectClaimsPreAuth.mutationLabel");
+    
+    this.setState({ 
+      rejectionClaim: null,
+      forcedDirty: true 
+    });
+  };
   resetForm = () =>
     this.setState(() => ({
       lockNew: false,
@@ -554,6 +579,59 @@ class PreauthorizationForm extends Component {
         ),
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==4 || claim.statusPreAuthorization==8),
+        content: (
+          <span>
+            <Fab
+              color="secondary"
+              onClick={() => this.setState({ rejectionClaim: claim })}  // Changed this
+            >
+              <CancelIcon color="error" />
+            </Fab>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.reject"),
+      },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==4),
+        content: (
+          <span>
+          <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
+          <Fab
+          color="secondary"
+          onClick={() =>this.sendToMedical(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          >
+            <CheckIcon />
+            
+          </Fab>
+          </span>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.next-step"),
+      },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==8),
+        content: (
+          <span>
+          <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
+          <Fab
+          color="secondary"
+          onClick={() =>this.sendToNormalClaim(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          >
+           <CheckIcon style={{ color: "green" }} />
+            
+          </Fab>
+          </span>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.next-step"),
+      },
+      
+      
     ];
 
     const editingProps = {
@@ -595,6 +673,12 @@ class PreauthorizationForm extends Component {
               close={(e) => this.setState({ attachmentsClaim: null })}
               onUpdated={() => this.setState({ forcedDirty: true })}
             />
+            <PublishedComponent
+            pubRef="claim.RejectionDialog"
+            claim={this.state.rejectionClaim}
+            close={() => this.setState({ rejectionClaim: null })}
+            onSubmit={this.handleRejectionSubmit}
+          />
             <Form
               module="claim"
               title="edit.title"
@@ -630,7 +714,8 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert,submitToMedical,submitToNormalClaim,
+      rejectClaimPreAuthorization },
     dispatch,
   );
 };

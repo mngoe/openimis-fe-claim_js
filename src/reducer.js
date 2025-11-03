@@ -693,6 +693,14 @@ function reducer(
       return dispatchMutationResp(state, "updateClaim", action);
     case "CLAIM_SUBMIT_CLAIMS_RESP":
       return dispatchMutationResp(state, "submitClaims", action);
+    case "CLAIM_SUBMIT_CLAIMS_PRE_AUTHORIZATION_RESP":
+      return dispatchMutationResp(state, "submitClaimsPreAuthorization", action);
+    case "CLAIM_SUBMIT_CLAIMS_TO_MEDICAL_RESP":
+        return dispatchMutationResp(state, "submitClaimsToMedical", action);
+    case "CLAIM_SUBMIT_CLAIMS_TO_NORMAL_RESP":
+      return dispatchMutationResp(state, "submitToNormalClaim", action);
+    case "CLAIM_REJECT_CLAIMS_PRE_AUTHORIZATION_RESP":
+      return dispatchMutationResp(state, "rejectClaimPreAuthorization", action);
     case "CLAIM_DELETE_CLAIMS_RESP":
       return dispatchMutationResp(state, "deleteClaims", action);
     case "CLAIM_SELECT_CLAIMS_FOR_FEEDBACK_RESP":
