@@ -1,6 +1,7 @@
 import _ from "lodash";
 
 export const CLAIM_STATUS = [1, 2, 4, 8, 16];
+export const CLAIM_PRE_AUTHORIZATION_STATUS = [1, 2, 4, 8, 16];
 export const CLAIM_ACT_TYPE = [1, 2];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];

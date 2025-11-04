@@ -1,10 +1,11 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment  } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
+import CancelIcon from "@material-ui/icons/Cancel";
 import CheckIcon from "@material-ui/icons/Check";
 import ReplayIcon from "@material-ui/icons/Replay";
 import PrintIcon from "@material-ui/icons/ListAlt";
@@ -45,6 +46,8 @@ import {
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 import PreauthorizationMasterPanel from "./PreauthorizationMasterPanel";
+import { submitToMedical } from "../actions";
+import { submitToNormalClaim,rejectClaimPreAuthorization } from "../actions";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.PreauthorizationForm";
 
@@ -81,6 +84,7 @@ class PreauthorizationForm extends Component {
     isDuplicate: false,
     isRestored: false,
     isSaved: false,
+    rejectionClaim: null,
   };
 
   constructor(props) {
@@ -141,8 +145,10 @@ class PreauthorizationForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
+    claim.codePreAuthorization = "";
     claim.preAuthorization = true;
     claim.isPreAuthorization = true;
+    claim.statusPreAuthorization = null;
     claim.jsonExt = {};
     return claim;
   }
@@ -271,9 +277,9 @@ class PreauthorizationForm extends Component {
   };
 
   canSave = (forFeedback, forReview) => {
-    if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
+    if (!this.autoGenerateClaimPreAuthorizationCode && !this.state.claim.codePreAuthorization) return false;
     if (this.state.lockNew) return false;
-    if (!this.props.isClaimCodeValid) return false;
+    if (!this.props.isClaimCodePreAuthorizationValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     if (
@@ -281,25 +287,25 @@ class PreauthorizationForm extends Component {
       this.state.claim.visitType === this.claimTypeReferSymbol &&
       !this.state.claim.referHF
     )
-      return false;
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
+    return false;
+    // if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.prescriber) return false;
     if (!this.state.claim.admin) return false;
-    if (!this.state.claim.dateClaimed) return false;
-    if (!this.state.claim.dateFrom) return false;
-    if (this.fields.visitDateTo == "M"){
-      if( !this.state.claim.dateTo) return false;
-    }
-    if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
-    if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
+    // if (!this.state.claim.dateClaimed) return false;
+    // if (!this.state.claim.dateFrom) return false;
+    // if (this.fields.visitDateTo == "M"){
+    //   if( !this.state.claim.dateTo) return false;
+    // }
+    // if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
+    // if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (
-      (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
-      (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
-    ){
-      return false
-    } 
+    // if (
+    //   (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
+    //   (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
+    // ){
+    //   return false
+    // } 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
@@ -314,12 +320,13 @@ class PreauthorizationForm extends Component {
     }
 
 
-    if (this.isCareTypeMandatory){
-      if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
-    }
-    if (this.isExplanationMandatoryForIPD) {
-      if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
-    }
+    // if (this.isCareTypeMandatory){
+    //   if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
+    // }
+    // if (this.isExplanationMandatoryForIPD) {
+    //   if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
+    // }
+
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
@@ -449,6 +456,26 @@ class PreauthorizationForm extends Component {
     this.setState({ isRestored: true });
   };
 
+  sendToMedical= (claim,label) =>{
+    console.log("Send to medical clicked");
+    this.props.submitToMedical(claim,label);
+  }
+
+  sendToNormalClaim= (claim,label) =>{
+    console.log("Send to medical clicked");
+    this.props.submitToNormalClaim(claim,label);
+  }
+
+ handleRejectionSubmit = (claim, rejectionReason) => {
+  console.log("Rejecting claim:", claim.uuid, "Reason:", rejectionReason);
+    // TODO: Call your rejection mutation here
+    this.props.rejectClaimPreAuthorization(claim, rejectionReason,"RejectClaimsPreAuth.mutationLabel");
+    
+    this.setState({ 
+      rejectionClaim: null,
+      forcedDirty: true 
+    });
+  };
   resetForm = () =>
     this.setState(() => ({
       lockNew: false,
@@ -552,6 +579,59 @@ class PreauthorizationForm extends Component {
         ),
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==4 || claim.statusPreAuthorization==8),
+        content: (
+          <span>
+            <Fab
+              color="secondary"
+              onClick={() => this.setState({ rejectionClaim: claim })}  // Changed this
+            >
+              <CancelIcon color="error" />
+            </Fab>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.reject"),
+      },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==4),
+        content: (
+          <span>
+          <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
+          <Fab
+          color="secondary"
+          onClick={() =>this.sendToMedical(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          >
+            <CheckIcon />
+            
+          </Fab>
+          </span>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.next-step"),
+      },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==8),
+        content: (
+          <span>
+          <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
+          <Fab
+          color="secondary"
+          onClick={() =>this.sendToNormalClaim(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          >
+           <CheckIcon style={{ color: "green" }} />
+            
+          </Fab>
+          </span>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.next-step"),
+      },
+      
+      
     ];
 
     const editingProps = {
@@ -593,6 +673,12 @@ class PreauthorizationForm extends Component {
               close={(e) => this.setState({ attachmentsClaim: null })}
               onUpdated={() => this.setState({ forcedDirty: true })}
             />
+            <PublishedComponent
+            pubRef="claim.RejectionDialog"
+            claim={this.state.rejectionClaim}
+            close={() => this.setState({ rejectionClaim: null })}
+            onSubmit={this.handleRejectionSubmit}
+          />
             <Form
               module="claim"
               title="edit.title"
@@ -623,12 +709,13 @@ const mapStateToProps = (state, props) => ({
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   generating: state.claim.generating,
-  isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid,
+  isClaimCodePreAuthorizationValid: state.claim.validationFields?.claimPreAuthorizationCode?.isValid,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert,submitToMedical,submitToNormalClaim,
+      rejectClaimPreAuthorization },
     dispatch,
   );
 };

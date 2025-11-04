@@ -19,9 +19,9 @@ import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
-  claimCodeSetValid,
-  claimCodeValidationCheck,
-  claimCodeValidationClear,
+  claimPreAuthorizationCodeSetValid,
+  claimPreAuthorizationCodeValidationCheck,
+  claimPreAuthorizationCodeValidationClear,
   claimHealthFacilitySet,
   clearClaim,
 } from "../actions";
@@ -41,8 +41,8 @@ const styles = (theme) => ({
 
 class PreauthorizationMasterPanel extends FormPanel {
   state = {
-    claimCode: null,
-    claimCodeError: null,
+    claimPreAuthorizationCode: null,
+    claimPreAuthorizationCodeError: null,
   };
 
   constructor(props) {
@@ -50,10 +50,10 @@ class PreauthorizationMasterPanel extends FormPanel {
     this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 8);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
-    this.autoGenerateClaimCode = props.modulesManager.getConf(
+    this.autoGenerateClaimPreAuthorizationCode = props.modulesManager.getConf(
       "fe-claim",
-      "claimForm.autoGenerateClaimCode",
-      DEFAULT.AUTOGENERATE_CLAIM_CODE,
+      "claimForm.autoGenerateClaimPreAuthorizationCode",
+      false,
     );
     this.insureePicker = props.modulesManager.getConf(
       "fe-claim",
@@ -81,14 +81,14 @@ class PreauthorizationMasterPanel extends FormPanel {
       "attachmentRequiredForReferral",
       false,
     );
-    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", true);
+    // this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", true);
+    this.showPatientCondition = false;
   }
 
   shouldValidate = (inputValue) => {
-    if (this.autoGenerateClaimCode) return false;
-
-    const { savedClaimCode } = this.props;
-    const shouldValidate = inputValue !== savedClaimCode;
+    if (this.autoGenerateClaimPreAuthorizationCode) return false;
+    const { savedClaimPreAuthorizationCode } = this.props;
+    const shouldValidate = inputValue !== savedClaimPreAuthorizationCode;
     return shouldValidate;
   };
 
@@ -199,7 +199,7 @@ class PreauthorizationMasterPanel extends FormPanel {
               </Grid>
             }
           />
-        <ControlledField
+        {/* <ControlledField
           module="claim"
           id="Claim.visitDateFrom"
           field={
@@ -217,8 +217,8 @@ class PreauthorizationMasterPanel extends FormPanel {
               />
             </Grid>
           }
-        />
-        <ControlledField
+        /> */}
+        {/* <ControlledField
           module="claim"
           id="Claim.visitDateTo"
           field={
@@ -237,8 +237,8 @@ class PreauthorizationMasterPanel extends FormPanel {
               />
             </Grid>
           }
-        />
-        <ControlledField
+        /> */}
+        {/* <ControlledField
           module="claim"
           id="Claim.claimedDate"
           field={
@@ -256,7 +256,7 @@ class PreauthorizationMasterPanel extends FormPanel {
               />
             </Grid>
           }
-        />
+        /> */}
         <ControlledField
           module="claim"
           id="Claim.visitType"
@@ -275,7 +275,7 @@ class PreauthorizationMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
+        {/* <ControlledField
           module="claim"
           id="Claim.careType"
           field={
@@ -292,7 +292,7 @@ class PreauthorizationMasterPanel extends FormPanel {
               />
             </Grid>
           }
-        />
+        /> */}
         {!forFeedback && (
           <ControlledField
             module="claim"
@@ -342,28 +342,28 @@ class PreauthorizationMasterPanel extends FormPanel {
        
         <ControlledField
           module="claim"
-          id="Claim.code"
+          id="Claim.codePreAuthorization"
           field={
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
-                action={claimCodeValidationCheck}
-                clearAction={claimCodeValidationClear}
+                action={claimPreAuthorizationCodeValidationCheck}
+                clearAction={claimPreAuthorizationCodeValidationClear}
                 codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
                 isValidating={isCodeValidating}
-                itemQueryIdentifier="claimCode"
-                label="claim.code"
+                itemQueryIdentifier="claimPreAuthorizationCode"
+                label="claim.pre-authorization-code"
                 module="claim"
-                onChange={(code) => this.updateAttribute("code", code)}
-                readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimCode}
-                required={!this.autoGenerateClaimCode}
-                setValidAction={claimCodeSetValid}
+                onChange={(codePreAuthorization) => this.updateAttribute("codePreAuthorization", codePreAuthorization)}
+                readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimPreAuthorizationCode}
+                required={!this.autoGenerateClaimPreAuthorizationCode}
+                setValidAction={claimPreAuthorizationCodeSetValid}
                 shouldValidate={this.shouldValidate}
                 validationError={codeValidationError}
                 value={
-                  this.state.data?.code
-                    ? this.state.data.code
-                    : this.autoGenerateClaimCode && !isRestored
+                  this.state.data?.codePreAuthorization
+                    ? this.state.data.codePreAuthorization
+                    : this.autoGenerateClaimPreAuthorizationCode && !isRestored
                     ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate")
                     : ""
                 }
@@ -581,11 +581,11 @@ const mapStateToProps = (state) => ({
   fetchingClaimCodeCount: state.claim.fetchingClaimCodeCount,
   fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
   claimCodeCount: state.claim.claimCodeCount,
-  savedClaimCode: state.claim.claim?.code,
+  savedClaimPreAuthorizationCode: state.claim.claim?.codePreAuthorization,
   errorClaimCodeCount: state.claim.errorClaimCodeCount,
-  isCodeValid: state.claim.validationFields?.claimCode?.isValid,
-  isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
-  codeValidationError: state.claim.validationFields?.claimCode?.validationError,
+  isCodeValid: state.claim.validationFields?.claimPreAuthorizationCode?.isValid,
+  isCodeValidating: state.claim.validationFields?.claimPreAuthorizationCode?.isValidating,
+  codeValidationError: state.claim.validationFields?.claimPreAuthorizationCode?.validationError,
 });
 
 const mapDispatchToProps = (dispatch) => {

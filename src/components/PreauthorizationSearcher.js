@@ -14,7 +14,7 @@ import {
   withModulesManager,
   formatMessageWithValues,
   formatMessage,
-  formatDateFromISO,
+  formatDateTimeFromISO,
   formatAmount,
   FormattedMessage,
   PublishedComponent,
@@ -70,6 +70,12 @@ class PreauthorizationSearcher extends Component {
       id: "isPreAuthorization",
       filter: 'isPreAuthorization: true',
     });
+
+    forced.push({
+      id: "statusPreAuthorization",
+      filter: "statusPreAuthorization_In: [2, 4, 8]",
+    });
+    
     
     let random = state.filters["random"];
     if (forced.length > 0) {
@@ -177,17 +183,18 @@ class PreauthorizationSearcher extends Component {
 
   headers = () => {
     var result = [
-      "claimSummaries.code",
+      "claimSummaries.codePreAuthorization",
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.prescriber",
-      "claimSummaries.claimedDate",
-      "claimSummaries.processedDate",
-      "claimSummaries.feedbackStatus",
-      "claimSummaries.reviewStatus",
-      "claimSummaries.claimed",
-      "claimSummaries.approved",
-      "claimSummaries.claimStatus",
+      // "claimSummaries.claimedDate",
+      "claimSummaries.preAuthorizationDate",
+      "claimSummaries.statusPreAuthorization",
+      // "claimSummaries.feedbackStatus",
+      // "claimSummaries.reviewStatus",
+      // "claimSummaries.claimed",
+      // "claimSummaries.approved",
+      // "claimSummaries.claimStatus",
     ];
     if (this.showPreAuthorization) {
       result.push("claim.claimSummaries.pre-authorization");
@@ -240,7 +247,7 @@ class PreauthorizationSearcher extends Component {
 
   itemFormatters = () => {
     var result = [
-      (c) => c.code,
+      (c) => c.codePreAuthorization,
       (c) => (
         <PublishedComponent
           readOnly={true}
@@ -251,13 +258,14 @@ class PreauthorizationSearcher extends Component {
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
       (c) => `${c.prescriber?.code || ""} ${c.prescriber?.lastName || ""} ${c.prescriber?.otherNames || ""}`,
-      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
-      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
-      (c) => this.feedbackColFormatter(c),
-      (c) => this.reviewColFormatter(c),
-      (c) => formatAmount(this.props.intl, c.claimed),
-      (c) => formatAmount(this.props.intl, c.approved),
-      (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
+      (c) => formatDateTimeFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
+      (c) => formatMessage(this.props.intl, "claim", "preAuth.status."+c.statusPreAuthorization),
+      // (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
+      // (c) => this.feedbackColFormatter(c),
+      // (c) => this.reviewColFormatter(c),
+      // (c) => formatAmount(this.props.intl, c.claimed),
+      // (c) => formatAmount(this.props.intl, c.approved),
+      // (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
     if (this.showPreAuthorization) {
       result.push((c) => (c.preAuthorization ? <CheckIcon /> : ""));
