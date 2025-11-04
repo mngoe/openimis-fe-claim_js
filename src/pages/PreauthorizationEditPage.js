@@ -52,7 +52,7 @@ class PreauthorizationEditPage extends Component {
       <div className={classes.page}>
         <PreauthorizationForm
           claim_uuid={claim_uuid}
-          back={(e) => historyPush(modulesManager, history, "claim.route.preAuthorizations")}
+          back={(e) => historyPush(modulesManager, history, "claim.route.preauthorizations")}
           add={rights.includes(RIGHT_ADD) ? this.add : null}
           save={rights.includes(RIGHT_LOAD) ? this.save : null}
           isHealthFacilityPage={false}
