@@ -42,6 +42,9 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   REFERRAL,
+  RIGHT_REJECT_PRE_AUTH_PERMS,
+  RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS,
+  RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS,
 } from "../constants";
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
@@ -581,7 +584,7 @@ class PreauthorizationForm extends Component {
       },
 
       {
-        condition: claim_uuid && (claim.statusPreAuthorization==4 || claim.statusPreAuthorization==8),
+        condition: claim_uuid && (claim.statusPreAuthorization==4 || claim.statusPreAuthorization==8) && rights.includes(RIGHT_REJECT_PRE_AUTH_PERMS),
         content: (
           <span>
             <Fab
@@ -596,7 +599,7 @@ class PreauthorizationForm extends Component {
       },
 
       {
-        condition: claim_uuid && (claim.statusPreAuthorization==4),
+        condition: claim_uuid && (claim.statusPreAuthorization==4) && rights.includes(RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS),
         content: (
           <span>
           <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
@@ -614,7 +617,7 @@ class PreauthorizationForm extends Component {
       },
 
       {
-        condition: claim_uuid && (claim.statusPreAuthorization==8),
+        condition: claim_uuid && (claim.statusPreAuthorization==8) && rights.includes(RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS) ,
         content: (
           <span>
           <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
@@ -684,6 +687,7 @@ class PreauthorizationForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={PreauthorizationMasterPanel}
+              // readOnly={readOnly}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}
