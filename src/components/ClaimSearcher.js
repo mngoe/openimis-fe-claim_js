@@ -65,6 +65,12 @@ class ClaimSearcher extends Component {
       .filter((f) => !!state.filters[f]["filter"])
       .map((f) => state.filters[f]["filter"]);
     let forced = this.forcedFilters();
+
+    forced.push({
+      id: "isNormalClaim",
+      filter: 'isNormalClaim: true',
+    });
+    
     let random = state.filters["random"];
     if (forced.length > 0) {
       prms.push(...forced.map((f) => f.filter));
