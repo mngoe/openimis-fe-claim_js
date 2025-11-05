@@ -124,6 +124,7 @@
   "claim.feedbackStatus.4": "Selected",
   "claim.feedbackStatus.8": "Delivered",
   "claim.feedbackStatus.16": "Bypassed",
+  "claim.preAuth.status.null": "Any",
   "claim.preAuth.status.1": "Refused",
   "claim.preAuth.status.2": "Created",
   "claim.preAuth.status.4": "Waiting admin HF approval",

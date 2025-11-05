@@ -329,22 +329,22 @@ class Details extends Component {
     const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, } = this.props;
     return (
       <Grid container className={classes.form}>
-        {/* <Grid item xs={1} className={classes.item}>
+        <Grid item xs={1} className={classes.item}>
           <PublishedComponent
-            pubRef="claim.ClaimStatusPicker"
-            name="claimStatus"
-            value={filters["claimStatus"] && filters["claimStatus"]["value"]}
+            pubRef="claim.PreAuthFilterPicker"
+            name="claimPreAuthStatus"
+            value={filters["claimPreAuthStatus"] && filters["claimPreAuthStatus"]["value"]}
             onChange={(v, s) =>
               onChangeFilters([
                 {
-                  id: "claimStatus",
+                  id: "claimPreAuthStatus",
                   value: v,
-                  filter: !!v ? `status: ${v}` : null,
+                  filter: !!v ? `statusPreAuthorization: ${v}` : null,
                 },
               ])
             }
           />
-        </Grid> */}
+        </Grid>
         {/* <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.FeedbackStatusPicker"
