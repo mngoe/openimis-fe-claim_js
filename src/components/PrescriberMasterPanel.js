@@ -312,8 +312,12 @@ class PrescriberMasterPanel extends FormPanel {
             ))}
                 <IconButton
                     onClick={() => {
-                    const updated = [...(edited.authorizedHealthFacilities || []), null];
-                    this.updateAttribute("authorizedHealthFacilities", updated);
+                        let tab=edited.authorizedHealthFacilities || [];
+
+                        if(tab.length==0 || tab.at(tab.length-1)!=null){
+                            const updated = [...(tab), null];
+                            this.updateAttribute("authorizedHealthFacilities", updated);
+                        }
                     }}
                 >
                 <AddCircle color="primary" />
