@@ -1,169 +1,96 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import { injectIntl } from "react-intl";
+import { Grid, Divider } from "@material-ui/core";
+import { withTheme, withStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 import _debounce from "lodash/debounce";
+import {
+  withModulesManager,
+  formatMessage,
+  ControlledField,
+  PublishedComponent,
+  TextInput,
+  NumberInput,
+  Contributions,
+} from "@openimis/fe-core";
+import {
+  selectHealthFacility,
+  selectDistrict,
+  selectRegion,
+} from "../actions";
 
-import { Grid } from "@material-ui/core";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-import { withModulesManager, formatMessage, TextInput, NumberInput, ControlledField, PublishedComponent } from "@openimis/fe-core";
+const PRESCRIBER_FILTER_CONTRIBUTION_KEY = "prescriber.Filter";
 
 const styles = (theme) => ({
-  form: {
-    padding: 0,
-  },
-  item: {
-    padding: theme.spacing(1),
-  },
+  dialogTitle: theme.dialog.title,
+  dialogContent: theme.dialog.content,
+  form: { padding: 0 },
+  item: { padding: theme.spacing(1) },
+  paperDivider: theme.paper.divider,
 });
 
-class PrescriberFilter extends Component {
-  _regionFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "region",
-        value: v,
-        filter: `mainHealthFacility_Location_Parent_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "region", value: null, filter: null };
-    }
-  };
-
-  _districtFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "district",
-        value: v,
-        filter: `mainHealthFacility_Location_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "district", value: null, filter: null };
-    }
-  };
-  
-  _healthFacilityFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "mainHealthFacility",
-        value: v,
-        filter: `mainHealthFacility_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "mainhealthFacility", value: null, filter: null };
-    }
-  };
-
-  _statusFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "status",
-        value: v,
-        filter: `status_Code: ${v.code}`,
-      };
-    } else {
-      return { id: "status", value: null, filter: null };
-    }
-  };
-
-  _specialityFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "speciality",
-        value: v,
-        filter: `speciality_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "speciality", value: null, filter: null };
-    }
-  };
-
-  debouncedOnChangeFilter = _debounce(
-    this.props.onChangeFilters,
-    this.props.modulesManager.getConf("fe-claim", "debounceTime", 200),
-  );
-
-  _onChangeRegion = (v, s) => {
-      this.props.onChangeFilters([
-        this._regionFilter(v),
-        this._districtFilter(null),
-        this._healthFacilityFilter(null),
-      ]);
-    };
-  
-    _onChangeDistrict = (v, s) => {
-      this.props.onChangeFilters([
-        this._regionFilter(!!v ? v.parent : this._filterValue("region")),
-        this._districtFilter(v),
-        this._healthFacilityFilter(null),
-      ]);
-    };
-  
-    _onChangeHealthFacility = (v, s) => {
-      this.props.onChangeFilters([
-        this._healthFacilityFilter(v),
-      ]);
-    };
-
-  _onChangeHealthFacility = (v, s) => {
-    this.props.onChangeFilters([
-      this._regionFilter(!!v ? v.location.parent : this._filterValue("region")),
-      this._districtFilter(!!v ? v.location : this._filterValue("district")),
-      this._healthFacilityFilter(v)
-    ]);
-  };
-
-  _onChangeStatus = (v, s) => {
-    this.props.onChangeFilters([
-      this._statusFilter(v)
-    ]);
-  };
-
-  _onChangeSpeciality = (v, s) => {
-    this.props.onChangeFilters([
-      this._specialityFilter(v)
-    ]);
-  };
+class Head extends Component {
+  state = { reset: 0 };
 
   _filterValue = (k) => {
     const { filters } = this.props;
-    return !!filters && !!filters[k] ? filters[k].value : null;
+    return !!filters[k] ? filters[k].value : null;
   };
 
-  _filterTextFieldValue = (key) => {
-    const { filters } = this.props;
-    return !!filters && !!filters[key] ? filters[key].value : "";
+  _regionFilter = (v) =>
+    !!v
+      ? { id: "region", value: v, filter: `mainHealthFacility_Location_Parent_Uuid: "${v.uuid}"` }
+      : { id: "region", value: null, filter: null };
+
+  _districtFilter = (v) =>
+    !!v
+      ? { id: "district", value: v, filter: `mainHealthFacility_Location_Uuid: "${v.uuid}"` }
+      : { id: "district", value: null, filter: null };
+
+  _healthFacilityFilter = (v) =>
+    !!v
+      ? { id: "mainHealthFacility", value: v, filter: `mainHealthFacility_Uuid: "${v.uuid}"` }
+      : { id: "mainHealthFacility", value: null, filter: null };
+
+  _onChangeRegion = (v) => {
+    this.props.onChangeFilters([
+      this._regionFilter(v),
+      this._districtFilter(null),
+      this._healthFacilityFilter(null),
+    ]);
+    this.setState((s) => ({ reset: s.reset + 1 }));
+    this.props.selectRegion(v);
   };
 
-  _onChangeCheckbox = (key, value) => {
-    let filters = [
-      {
-        id: key,
-        value: value,
-        filter: `${key}: ${value}`,
-      },
-    ];
-    this.props.onChangeFilters(filters);
+  _onChangeDistrict = (v) => {
+    this.props.onChangeFilters([
+      this._regionFilter(!!v ? v.parent : this._filterValue("region")),
+      this._districtFilter(v),
+      this._healthFacilityFilter(null),
+    ]);
+    this.setState((s) => ({ reset: s.reset + 1 }));
+    this.props.selectDistrict(v);
   };
 
-  _onChange = (k, v, s) => {
-    let filters = [
-      {
-        id: k,
-        value: v,
-        filter: `${k}: "${v}"`,
-      },
-    ];
-    this.props.onChangeFilters(filters);
+  _onChangeHealthFacility = (v) => {
+    this.props.onChangeFilters([
+      this._regionFilter(!!v ? v.location.parent : this._filterValue("region")),
+      this._districtFilter(!!v ? v.location : this._filterValue("district")),
+      this._healthFacilityFilter(v),
+    ]);
+    this.setState((s) => ({ reset: s.reset + 1 }));
+    this.props.selectHealthFacility(v);
   };
 
   render() {
-    const { intl, classes } = this.props;
-
+    const { classes } = this.props;
     return (
       <Grid container className={classes.form}>
         <ControlledField
           module="claim"
-          id="ClaimFilter.region"
+          id="PrescriberFilter.region"
           field={
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
@@ -177,7 +104,7 @@ class PrescriberFilter extends Component {
         />
         <ControlledField
           module="claim"
-          id="ClaimFilter.district"
+          id="PrescriberFilter.district"
           field={
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
@@ -185,6 +112,7 @@ class PrescriberFilter extends Component {
                 value={this._filterValue("district")}
                 region={this._filterValue("region")}
                 withNull={true}
+                reset={this.state.reset}
                 onChange={this._onChangeDistrict}
               />
             </Grid>
@@ -192,19 +120,58 @@ class PrescriberFilter extends Component {
         />
         <ControlledField
           module="claim"
-          id="ClaimFilter.healthFacility"
+          id="PrescriberFilter.healthFacility"
           field={
             <Grid item xs={3} className={classes.item}>
               <PublishedComponent
                 pubRef="location.HealthFacilityPicker"
-                value={this._filterValue("healthFacility")}
+                value={this._filterValue("mainHealthFacility")}
                 region={this._filterValue("region")}
                 district={this._filterValue("district")}
+                reset={this.state.reset}
                 onChange={this._onChangeHealthFacility}
               />
             </Grid>
           }
         />
+      </Grid>
+    );
+  }
+}
+
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(
+    {
+      selectHealthFacility,
+      selectDistrict,
+      selectRegion,
+    },
+    dispatch
+  );
+
+const BoundHead = connect(null, mapDispatchToProps)(Head);
+
+class Details extends Component {
+  debouncedOnChangeFilter = _debounce(
+    this.props.onChangeFilters,
+    this.props.modulesManager.getConf("fe-claim", "debounceTime", 200)
+  );
+
+  _filterValue = (k) => {
+    const { filters } = this.props;
+    return !!filters && !!filters[k] ? filters[k].value : null;
+  };
+
+  _filterTextFieldValue = (k) => {
+    const { filters } = this.props;
+    return !!filters && !!filters[k] ? filters[k].value : "";
+  };
+
+  render() {
+    const { classes, intl, onChangeFilters } = this.props;
+
+    return (
+      <Grid container className={classes.form}>
         <Grid item xs={3} className={classes.item}>
           <TextInput
             module="claim"
@@ -222,6 +189,7 @@ class PrescriberFilter extends Component {
             }
           />
         </Grid>
+
         <Grid item xs={3} className={classes.item}>
           <TextInput
             module="claim"
@@ -239,21 +207,21 @@ class PrescriberFilter extends Component {
             }
           />
         </Grid>
+
         <Grid item xs={3} className={classes.item}>
           <TextInput
             module="claim"
             label="prescriber.otherNames"
             name="otherNames"
             value={this._filterTextFieldValue("otherNames")}
-            onChange={(v) => {
-                this.debouncedOnChangeFilter([
-                  {
-                    id: "otherNames",
-                    value: v,
-                    filter: !!v ? `otherNames_Icontains: "${v}"` : null,
-                  },
-                ]);
-              }
+            onChange={(v) =>
+              this.debouncedOnChangeFilter([
+                {
+                  id: "otherNames",
+                  value: v,
+                  filter: !!v ? `otherNames_Icontains: "${v}"` : null,
+                },
+              ])
             }
           />
         </Grid>
@@ -264,36 +232,36 @@ class PrescriberFilter extends Component {
             label="prescriber.nin"
             name="nin"
             value={this._filterTextFieldValue("nin")}
-            onChange={(v) => {
-                this.debouncedOnChangeFilter([
-                  {
-                    id: "nin",
-                    value: v,
-                    filter: !!v ? `nin_Istartswith: "${v}"` : null,
-                  },
-                ]);
-              }
+            onChange={(v) =>
+              this.debouncedOnChangeFilter([
+                {
+                  id: "nin",
+                  value: v,
+                  filter: !!v ? `nin_Istartswith: "${v}"` : null,
+                },
+              ])
             }
           />
         </Grid>
+
         <Grid item xs={3} className={classes.item}>
           <TextInput
             module="claim"
             label="prescriber.phone"
             name="phone"
             value={this._filterTextFieldValue("phone")}
-            onChange={(v) => {
-                this.debouncedOnChangeFilter([
-                  {
-                    id: "phone",
-                    value: v,
-                    filter: !!v ? `phone_Istartswith: "${v}"` : null,
-                  },
-                ]);
-              }
+            onChange={(v) =>
+              this.debouncedOnChangeFilter([
+                {
+                  id: "phone",
+                  value: v,
+                  filter: !!v ? `phone_Istartswith: "${v}"` : null,
+                },
+              ])
             }
           />
         </Grid>
+
         <ControlledField
           module="claim"
           id="prescriber.status"
@@ -302,11 +270,20 @@ class PrescriberFilter extends Component {
               <PublishedComponent
                 pubRef="claim.StatusPicker"
                 value={this._filterValue("status")}
-                onChange={this._onChangeStatus}
+                onChange={(v) =>
+                  onChangeFilters([
+                    {
+                      id: "status",
+                      value: v,
+                      filter: !!v ? `status_Code: ${v.code}` : null,
+                    },
+                  ])
+                }
               />
             </Grid>
           }
         />
+
         <ControlledField
           module="claim"
           id="prescriber.speciality"
@@ -315,107 +292,120 @@ class PrescriberFilter extends Component {
               <PublishedComponent
                 pubRef="claim.SpecialityPicker"
                 value={this._filterValue("speciality")}
-                onChange={this._onChangeSpeciality}
+                onChange={(v) =>
+                  onChangeFilters([
+                    {
+                      id: "speciality",
+                      value: v,
+                      filter: !!v ? `speciality_Uuid: "${v.uuid}"` : null,
+                    },
+                  ])
+                }
               />
             </Grid>
           }
         />
-        <ControlledField
-              module=""
-              id="prescriber.entryDate"
-              field={
-                  <Grid item xs={3}>
-                      <Grid container>
-                          <Grid item xs={6} className={classes.item}>
-                              <PublishedComponent
-                                  pubRef="core.DatePicker"
-                                  value={this._filterValue("entryDateFrom")}
-                                  module="claim"
-                                  label="prescriber.entryDateFrom"
-                                  onChange={(d) => {
-                                      this.props.onChangeFilters([
-                                          {
-                                              id: "entryDateFrom",
-                                              value: d,
-                                              filter: `entryDate_Gte: "${d}"`,
-                                          },
-                                      ]);
-                                    }
-                                  }
-                              />
-                          </Grid>
-                          <Grid item xs={6} className={classes.item}>
-                              <PublishedComponent
-                                  pubRef="core.DatePicker"
-                                  value={this._filterValue("entryDateTo")}
-                                  module="claim"
-                                  label="prescriber.entryDateTo"
-                                  onChange={(d) => {
-                                      this.props.onChangeFilters([
-                                          {
-                                              id: "entryDateTo",
-                                              value: d,
-                                              filter: `entryDate_Lte: "${d}"`,
-                                          },
-                                      ])
-                                    }
-                                  }
-                              />
-                          </Grid>
-                      </Grid>
-                  </Grid>
-              }
-          />
 
-          <ControlledField
-              module=""
-              id="prescriber.releaseDate"
-              field={
-                  <Grid item xs={3}>
-                      <Grid container>
-                          <Grid item xs={6} className={classes.item}>
-                              <PublishedComponent
-                                  pubRef="core.DatePicker"
-                                  value={this._filterValue("releaseDateFrom")}
-                                  module="claim"
-                                  label="prescriber.releaseDateFrom"
-                                  onChange={(d) => {
-                                      this.props.onChangeFilters([
-                                          {
-                                              id: "releaseDateFrom",
-                                              value: d,
-                                              filter: `releaseDate_Gte: "${d}"`,
-                                          },
-                                      ]);
-                                    }
-                                  }
-                              />
-                          </Grid>
-                          <Grid item xs={6} className={classes.item}>
-                              <PublishedComponent
-                                  pubRef="core.DatePicker"
-                                  value={this._filterValue("releaseDateTo")}
-                                  module="claim"
-                                  label="prescriber.releaseDateTo"
-                                  onChange={(d) => {
-                                      this.props.onChangeFilters([
-                                          {
-                                              id: "releaseDateTo",
-                                              value: d,
-                                              filter: `releaseDate_Lte: "${d}"`,
-                                          },
-                                      ]);
-                                    }
-                                  }
-                              />
-                          </Grid>
-                      </Grid>
-                  </Grid>
-              }
-          />
+        <Grid item xs={3}>
+          <Grid container>
+            <Grid item xs={6} className={classes.item}>
+              <PublishedComponent
+                pubRef="core.DatePicker"
+                value={this._filterValue("entryDateFrom")}
+                module="claim"
+                label="prescriber.entryDateFrom"
+                onChange={(d) =>
+                  onChangeFilters([
+                    {
+                      id: "entryDateFrom",
+                      value: d,
+                      filter: !!d ? `entryDate_Gte: "${d}"` : null,
+                    },
+                  ])
+                }
+              />
+            </Grid>
+            <Grid item xs={6} className={classes.item}>
+              <PublishedComponent
+                pubRef="core.DatePicker"
+                value={this._filterValue("entryDateTo")}
+                module="claim"
+                label="prescriber.entryDateTo"
+                onChange={(d) =>
+                  onChangeFilters([
+                    {
+                      id: "entryDateTo",
+                      value: d,
+                      filter: !!d ? `entryDate_Lte: "${d}"` : null,
+                    },
+                  ])
+                }
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={3}>
+          <Grid container>
+            <Grid item xs={6} className={classes.item}>
+              <PublishedComponent
+                pubRef="core.DatePicker"
+                value={this._filterValue("releaseDateFrom")}
+                module="claim"
+                label="prescriber.releaseDateFrom"
+                onChange={(d) =>
+                  onChangeFilters([
+                    {
+                      id: "releaseDateFrom",
+                      value: d,
+                      filter: !!d ? `releaseDate_Gte: "${d}"` : null,
+                    },
+                  ])
+                }
+              />
+            </Grid>
+            <Grid item xs={6} className={classes.item}>
+              <PublishedComponent
+                pubRef="core.DatePicker"
+                value={this._filterValue("releaseDateTo")}
+                module="claim"
+                label="prescriber.releaseDateTo"
+                onChange={(d) =>
+                  onChangeFilters([
+                    {
+                      id: "releaseDateTo",
+                      value: d,
+                      filter: !!d ? `releaseDate_Lte: "${d}"` : null,
+                    },
+                  ])
+                }
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Contributions
+          filters={this.props.filters}
+          onChangeFilters={onChangeFilters}
+          contributionKey={PRESCRIBER_FILTER_CONTRIBUTION_KEY}
+        />
       </Grid>
     );
   }
 }
 
-export default withModulesManager(injectIntl(withTheme(withStyles(styles)(PrescriberFilter))));
+class PrescriberFilter extends Component {
+  render() {
+    const { classes } = this.props;
+    return (
+      <form className={classes.container} noValidate autoComplete="off">
+        <BoundHead {...this.props} />
+        <Details {...this.props} />
+      </form>
+    );
+  }
+}
+
+export default withModulesManager(
+  injectIntl(withTheme(withStyles(styles)(PrescriberFilter)))
+);
