@@ -61,13 +61,13 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" preAuth="true"/>;
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" preAuth="true"/>;
   }
 }
 

@@ -299,7 +299,7 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false,preAuth = false } = this.props;
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
@@ -352,6 +352,7 @@ class ClaimChildPanel extends Component {
           <PublishedComponent
             readOnly={!!forReview || readOnly}
             pubRef={picker}
+            preAuth={preAuth}
             filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
             value={i[type]}
