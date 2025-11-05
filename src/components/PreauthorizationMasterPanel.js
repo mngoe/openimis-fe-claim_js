@@ -146,7 +146,8 @@ class PreauthorizationMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    let ro = readOnly || !!forReview || !!forFeedback;
+    // let trueReadonly = readOnly || !!forReview || !!forFeedback;
+    let trueReadonly=edited?.statusPreAuthorization >= 8;
     return (
       <Grid container>
         <ControlledField
@@ -174,7 +175,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 value={edited.insuree}
                 reset={reset || isDuplicate}
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
-                readOnly={ro}
+                readOnly={trueReadonly}
                 required={true}
                 autoFocus={true}
               />
@@ -192,6 +193,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                   label={formatMessage(intl, "claim", "prescriber")}
                   value={edited.prescriber}
                   reset={reset}
+                  readOnly={trueReadonly}
                   hf_uuid={edited.healthFacility?.uuid}
                   onChange={(v, s) => this.updateAttribute("prescriber", v)}
                   required
@@ -211,7 +213,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 label="visitDateFrom"
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateFrom", d)}
-                readOnly={ro}
+                readOnly={trueReadonly}
                 required={true}
                 maxDate={edited.dateTo < edited.dateClaimed ? edited.dateTo : edited.dateClaimed}
               />
@@ -230,7 +232,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 label="visitDateTo"
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateTo", d)}
-                readOnly={ro}
+                readOnly={trueReadonly}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
                 required={this.fields.visitDateTo == "M"}
@@ -250,7 +252,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 label="claimedDate"
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={this.isClaimedDateFixed ?? ro}
+                readOnly={this.isClaimedDateFixed ?? trueReadonly}
                 required={true}
                 minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
               />
@@ -269,7 +271,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 value={edited.visitType}
                 reset={reset}
                 onChange={(v, s) => this.updateAttribute("visitType", v)}
-                readOnly={ro}
+                readOnly={trueReadonly}
                 required={true}
               />
             </Grid>
@@ -287,7 +289,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 value={edited.careType}
                 reset={reset}
                 onChange={(value) => this.updateAttribute("careType", value)}
-                readOnly={ro}
+                readOnly={trueReadonly}
                 required={this.isCareTypeMandatory}
               />
             </Grid>
@@ -306,7 +308,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                   value={edited.icd}
                   reset={reset}
                   onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro}
+                  readOnly={trueReadonly}
                   required
                 />
               </Grid>
@@ -327,7 +329,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                      this.EMPTY_STRING
                    }
                    reset={reset}
-                   readOnly={ro}
+                   readOnly={trueReadonly}
                    required={this.fields.referalHF == "M" && edited.visitType === this.claimTypeReferSymbol}
                    filterOptions={(options) =>
                      options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
@@ -355,7 +357,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 label="claim.pre-authorization-code"
                 module="claim"
                 onChange={(codePreAuthorization) => this.updateAttribute("codePreAuthorization", codePreAuthorization)}
-                readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimPreAuthorizationCode}
+                readOnly={trueReadonly || this.autoGenerateClaimPreAuthorizationCode}
                 required={!this.autoGenerateClaimPreAuthorizationCode}
                 setValidAction={claimPreAuthorizationCodeSetValid}
                 shouldValidate={this.shouldValidate}
@@ -385,7 +387,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                 value={edited.guaranteeId}
                 reset={reset}
                 onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                readOnly={ro}
+                readOnly={trueReadonly}
                 inputProps={{
                   "maxLength": this.guaranteeIdMaxLength,
                 }}
@@ -472,7 +474,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                       value={edited[`icd${diagnosisIndex + 1}`]}
                       reset={reset}
                       onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
-                      readOnly={ro}
+                      readOnly={trueReadonly}
                     />
                   </Grid>
                 }
@@ -507,7 +509,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                     value={edited.explanation}
                     reset={reset}
                     onChange={(v) => this.updateAttribute("explanation", v)}
-                    readOnly={ro}
+                    readOnly={trueReadonly}
                     required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
                   />
                 </Grid>
@@ -525,7 +527,7 @@ class PreauthorizationMasterPanel extends FormPanel {
                       value={edited.adjustment}
                       reset={reset}
                       onChange={(v) => this.updateAttribute("adjustment", v)}
-                      readOnly={readOnly || edited.reviewStatus >= 8}
+                      readOnly={trueReadonly || edited.reviewStatus >= 8}
                     />
                   </Grid>
                 }
@@ -559,7 +561,7 @@ class PreauthorizationMasterPanel extends FormPanel {
         )}
         <Contributions
           claim={edited}
-          readOnly={ro}
+          readOnly={trueReadonly}
           insuree={edited.insuree}
           dateTo={edited.dateTo}
           dateFrom={edited.dateFrom}

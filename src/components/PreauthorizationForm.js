@@ -42,8 +42,11 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   REFERRAL,
+  RIGHT_REJECT_PRE_AUTH_PERMS,
+  RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS,
+  RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS,
 } from "../constants";
-import ClaimChildPanel from "./ClaimChildPanel";
+import PreAuthChildPanel from "./PreAuthChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 import PreauthorizationMasterPanel from "./PreauthorizationMasterPanel";
 import { submitToMedical } from "../actions";
@@ -61,13 +64,13 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    return <PreAuthChildPanel {...this.props} type="service" picker="medical.ServicePicker" preAuth="true"/>;
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    return <PreAuthChildPanel {...this.props}  type="item" picker="medical.ItemPicker" preAuth="true"/>;
   }
 }
 
@@ -581,7 +584,9 @@ class PreauthorizationForm extends Component {
       },
 
       {
-        condition: claim_uuid && (claim.statusPreAuthorization==4 || claim.statusPreAuthorization==8),
+        condition: claim_uuid && ((claim.statusPreAuthorization==4 && rights.includes(RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS))
+          || (claim.statusPreAuthorization==8 && rights.includes(RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS))
+          ) && rights.includes(RIGHT_REJECT_PRE_AUTH_PERMS),
         content: (
           <span>
             <Fab
@@ -596,7 +601,7 @@ class PreauthorizationForm extends Component {
       },
 
       {
-        condition: claim_uuid && (claim.statusPreAuthorization==4),
+        condition: claim_uuid && (claim.statusPreAuthorization==4) && rights.includes(RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS),
         content: (
           <span>
           <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
@@ -614,7 +619,7 @@ class PreauthorizationForm extends Component {
       },
 
       {
-        condition: claim_uuid && (claim.statusPreAuthorization==8),
+        condition: claim_uuid && (claim.statusPreAuthorization==8) && rights.includes(RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS) ,
         content: (
           <span>
           <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
@@ -684,6 +689,7 @@ class PreauthorizationForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={PreauthorizationMasterPanel}
+              // readOnly={readOnly}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}

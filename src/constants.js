@@ -1,6 +1,7 @@
 import _ from "lodash";
 
 export const CLAIM_STATUS = [1, 2, 4, 8, 16];
+export const CLAIM_STATUS_FILTER = [ 2, 4, 8];
 export const CLAIM_PRE_AUTHORIZATION_STATUS = [1, 2, 4, 8, 16];
 export const CLAIM_ACT_TYPE = [1, 2];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
@@ -41,9 +42,14 @@ export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
 
+
+export const RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS = 111015;
+export const RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS = 111016;
+export const RIGHT_REJECT_PRE_AUTH_PERMS = 111018;
+
 export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = 'status_Gt: 2';
 
-export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 1;
+export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4;
 export const POLICY_ACTIVE_STATUS = 2;
 
 export const DEFAULT = {

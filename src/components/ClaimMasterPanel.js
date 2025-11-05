@@ -81,8 +81,8 @@ class ClaimMasterPanel extends FormPanel {
       "attachmentRequiredForReferral",
       false,
     );
-    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", true);
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", true);
+    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
   }
 
   shouldValidate = (inputValue) => {

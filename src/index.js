@@ -22,6 +22,7 @@ import PatientConditionPicker from "./pickers/PatientConditionPicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import RejectionDialog from "./components/RejectionDialog";
+import PreAuthFilterPicker from "./pickers/PreAuthFilterPicker";
 import messages_en from "./translations/en.json";
 import messages_km from "./translations/km.json";
 import messages_fr from "./translations/fr.json";
@@ -226,6 +227,7 @@ const DEFAULT_CONFIG = {
       ],
     },
     { key: "claim.ClaimOfficerPicker", ref: ClaimOfficerPicker },
+    { key: "claim.PreAuthFilterPicker", ref: PreAuthFilterPicker },
     { key: "claim.RejectionDialog", ref: RejectionDialog },
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },

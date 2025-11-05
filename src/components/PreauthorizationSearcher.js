@@ -20,6 +20,7 @@ import {
   PublishedComponent,
 } from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
+import PreauthorizationFilter from "./PreauthorizationFilter";
 
 const PREAUTHORIZATION_SEARCHER_CONTRIBUTION_KEY = "preauthorization.Searcher";
 
@@ -192,7 +193,7 @@ class PreauthorizationSearcher extends Component {
       "claimSummaries.statusPreAuthorization",
       // "claimSummaries.feedbackStatus",
       // "claimSummaries.reviewStatus",
-      // "claimSummaries.claimed",
+      "claimSummaries.claimed",
       // "claimSummaries.approved",
       // "claimSummaries.claimStatus",
     ];
@@ -263,7 +264,7 @@ class PreauthorizationSearcher extends Component {
       // (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
       // (c) => this.feedbackColFormatter(c),
       // (c) => this.reviewColFormatter(c),
-      // (c) => formatAmount(this.props.intl, c.claimed),
+      (c) => formatAmount(this.props.intl, c.claimed),
       // (c) => formatAmount(this.props.intl, c.approved),
       // (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
@@ -350,7 +351,7 @@ class PreauthorizationSearcher extends Component {
           canSelectAll={this.canSelectAll}
           defaultFilters={defaultFilters}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={ClaimFilter}
+          FilterPane={PreauthorizationFilter}
           FilterExt={FilterExt}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={claims}

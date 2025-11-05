@@ -57,10 +57,10 @@ class PreAuthorizationsPage extends Component {
   canSubmitSelected = (selection) =>
     !!selection &&
     selection.length &&
-    selection.filter((s) => s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
+    selection.filter((s) => s.statusPreAuthorization === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
       selection.length;
 
-  canSubmitAll = (selection) => !selection || selection.length == 0;
+  // canSubmitAll = (selection) => !selection || selection.length == 0;
 
   submitSelected = (selection) => {
     if (selection.length === 1) {
@@ -77,15 +77,21 @@ class PreAuthorizationsPage extends Component {
     }
   };
 
-  submitAll = (selection) => {
-    let filters = this.props.selectedFilters;
-    if (selection.length === 0) {
-      this.props.submitAll(
-        filters,
-        formatMessageWithValues(this.props.intl, "claim", "SubmitAllClaims.mutationLabel", { "claims": "All" }),
-      );
-    }
-  };
+  // submitAll = (selection) => {
+  //   // let filters = this.props.selectedFilters;
+  //   if (selection.length === 0) {
+
+  //     this.props.submitPreAuthorization(
+  //       selection,
+  //       formatMessage(this.props.intl, "claim", "SubmitClaims.mutationLabel.all"),
+  //     );
+
+  //     // this.props.submitAll(
+  //     //   filters,
+  //     //   formatMessageWithValues(this.props.intl, "claim", "SubmitAllClaims.mutationLabel", { "claims": "All" }),
+  //     // );
+  //   }
+  // };
 
   canDeleteSelected = (selection) =>
     !!selection && selection.length && selection.filter((s) => s.status === 2).length === selection.length;
@@ -158,7 +164,7 @@ class PreAuthorizationsPage extends Component {
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
-      actions.push({ label: "claimSummaries.submitAll", enabled: this.canSubmitAll, action: this.submitAll });
+      // actions.push({ label: "claimSummaries.submitAll", enabled: this.canSubmitAll, action: this.submitAll });
       actions.push({
         label: "claimSummaries.submitSelected",
         enabled: this.canSubmitSelected,
