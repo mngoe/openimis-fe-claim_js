@@ -143,6 +143,7 @@ class ClaimForm extends Component {
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
     claim.preAuthorization = false;
+    claim.isPreAuthorization=false;
     claim.jsonExt = {};
     return claim;
   }
