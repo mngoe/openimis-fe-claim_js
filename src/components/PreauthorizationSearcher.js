@@ -20,6 +20,7 @@ import {
   PublishedComponent,
 } from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
+import PreauthorizationFilter from "./PreauthorizationFilter";
 
 const PREAUTHORIZATION_SEARCHER_CONTRIBUTION_KEY = "preauthorization.Searcher";
 
@@ -350,7 +351,7 @@ class PreauthorizationSearcher extends Component {
           canSelectAll={this.canSelectAll}
           defaultFilters={defaultFilters}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={ClaimFilter}
+          FilterPane={PreauthorizationFilter}
           FilterExt={FilterExt}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={claims}
