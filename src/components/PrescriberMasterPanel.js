@@ -37,7 +37,16 @@ class PrescriberMasterPanel extends FormPanel {
                 value={edited.region || edited.mainHealthFacility?.location?.parent}
                 withNull={true}
                 readOnly={readOnly}
-                onChange={(v) => this.updateAttribute("region",v)}
+                onChange={(v) =>{
+                    this.updateAttribute("region",v);
+                    setTimeout(()=>{
+                        if(v == null){
+                            this.updateAttribute("district",null);
+                            this.updateAttribute("mainHealthFacility",null);
+                        }
+                    }
+                    ,0)}
+                }
                 />
             </Grid>
             }
@@ -53,7 +62,18 @@ class PrescriberMasterPanel extends FormPanel {
                 region={edited.region || edited.mainHealthFacility?.location?.parent}
                 readOnly={readOnly}
                 withNull={true}
-                onChange={(v) => this.updateAttribute("district",v)}
+                onChange={(v) => {
+                        this.updateAttribute("district",v);
+                        setTimeout(()=>{
+                            if(v != null){
+                                this.updateAttribute("region",v.parent);
+                            }else{
+                                this.updateAttribute("mainHealthFacility",null);
+                            }
+                        }
+                        ,0)
+                    }
+                }
                 />
             </Grid>
             }
@@ -70,6 +90,7 @@ class PrescriberMasterPanel extends FormPanel {
                     required={true}
                     district={edited.district}
                     readOnly={readOnly}
+                    withNull={true}
                     onChange={(v) => {
                       this.updateAttribute("mainHealthFacility",v)
                       
@@ -267,8 +288,6 @@ class PrescriberMasterPanel extends FormPanel {
                     <PublishedComponent
                     pubRef="location.HealthFacilityPicker"
                     value={hf}
-                    region={edited.region}
-                    district={edited.district}
                     withNull={true}
                     onChange={(v) => {
                         const updated = [...(edited.authorizedHealthFacilities || [])];
