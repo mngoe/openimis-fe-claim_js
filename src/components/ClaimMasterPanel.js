@@ -3,6 +3,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import { bindActionCreators } from "redux";
+import { TextField } from "@material-ui/core";
 import {
   formatMessage,
   ControlledField,
@@ -314,7 +315,7 @@ class ClaimMasterPanel extends FormPanel {
                     }
                   }}
                   InputLabelProps={{ shrink: true }}
-                  disabled={trueReadonly}
+                  disabled={true}
                   required={true}
                   fullWidth
                 />
