@@ -666,7 +666,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "isPreAuthorization",
     "codePreAuthorization",
     "jsonExt",
-    "statusPreAuthorization"
+    "statusPreAuthorization",
+    "datePreAuthorization"
   ];
   if (!!forFeedback) {
     projections.push(

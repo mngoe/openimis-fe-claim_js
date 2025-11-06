@@ -82,7 +82,6 @@ class ClaimMasterPanel extends FormPanel {
       false,
     );
     this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
   }
 
   shouldValidate = (inputValue) => {
@@ -148,6 +147,7 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     let ro = readOnly || !!forReview || !!forFeedback;
+    let isPreAuthorization = edited.isPreAuthorization;
     return (
       <Grid container>
         <ControlledField
@@ -175,7 +175,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.insuree}
                 reset={reset || isDuplicate}
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
-                readOnly={ro}
+                readOnly={ro || isPreAuthorization}
                 required={true}
                 autoFocus={true}
               />
@@ -193,6 +193,7 @@ class ClaimMasterPanel extends FormPanel {
                   label={formatMessage(intl, "claim", "prescriber")}
                   value={edited.prescriber}
                   reset={reset}
+                  readOnly={ro || isPreAuthorization}
                   hf_uuid={edited.healthFacility?.uuid}
                   onChange={(v, s) => this.updateAttribute("prescriber", v)}
                   required
@@ -270,7 +271,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.visitType}
                 reset={reset}
                 onChange={(v, s) => this.updateAttribute("visitType", v)}
-                readOnly={ro}
+                readOnly={ro || isPreAuthorization}
                 required={true}
               />
             </Grid>
@@ -307,7 +308,7 @@ class ClaimMasterPanel extends FormPanel {
                   value={edited.icd}
                   reset={reset}
                   onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro}
+                  readOnly={ro || isPreAuthorization}
                   required
                 />
               </Grid>
@@ -328,7 +329,7 @@ class ClaimMasterPanel extends FormPanel {
                      this.EMPTY_STRING
                    }
                    reset={reset}
-                   readOnly={ro}
+                   readOnly={ro || isPreAuthorization}
                    required={this.fields.referalHF == "M" && edited.visitType === this.claimTypeReferSymbol}
                    filterOptions={(options) =>
                      options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
@@ -386,7 +387,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.guaranteeId}
                 reset={reset}
                 onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                readOnly={ro}
+                readOnly={ro || isPreAuthorization}
                 inputProps={{
                   "maxLength": this.guaranteeIdMaxLength,
                 }}
@@ -473,7 +474,7 @@ class ClaimMasterPanel extends FormPanel {
                       value={edited[`icd${diagnosisIndex + 1}`]}
                       reset={reset}
                       onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
-                      readOnly={ro}
+                      readOnly={ro || isPreAuthorization}
                     />
                   </Grid>
                 }
@@ -508,7 +509,7 @@ class ClaimMasterPanel extends FormPanel {
                     value={edited.explanation}
                     reset={reset}
                     onChange={(v) => this.updateAttribute("explanation", v)}
-                    readOnly={ro}
+                    readOnly={ro || isPreAuthorization}
                     required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
                   />
                 </Grid>
@@ -558,19 +559,50 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Grid>
         )}
-        {this.showPreAuthorization && (
+        {edited?.preAuthorization && (
           <FormControlLabel
             control={
               <Checkbox
                 id="Claim.preAuthorization"
                 color="primary"
                 checked={edited?.preAuthorization}
+                disabled={true}
                 onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
               />
             }
             label={formatMessage(intl, "claim", "pre-authorization")}
           />
         )}
+        {edited?.preAuthorization && (
+          <Grid item xs={3} className={classes.item}>
+            <TextInput
+              id="claim.preAuthorizationCode"
+              module="insuree"
+              label="claim.pre-authorization-code"
+              value={edited.codePreAuthorization}
+              readOnly={true}
+            />
+          </Grid>
+        )}
+        {edited?.preAuthorization && (
+          <ControlledField
+          module="claim"
+          id="Claim.preAuthorizationDate"
+          field={
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="core.DatePicker"
+                value={edited.datePreAuthorization}
+                module="claim"
+                label="claim.pre-authorization-date"
+                reset={reset}
+                readOnly={true}
+              />
+            </Grid>
+          }
+        />
+        )}
+  
         <Contributions
           claim={edited}
           readOnly={ro}
