@@ -144,7 +144,6 @@ class ClaimForm extends Component {
     claim.code = "";
     claim.isPreAuthorization=false;
     claim.preAuthorization = false;
-    claim.isPreAuthorization=false;
     claim.jsonExt = {};
     return claim;
   }
