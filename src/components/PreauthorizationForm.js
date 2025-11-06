@@ -151,6 +151,7 @@ class PreauthorizationForm extends Component {
     claim.codePreAuthorization = "";
     claim.preAuthorization = true;
     claim.isPreAuthorization = true;
+    claim.datePreAuthorizationEmergency=null;
     claim.statusPreAuthorization = null;
     claim.jsonExt = {};
     return claim;
@@ -291,6 +292,9 @@ class PreauthorizationForm extends Component {
       !this.state.claim.referHF
     )
     return false;
+    if (!this.state.claim.datePreAuthorizationEmergency&&this.state.claim.visitType=="E"&&this.state.claim.isPreAuthorization=="E") {
+      
+    }
     // if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.prescriber) return false;

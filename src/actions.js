@@ -600,6 +600,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
     preAuthorization: ${claim.preAuthorization}
     isPreAuthorization: ${claim.isPreAuthorization}
+    ${claim.datePreAuthorizationEmergency? `datePreAuthorizationEmergency: "${claim.datePreAuthorizationEmergency}" `: ""}
  `;
 }
 
@@ -667,7 +668,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "codePreAuthorization",
     "jsonExt",
     "statusPreAuthorization",
-    "datePreAuthorization"
+    "datePreAuthorization",
+    "datePreAuthorizationEmergency" 
   ];
   if (!!forFeedback) {
     projections.push(

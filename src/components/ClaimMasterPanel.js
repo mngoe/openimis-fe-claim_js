@@ -284,16 +284,39 @@ class ClaimMasterPanel extends FormPanel {
             id="Claim.datePreAuthorizationEmergency"
             field={
               <Grid item xs={2} className={classes.item}>
-                <PublishedComponent
-                  pubRef="core.DatePicker"
-                  value={edited.datePreAuthorizationEmergency ?? new Date()}
-                  module="claim"
-                  label="claim.datePreAuthorizationEmergency"
-                  reset={reset}
-                  onChange={(d) => this.updateAttribute("datePreAuthorizationEmergency", d)}
-                  readOnly={ro || isPreAuthorization}
+                <TextField
+                  readOnly={true}
+                  type="datetime-local"
+                  label={formatMessage(intl, "claim", "claim.datePreAuthorizationEmergency")}
+                  value={
+                    edited.datePreAuthorizationEmergency 
+                      ? (typeof edited.datePreAuthorizationEmergency === 'string' 
+                          ? edited.datePreAuthorizationEmergency.slice(0, 16)
+                          : (() => {
+                              const date = new Date(edited.datePreAuthorizationEmergency);
+                              const year = date.getFullYear();
+                              const month = String(date.getMonth() + 1).padStart(2, '0');
+                              const day = String(date.getDate()).padStart(2, '0');
+                              const hours = String(date.getHours()).padStart(2, '0');
+                              const minutes = String(date.getMinutes()).padStart(2, '0');
+                              return `${year}-${month}-${day}T${hours}:${minutes}`;
+                            })())
+                      : ""
+                  }
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      // e.target.value est déjà au format "2025-11-06T14:58"
+                      // Ajouter juste les secondes sans conversion de timezone
+                      const isoString = `${e.target.value}:00`;
+                      this.updateAttribute("datePreAuthorizationEmergency", isoString);
+                    } else {
+                      this.updateAttribute("datePreAuthorizationEmergency", null);
+                    }
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  disabled={trueReadonly}
                   required={true}
-                  // minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
+                  fullWidth
                 />
               </Grid>
             }
