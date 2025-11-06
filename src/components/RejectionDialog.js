@@ -38,14 +38,11 @@ class RejectionDialog extends Component {
   };
 
   componentDidMount() {
-    console.log("RejectionDialog mounted, claim:", this.props.claim);
   }
 
   componentDidUpdate(prevProps) {
-    console.log("RejectionDialog updated, claim:", this.props.claim);
     // Reset the rejection value when dialog is opened
     if (!prevProps.claim && this.props.claim) {
-      console.log("Dialog opening with claim:", this.props.claim);
       this.setState({ rejection_value: "" });
     }
   }
@@ -65,7 +62,6 @@ class RejectionDialog extends Component {
     const { claim, onSubmit } = this.props;
     const { rejection_value } = this.state;
 
-    console.log("Rejection submitted for claim:", claim?.uuid, "reason:", rejection_value);
     
     // Call the submission handler if provided
     if (onSubmit) {

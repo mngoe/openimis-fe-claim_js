@@ -54,7 +54,7 @@ const ROUTE_SPECIALITY_EDIT = "claim/specialities/speciality";
 const ROUTE_PRESCRIBERS = "claim/prescribers";
 const ROUTE_PRESCRIBER_EDIT = "claim/prescriberEdit";
 const ROUTE_PREAUTHORIZATIONS = "claim/preAuthorizations";
-const ROUTE_PREAUTHORIZATION_EDIT = "claim/preAuthorizationEdit";
+const ROUTE_PREAUTHORIZATION_EDIT = "claim/preAuthorization/edit";
 
 const DEFAULT_CONFIG = {
   "translations": [

@@ -202,64 +202,7 @@ class PreauthorizationMasterPanel extends FormPanel {
               </Grid>
             }
           />
-        {/* <ControlledField
-          module="claim"
-          id="Claim.visitDateFrom"
-          field={
-            <Grid item xs={2} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateFrom}
-                module="claim"
-                label="visitDateFrom"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateFrom", d)}
-                readOnly={trueReadonly}
-                required={true}
-                maxDate={edited.dateTo < edited.dateClaimed ? edited.dateTo : edited.dateClaimed}
-              />
-            </Grid>
-          }
-        /> */}
-        {/* <ControlledField
-          module="claim"
-          id="Claim.visitDateTo"
-          field={
-            <Grid item xs={2} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateTo}
-                module="claim"
-                label="visitDateTo"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateTo", d)}
-                readOnly={trueReadonly}
-                minDate={edited.dateFrom}
-                maxDate={edited.dateClaimed}
-                required={this.fields.visitDateTo == "M"}
-              />
-            </Grid>
-          }
-        /> */}
-        {/* <ControlledField
-          module="claim"
-          id="Claim.claimedDate"
-          field={
-            <Grid item xs={2} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateClaimed ?? new Date()}
-                module="claim"
-                label="claimedDate"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={this.isClaimedDateFixed ?? trueReadonly}
-                required={true}
-                minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
-              />
-            </Grid>
-          }
-        /> */}
+        
         <ControlledField
           module="claim"
           id="Claim.visitType"
@@ -305,8 +248,7 @@ class PreauthorizationMasterPanel extends FormPanel {
           }
           onChange={(e) => {
             if (e.target.value) {
-              // e.target.value est déjà au format "2025-11-06T14:58"
-              // Ajouter juste les secondes sans conversion de timezone
+              
               const isoString = `${e.target.value}:00`;
               this.updateAttribute("datePreAuthorizationEmergency", isoString);
             } else {
@@ -322,24 +264,6 @@ class PreauthorizationMasterPanel extends FormPanel {
     }
   />
 }
-        {/* <ControlledField
-          module="claim"
-          id="Claim.careType"
-          field={
-            <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
-              <PublishedComponent
-                pubRef="claim.CareTypePicker"
-                name="careType"
-                withNull={false}
-                value={edited.careType}
-                reset={reset}
-                onChange={(value) => this.updateAttribute("careType", value)}
-                readOnly={trueReadonly}
-                required={this.isCareTypeMandatory}
-              />
-            </Grid>
-          }
-        /> */}
         {!forFeedback && (
           <ControlledField
             module="claim"
