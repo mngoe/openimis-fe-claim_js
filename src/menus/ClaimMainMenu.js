@@ -13,6 +13,14 @@ class ClaimMainMenu extends Component {
     if (!!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) {
       // RIGHT_SEARCH is shared by HF & HQ staff)
       entries.push({
+        text: formatMessage(this.props.intl, "claim", "menu.PreAuthorizationClaims"),
+        icon: <Keyboard />,
+        route: "/claim/preAuthorizations",
+      });
+    }
+    if (!!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) {
+      // RIGHT_SEARCH is shared by HF & HQ staff)
+      entries.push({
         text: formatMessage(this.props.intl, "claim", "menu.healthFacilityClaims"),
         icon: <Keyboard />,
         route: "/claim/healthFacilities",

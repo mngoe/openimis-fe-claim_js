@@ -104,7 +104,6 @@ function reducer(
       };
     case "PRESCRIBER_FETCH_ONE_RESP": {
       const edges = action.payload?.data?.prescribers?.edges || [];
-      console.log("edges",action.payload?.data);
       const prescriber = edges.length > 0 ? edges[0].node : null;
       return {
         ...state,
@@ -456,6 +455,18 @@ function reducer(
           },
         },
       };
+      case "CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION_REQ":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimPreAuthorizationCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
+          },
+        },
+      };
       case "SPECIALITY_CODE_FIELDS_VALIDATION_REQ":
         return {
           ...state,
@@ -486,6 +497,18 @@ function reducer(
         validationFields: {
           ...state.validationFields,
           claimCode: {
+            isValidating: false,
+            isValid: action.payload?.data.isValid,
+            validationError: formatGraphQLError(action.payload),
+          },
+        },
+      };
+      case "CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION_RESP":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimPreAuthorizationCode: {
             isValidating: false,
             isValid: action.payload?.data.isValid,
             validationError: formatGraphQLError(action.payload),
@@ -528,6 +551,18 @@ function reducer(
           },
         },
       };
+      case "CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION_ERR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimPreAuthorizationCode: {
+            isValidating: false,
+            isValid: false,
+            validationError: formatServerError(action.payload),
+          },
+        },
+      };
       case "SPECIALITY_CODE_FIELDS_VALIDATION_ERR":
         return {
           ...state,
@@ -558,6 +593,18 @@ function reducer(
         validationFields: {
           ...state.validationFields,
           claimCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
+          },
+        },
+      };
+      case "CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION_CLEAR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimPreAuthorizationCode: {
             isValidating: true,
             isValid: false,
             validationError: null,
@@ -600,6 +647,18 @@ function reducer(
           },
         },
       };
+      case "CLAIM_PRE_AUTHORIZATION_CODE_FIELDS_VALIDATION_SET_VALID":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimPreAuthorizationCode: {
+            isValidating: false,
+            isValid: true,
+            validationError: null,
+          },
+        },
+      };
       case "SPECIALITY_CODE_FIELDS_VALIDATION_SET_VALID":
       return {
         ...state,
@@ -634,6 +693,14 @@ function reducer(
       return dispatchMutationResp(state, "updateClaim", action);
     case "CLAIM_SUBMIT_CLAIMS_RESP":
       return dispatchMutationResp(state, "submitClaims", action);
+    case "CLAIM_SUBMIT_CLAIMS_PRE_AUTHORIZATION_RESP":
+      return dispatchMutationResp(state, "submitClaimsPreAuthorization", action);
+    case "CLAIM_SUBMIT_CLAIMS_TO_MEDICAL_RESP":
+        return dispatchMutationResp(state, "submitClaimsToMedical", action);
+    case "CLAIM_SUBMIT_CLAIMS_TO_NORMAL_RESP":
+      return dispatchMutationResp(state, "submitToNormalClaim", action);
+    case "CLAIM_REJECT_CLAIMS_PRE_AUTHORIZATION_RESP":
+      return dispatchMutationResp(state, "rejectClaimPreAuthorization", action);
     case "CLAIM_DELETE_CLAIMS_RESP":
       return dispatchMutationResp(state, "deleteClaims", action);
     case "CLAIM_SELECT_CLAIMS_FOR_FEEDBACK_RESP":
