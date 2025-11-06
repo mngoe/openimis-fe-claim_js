@@ -20,9 +20,9 @@ import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
-  claimCodeSetValid,
-  claimCodeValidationCheck,
-  claimCodeValidationClear,
+  claimPreAuthorizationCodeSetValid,
+  claimPreAuthorizationCodeValidationCheck,
+  claimPreAuthorizationCodeValidationClear,
   claimHealthFacilitySet,
   clearClaim,
 } from "../actions";
@@ -40,10 +40,10 @@ const styles = (theme) => ({
   item: theme.paper.item,
 });
 
-class ClaimMasterPanel extends FormPanel {
+class PreauthorizationMasterPanel extends FormPanel {
   state = {
-    claimCode: null,
-    claimCodeError: null,
+    claimPreAuthorizationCode: null,
+    claimPreAuthorizationCodeError: null,
   };
 
   constructor(props) {
@@ -51,10 +51,10 @@ class ClaimMasterPanel extends FormPanel {
     this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 8);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
-    this.autoGenerateClaimCode = props.modulesManager.getConf(
+    this.autoGenerateClaimPreAuthorizationCode = props.modulesManager.getConf(
       "fe-claim",
-      "claimForm.autoGenerateClaimCode",
-      DEFAULT.AUTOGENERATE_CLAIM_CODE,
+      "claimForm.autoGenerateClaimPreAuthorizationCode",
+      false,
     );
     this.insureePicker = props.modulesManager.getConf(
       "fe-claim",
@@ -82,14 +82,14 @@ class ClaimMasterPanel extends FormPanel {
       "attachmentRequiredForReferral",
       false,
     );
-    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
+    // this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", true);
+    this.showPatientCondition = false;
   }
 
   shouldValidate = (inputValue) => {
-    if (this.autoGenerateClaimCode) return false;
-
-    const { savedClaimCode } = this.props;
-    const shouldValidate = inputValue !== savedClaimCode;
+    if (this.autoGenerateClaimPreAuthorizationCode) return false;
+    const { savedClaimPreAuthorizationCode } = this.props;
+    const shouldValidate = inputValue !== savedClaimPreAuthorizationCode;
     return shouldValidate;
   };
 
@@ -147,8 +147,8 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    let ro = readOnly || !!forReview || !!forFeedback;
-    let isPreAuthorization = edited.isPreAuthorization;
+    // let trueReadonly = readOnly || !!forReview || !!forFeedback;
+    let trueReadonly=edited?.statusPreAuthorization >= 8;
     return (
       <Grid container>
         <ControlledField
@@ -176,7 +176,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.insuree}
                 reset={reset || isDuplicate}
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
-                readOnly={ro || isPreAuthorization}
+                readOnly={trueReadonly}
                 required={true}
                 autoFocus={true}
               />
@@ -194,7 +194,7 @@ class ClaimMasterPanel extends FormPanel {
                   label={formatMessage(intl, "claim", "prescriber")}
                   value={edited.prescriber}
                   reset={reset}
-                  readOnly={ro || isPreAuthorization}
+                  readOnly={trueReadonly}
                   hf_uuid={edited.healthFacility?.uuid}
                   onChange={(v, s) => this.updateAttribute("prescriber", v)}
                   required
@@ -202,64 +202,7 @@ class ClaimMasterPanel extends FormPanel {
               </Grid>
             }
           />
-        <ControlledField
-          module="claim"
-          id="Claim.visitDateFrom"
-          field={
-            <Grid item xs={2} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateFrom}
-                module="claim"
-                label="visitDateFrom"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateFrom", d)}
-                readOnly={ro}
-                required={true}
-                maxDate={edited.dateTo < edited.dateClaimed ? edited.dateTo : edited.dateClaimed}
-              />
-            </Grid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.visitDateTo"
-          field={
-            <Grid item xs={2} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateTo}
-                module="claim"
-                label="visitDateTo"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateTo", d)}
-                readOnly={ro}
-                minDate={edited.dateFrom}
-                maxDate={edited.dateClaimed}
-                required={this.fields.visitDateTo == "M"}
-              />
-            </Grid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.claimedDate"
-          field={
-            <Grid item xs={2} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateClaimed ?? new Date()}
-                module="claim"
-                label="claimedDate"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={this.isClaimedDateFixed ?? ro}
-                required={true}
-                minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
-              />
-            </Grid>
-          }
-        />
+        
         <ControlledField
           module="claim"
           id="Claim.visitType"
@@ -272,75 +215,55 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.visitType}
                 reset={reset}
                 onChange={(v, s) => this.updateAttribute("visitType", v)}
-                readOnly={ro || isPreAuthorization}
+                readOnly={trueReadonly}
                 required={true}
               />
             </Grid>
           }
         />
-        {
-          (isPreAuthorization && edited.visitType=="E") &&
-          <ControlledField
-            module="claim"
-            id="Claim.datePreAuthorizationEmergency"
-            field={
-              <Grid item xs={2} className={classes.item}>
-                <TextField
-                  readOnly={true}
-                  type="datetime-local"
-                  label={formatMessage(intl, "claim", "claim.datePreAuthorizationEmergency")}
-                  value={
-                    edited.datePreAuthorizationEmergency 
-                      ? (typeof edited.datePreAuthorizationEmergency === 'string' 
-                          ? edited.datePreAuthorizationEmergency.slice(0, 16)
-                          : (() => {
-                              const date = new Date(edited.datePreAuthorizationEmergency);
-                              const year = date.getFullYear();
-                              const month = String(date.getMonth() + 1).padStart(2, '0');
-                              const day = String(date.getDate()).padStart(2, '0');
-                              const hours = String(date.getHours()).padStart(2, '0');
-                              const minutes = String(date.getMinutes()).padStart(2, '0');
-                              return `${year}-${month}-${day}T${hours}:${minutes}`;
-                            })())
-                      : ""
-                  }
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      // e.target.value est déjà au format "2025-11-06T14:58"
-                      // Ajouter juste les secondes sans conversion de timezone
-                      const isoString = `${e.target.value}:00`;
-                      this.updateAttribute("datePreAuthorizationEmergency", isoString);
-                    } else {
-                      this.updateAttribute("datePreAuthorizationEmergency", null);
-                    }
-                  }}
-                  InputLabelProps={{ shrink: true }}
-                  disabled={true}
-                  required={true}
-                  fullWidth
-                />
-              </Grid>
-            }
-          />
-        }
-        <ControlledField
-          module="claim"
-          id="Claim.careType"
-          field={
-            <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
-              <PublishedComponent
-                pubRef="claim.CareTypePicker"
-                name="careType"
-                withNull={false}
-                value={edited.careType}
-                reset={reset}
-                onChange={(value) => this.updateAttribute("careType", value)}
-                readOnly={ro}
-                required={this.isCareTypeMandatory}
-              />
-            </Grid>
+{
+  (edited.visitType=="E") &&
+  <ControlledField
+    module="claim"
+    id="Claim.datePreAuthorizationEmergency"
+    field={
+      <Grid item xs={2} className={classes.item}>
+        <TextField
+          type="datetime-local"
+          label={formatMessage(intl, "claim", "claim.datePreAuthorizationEmergency")}
+          value={
+            edited.datePreAuthorizationEmergency 
+              ? (typeof edited.datePreAuthorizationEmergency === 'string' 
+                  ? edited.datePreAuthorizationEmergency.slice(0, 16)
+                  : (() => {
+                      const date = new Date(edited.datePreAuthorizationEmergency);
+                      const year = date.getFullYear();
+                      const month = String(date.getMonth() + 1).padStart(2, '0');
+                      const day = String(date.getDate()).padStart(2, '0');
+                      const hours = String(date.getHours()).padStart(2, '0');
+                      const minutes = String(date.getMinutes()).padStart(2, '0');
+                      return `${year}-${month}-${day}T${hours}:${minutes}`;
+                    })())
+              : ""
           }
+          onChange={(e) => {
+            if (e.target.value) {
+              
+              const isoString = `${e.target.value}:00`;
+              this.updateAttribute("datePreAuthorizationEmergency", isoString);
+            } else {
+              this.updateAttribute("datePreAuthorizationEmergency", null);
+            }
+          }}
+          InputLabelProps={{ shrink: true }}
+          disabled={trueReadonly}
+          required={true}
+          fullWidth
         />
+      </Grid>
+    }
+  />
+}
         {!forFeedback && (
           <ControlledField
             module="claim"
@@ -354,7 +277,7 @@ class ClaimMasterPanel extends FormPanel {
                   value={edited.icd}
                   reset={reset}
                   onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro || isPreAuthorization}
+                  readOnly={trueReadonly}
                   required
                 />
               </Grid>
@@ -375,7 +298,7 @@ class ClaimMasterPanel extends FormPanel {
                      this.EMPTY_STRING
                    }
                    reset={reset}
-                   readOnly={ro || isPreAuthorization}
+                   readOnly={trueReadonly}
                    required={this.fields.referalHF == "M" && edited.visitType === this.claimTypeReferSymbol}
                    filterOptions={(options) =>
                      options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
@@ -390,28 +313,28 @@ class ClaimMasterPanel extends FormPanel {
        
         <ControlledField
           module="claim"
-          id="Claim.code"
+          id="Claim.codePreAuthorization"
           field={
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
-                action={claimCodeValidationCheck}
-                clearAction={claimCodeValidationClear}
+                action={claimPreAuthorizationCodeValidationCheck}
+                clearAction={claimPreAuthorizationCodeValidationClear}
                 codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
                 isValidating={isCodeValidating}
-                itemQueryIdentifier="claimCode"
-                label="claim.code"
+                itemQueryIdentifier="claimPreAuthorizationCode"
+                label="claim.pre-authorization-code"
                 module="claim"
-                onChange={(code) => this.updateAttribute("code", code)}
-                readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimCode}
-                required={!this.autoGenerateClaimCode}
-                setValidAction={claimCodeSetValid}
+                onChange={(codePreAuthorization) => this.updateAttribute("codePreAuthorization", codePreAuthorization)}
+                readOnly={trueReadonly || this.autoGenerateClaimPreAuthorizationCode}
+                required={!this.autoGenerateClaimPreAuthorizationCode}
+                setValidAction={claimPreAuthorizationCodeSetValid}
                 shouldValidate={this.shouldValidate}
                 validationError={codeValidationError}
                 value={
-                  this.state.data?.code
-                    ? this.state.data.code
-                    : this.autoGenerateClaimCode && !isRestored
+                  this.state.data?.codePreAuthorization
+                    ? this.state.data.codePreAuthorization
+                    : this.autoGenerateClaimPreAuthorizationCode && !isRestored
                     ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate")
                     : ""
                 }
@@ -433,7 +356,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.guaranteeId}
                 reset={reset}
                 onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                readOnly={ro || isPreAuthorization}
+                readOnly={trueReadonly}
                 inputProps={{
                   "maxLength": this.guaranteeIdMaxLength,
                 }}
@@ -520,7 +443,7 @@ class ClaimMasterPanel extends FormPanel {
                       value={edited[`icd${diagnosisIndex + 1}`]}
                       reset={reset}
                       onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
-                      readOnly={ro || isPreAuthorization}
+                      readOnly={trueReadonly}
                     />
                   </Grid>
                 }
@@ -555,7 +478,7 @@ class ClaimMasterPanel extends FormPanel {
                     value={edited.explanation}
                     reset={reset}
                     onChange={(v) => this.updateAttribute("explanation", v)}
-                    readOnly={ro || isPreAuthorization}
+                    readOnly={trueReadonly}
                     required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
                   />
                 </Grid>
@@ -573,7 +496,7 @@ class ClaimMasterPanel extends FormPanel {
                       value={edited.adjustment}
                       reset={reset}
                       onChange={(v) => this.updateAttribute("adjustment", v)}
-                      readOnly={readOnly || edited.reviewStatus >= 8}
+                      readOnly={trueReadonly || edited.reviewStatus >= 8}
                     />
                   </Grid>
                 }
@@ -605,53 +528,9 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Grid>
         )}
-        {edited?.preAuthorization && (
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="Claim.preAuthorization"
-                color="primary"
-                checked={edited?.preAuthorization}
-                disabled={true}
-                onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
-              />
-            }
-            label={formatMessage(intl, "claim", "pre-authorization")}
-          />
-        )}
-        {edited?.preAuthorization && (
-          <Grid item xs={3} className={classes.item}>
-            <TextInput
-              id="claim.preAuthorizationCode"
-              module="insuree"
-              label="claim.pre-authorization-code"
-              value={edited.codePreAuthorization}
-              readOnly={true}
-            />
-          </Grid>
-        )}
-        {edited?.preAuthorization && (
-          <ControlledField
-          module="claim"
-          id="Claim.preAuthorizationDate"
-          field={
-            <Grid item xs={3} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.datePreAuthorization}
-                module="claim"
-                label="claim.pre-authorization-date"
-                reset={reset}
-                readOnly={true}
-              />
-            </Grid>
-          }
-        />
-        )}
-  
         <Contributions
           claim={edited}
-          readOnly={ro}
+          readOnly={trueReadonly}
           insuree={edited.insuree}
           dateTo={edited.dateTo}
           dateFrom={edited.dateFrom}
@@ -673,11 +552,11 @@ const mapStateToProps = (state) => ({
   fetchingClaimCodeCount: state.claim.fetchingClaimCodeCount,
   fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
   claimCodeCount: state.claim.claimCodeCount,
-  savedClaimCode: state.claim.claim?.code,
+  savedClaimPreAuthorizationCode: state.claim.claim?.codePreAuthorization,
   errorClaimCodeCount: state.claim.errorClaimCodeCount,
-  isCodeValid: state.claim.validationFields?.claimCode?.isValid,
-  isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
-  codeValidationError: state.claim.validationFields?.claimCode?.validationError,
+  isCodeValid: state.claim.validationFields?.claimPreAuthorizationCode?.isValid,
+  isCodeValidating: state.claim.validationFields?.claimPreAuthorizationCode?.isValidating,
+  codeValidationError: state.claim.validationFields?.claimPreAuthorizationCode?.validationError,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -691,5 +570,5 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default withModulesManager(
-  injectIntl(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(ClaimMasterPanel)))),
+  injectIntl(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(PreauthorizationMasterPanel)))),
 );
