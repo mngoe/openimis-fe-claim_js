@@ -277,6 +277,28 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
+        {
+          (isPreAuthorization && edited.visitType=="E") &&
+          <ControlledField
+            module="claim"
+            id="Claim.datePreAuthorizationEmergency"
+            field={
+              <Grid item xs={2} className={classes.item}>
+                <PublishedComponent
+                  pubRef="core.DatePicker"
+                  value={edited.datePreAuthorizationEmergency ?? new Date()}
+                  module="claim"
+                  label="claim.datePreAuthorizationEmergency"
+                  reset={reset}
+                  onChange={(d) => this.updateAttribute("datePreAuthorizationEmergency", d)}
+                  readOnly={ro || isPreAuthorization}
+                  required={true}
+                  // minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
+                />
+              </Grid>
+            }
+          />
+        }
         <ControlledField
           module="claim"
           id="Claim.careType"
