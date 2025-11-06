@@ -1,10 +1,11 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment  } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
+import CancelIcon from "@material-ui/icons/Cancel";
 import CheckIcon from "@material-ui/icons/Check";
 import ReplayIcon from "@material-ui/icons/Replay";
 import PrintIcon from "@material-ui/icons/ListAlt";
@@ -40,14 +41,18 @@ import {
   STORAGE_KEY_ADMIN,
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
-  RIGHT_CLAIMREVIEW,
   REFERRAL,
+  RIGHT_REJECT_PRE_AUTH_PERMS,
+  RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS,
+  RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS,
 } from "../constants";
-import ClaimMasterPanel from "./ClaimMasterPanel";
-import ClaimChildPanel from "./ClaimChildPanel";
+import PreAuthChildPanel from "./PreAuthChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
+import PreauthorizationMasterPanel from "./PreauthorizationMasterPanel";
+import { submitToMedical } from "../actions";
+import { submitToNormalClaim,rejectClaimPreAuthorization } from "../actions";
 
-const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
+const CLAIM_FORM_CONTRIBUTION_KEY = "claim.PreauthorizationForm";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -59,17 +64,17 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    return <PreAuthChildPanel {...this.props} type="service" picker="medical.ServicePicker" preAuth="true"/>;
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    return <PreAuthChildPanel {...this.props}  type="item" picker="medical.ItemPicker" preAuth="true"/>;
   }
 }
 
-class ClaimForm extends Component {
+class PreauthorizationForm extends Component {
   state = {
     lockNew: false,
     reset: 0,
@@ -82,6 +87,7 @@ class ClaimForm extends Component {
     isDuplicate: false,
     isRestored: false,
     isSaved: false,
+    rejectionClaim: null,
   };
 
   constructor(props) {
@@ -102,24 +108,24 @@ class ClaimForm extends Component {
       true,
     );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
-    this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "claimForm.claimTypeReferSymbol", "R");
+    this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "ClaimForm.claimTypeReferSymbol", "R");
     this.autoGenerateClaimCode = props.modulesManager.getConf(
       "fe-claim",
-      "claimForm.autoGenerateClaimCode",
+      "ClaimForm.autoGenerateClaimCode",
       DEFAULT.AUTOGENERATE_CLAIM_CODE,
     );
     this.isExplanationMandatoryForIPD = props.modulesManager.getConf(
       "fe-claim",
-      "claimForm.isExplanationMandatoryForIPD",
+      "ClaimForm.isExplanationMandatoryForIPD",
       false,
     );
-    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
+    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "ClaimForm.isCareTypeMandatory", false);
     this.quantityMaxValue = props.modulesManager.getConf(
       "fe-claim",
-      "claimForm.quantityMaxValue",
+      "ClaimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "ClaimForm.isReferHFMandatory", false);
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
     this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
@@ -142,9 +148,10 @@ class ClaimForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
-    claim.isPreAuthorization=false;
-    claim.preAuthorization = false;
-    claim.isPreAuthorization=false;
+    claim.codePreAuthorization = "";
+    claim.preAuthorization = true;
+    claim.isPreAuthorization = true;
+    claim.statusPreAuthorization = null;
     claim.jsonExt = {};
     return claim;
   }
@@ -273,9 +280,9 @@ class ClaimForm extends Component {
   };
 
   canSave = (forFeedback, forReview) => {
-    if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
+    if (!this.autoGenerateClaimPreAuthorizationCode && !this.state.claim.codePreAuthorization) return false;
     if (this.state.lockNew) return false;
-    if (!this.props.isClaimCodeValid) return false;
+    if (!this.props.isClaimCodePreAuthorizationValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     if (
@@ -283,25 +290,25 @@ class ClaimForm extends Component {
       this.state.claim.visitType === this.claimTypeReferSymbol &&
       !this.state.claim.referHF
     )
-      return false;
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
+    return false;
+    // if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.prescriber) return false;
     if (!this.state.claim.admin) return false;
-    if (!this.state.claim.dateClaimed) return false;
-    if (!this.state.claim.dateFrom) return false;
-    if (this.fields.visitDateTo == "M"){
-      if( !this.state.claim.dateTo) return false;
-    }
-    if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
-    if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
+    // if (!this.state.claim.dateClaimed) return false;
+    // if (!this.state.claim.dateFrom) return false;
+    // if (this.fields.visitDateTo == "M"){
+    //   if( !this.state.claim.dateTo) return false;
+    // }
+    // if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
+    // if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (
-      (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
-      (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
-    ){
-      return false
-    } 
+    // if (
+    //   (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
+    //   (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
+    // ){
+    //   return false
+    // } 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
@@ -316,12 +323,13 @@ class ClaimForm extends Component {
     }
 
 
-    if (this.isCareTypeMandatory){
-      if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
-    }
-    if (this.isExplanationMandatoryForIPD) {
-      if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
-    }
+    // if (this.isCareTypeMandatory){
+    //   if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
+    // }
+    // if (this.isExplanationMandatoryForIPD) {
+    //   if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
+    // }
+
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
@@ -451,6 +459,26 @@ class ClaimForm extends Component {
     this.setState({ isRestored: true });
   };
 
+  sendToMedical= (claim,label) =>{
+    console.log("Send to medical clicked");
+    this.props.submitToMedical(claim,label);
+  }
+
+  sendToNormalClaim= (claim,label) =>{
+    console.log("Send to medical clicked");
+    this.props.submitToNormalClaim(claim,label);
+  }
+
+ handleRejectionSubmit = (claim, rejectionReason) => {
+  console.log("Rejecting claim:", claim.uuid, "Reason:", rejectionReason);
+    // TODO: Call your rejection mutation here
+    this.props.rejectClaimPreAuthorization(claim, rejectionReason,"RejectClaimsPreAuth.mutationLabel");
+    
+    this.setState({ 
+      rejectionClaim: null,
+      forcedDirty: true 
+    });
+  };
   resetForm = () =>
     this.setState(() => ({
       lockNew: false,
@@ -554,6 +582,61 @@ class ClaimForm extends Component {
         ),
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
+
+      {
+        condition: claim_uuid && ((claim.statusPreAuthorization==4 && rights.includes(RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS))
+          || (claim.statusPreAuthorization==8 && rights.includes(RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS))
+          ) && rights.includes(RIGHT_REJECT_PRE_AUTH_PERMS),
+        content: (
+          <span>
+            <Fab
+              color="secondary"
+              onClick={() => this.setState({ rejectionClaim: claim })}  // Changed this
+            >
+              <CancelIcon color="error" />
+            </Fab>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.reject"),
+      },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==4) && rights.includes(RIGHT_VALIDATE_ADMIN_HF_PRE_AUTH_PERMS),
+        content: (
+          <span>
+          <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
+          <Fab
+          color="secondary"
+          onClick={() =>this.sendToMedical(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          >
+            <CheckIcon />
+            
+          </Fab>
+          </span>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.next-step"),
+      },
+
+      {
+        condition: claim_uuid && (claim.statusPreAuthorization==8) && rights.includes(RIGHT_VALIDATE_MEDICAL_PRE_AUTH_PERMS) ,
+        content: (
+          <span>
+          <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
+          <Fab
+          color="secondary"
+          onClick={() =>this.sendToNormalClaim(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          >
+           <CheckIcon style={{ color: "green" }} />
+            
+          </Fab>
+          </span>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.edit.next-step"),
+      },
+      
+      
     ];
 
     const editingProps = {
@@ -595,11 +678,18 @@ class ClaimForm extends Component {
               close={(e) => this.setState({ attachmentsClaim: null })}
               onUpdated={() => this.setState({ forcedDirty: true })}
             />
+            <PublishedComponent
+            pubRef="claim.RejectionDialog"
+            claim={this.state.rejectionClaim}
+            close={() => this.setState({ rejectionClaim: null })}
+            onSubmit={this.handleRejectionSubmit}
+          />
             <Form
               module="claim"
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
-              HeadPanel={ClaimMasterPanel}
+              HeadPanel={PreauthorizationMasterPanel}
+              // readOnly={readOnly}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}
@@ -625,18 +715,19 @@ const mapStateToProps = (state, props) => ({
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   generating: state.claim.generating,
-  isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid,
+  isClaimCodePreAuthorizationValid: state.claim.validationFields?.claimPreAuthorizationCode?.isValid,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert,submitToMedical,submitToNormalClaim,
+      rejectClaimPreAuthorization },
     dispatch,
   );
 };
 
 export default withHistory(
   withModulesManager(
-    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ClaimForm)))),
+    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(PreauthorizationForm)))),
   ),
 );

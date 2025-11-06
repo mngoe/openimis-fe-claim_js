@@ -14,18 +14,19 @@ import {
   withModulesManager,
   formatMessageWithValues,
   formatMessage,
-  formatDateFromISO,
+  formatDateTimeFromISO,
   formatAmount,
   FormattedMessage,
   PublishedComponent,
 } from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
+import PreauthorizationFilter from "./PreauthorizationFilter";
 
-const CLAIM_SEARCHER_CONTRIBUTION_KEY = "claim.Searcher";
+const PREAUTHORIZATION_SEARCHER_CONTRIBUTION_KEY = "preauthorization.Searcher";
 
 const styles = (theme) => ({});
 
-class ClaimSearcher extends Component {
+class PreauthorizationSearcher extends Component {
   state = {
     random: null,
     attachmentsClaim: null,
@@ -67,9 +68,15 @@ class ClaimSearcher extends Component {
     let forced = this.forcedFilters();
 
     forced.push({
-      id: "isNormalClaim",
-      filter: 'isNormalClaim: true',
+      id: "isPreAuthorization",
+      filter: 'isPreAuthorization: true',
     });
+
+    forced.push({
+      id: "statusPreAuthorization",
+      filter: "statusPreAuthorization_In: [2, 4, 8]",
+    });
+    
     
     let random = state.filters["random"];
     if (forced.length > 0) {
@@ -177,17 +184,18 @@ class ClaimSearcher extends Component {
 
   headers = () => {
     var result = [
-      "claimSummaries.code",
+      "claimSummaries.codePreAuthorization",
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.prescriber",
-      "claimSummaries.claimedDate",
-      "claimSummaries.processedDate",
-      "claimSummaries.feedbackStatus",
-      "claimSummaries.reviewStatus",
+      // "claimSummaries.claimedDate",
+      "claimSummaries.preAuthorizationDate",
+      "claimSummaries.statusPreAuthorization",
+      // "claimSummaries.feedbackStatus",
+      // "claimSummaries.reviewStatus",
       "claimSummaries.claimed",
-      "claimSummaries.approved",
-      "claimSummaries.claimStatus",
+      // "claimSummaries.approved",
+      // "claimSummaries.claimStatus",
     ];
     if (this.showPreAuthorization) {
       result.push("claim.claimSummaries.pre-authorization");
@@ -240,7 +248,7 @@ class ClaimSearcher extends Component {
 
   itemFormatters = () => {
     var result = [
-      (c) => c.code,
+      (c) => c.codePreAuthorization,
       (c) => (
         <PublishedComponent
           readOnly={true}
@@ -251,13 +259,14 @@ class ClaimSearcher extends Component {
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
       (c) => `${c.prescriber?.code || ""} ${c.prescriber?.lastName || ""} ${c.prescriber?.otherNames || ""}`,
-      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
-      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
-      (c) => this.feedbackColFormatter(c),
-      (c) => this.reviewColFormatter(c),
+      (c) => formatDateTimeFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
+      (c) => formatMessage(this.props.intl, "claim", "preAuth.status."+c.statusPreAuthorization),
+      // (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
+      // (c) => this.feedbackColFormatter(c),
+      // (c) => this.reviewColFormatter(c),
       (c) => formatAmount(this.props.intl, c.claimed),
-      (c) => formatAmount(this.props.intl, c.approved),
-      (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
+      // (c) => formatAmount(this.props.intl, c.approved),
+      // (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
     if (this.showPreAuthorization) {
       result.push((c) => (c.preAuthorization ? <CheckIcon /> : ""));
@@ -342,7 +351,7 @@ class ClaimSearcher extends Component {
           canSelectAll={this.canSelectAll}
           defaultFilters={defaultFilters}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={ClaimFilter}
+          FilterPane={PreauthorizationFilter}
           FilterExt={FilterExt}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={claims}
@@ -350,7 +359,7 @@ class ClaimSearcher extends Component {
           fetchingItems={fetchingClaims}
           fetchedItems={fetchedClaims}
           errorItems={errorClaims}
-          contributionKey={CLAIM_SEARCHER_CONTRIBUTION_KEY}
+          contributionKey={PREAUTHORIZATION_SEARCHER_CONTRIBUTION_KEY}
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
@@ -394,5 +403,5 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default withModulesManager(
-  connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ClaimSearcher)))),
+  connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(PreauthorizationSearcher)))),
 );

@@ -21,6 +21,8 @@ import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
 import PatientConditionPicker from "./pickers/PatientConditionPicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
+import RejectionDialog from "./components/RejectionDialog";
+import PreAuthFilterPicker from "./pickers/PreAuthFilterPicker";
 import messages_en from "./translations/en.json";
 import messages_km from "./translations/km.json";
 import messages_fr from "./translations/fr.json";
@@ -40,6 +42,8 @@ import PrescriberEditPage from "./pages/PrescriberEditPage";
 import PrescriberReport from "./reports/PrescriberReport";
 import PrescriberFosaReport from "./reports/PrescriberFosaReport";
 import ClaimActTypePicker from "./pickers/ClaimActTypePicker";
+import PreauthorizationEditPage from "./pages/PreauthorizationEditPage";
+import PreauthorizationsPage from "./pages/PreauthorizationsPage";
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
@@ -48,7 +52,9 @@ const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
 const ROUTE_SPECIALITIES = "claim/specialities";
 const ROUTE_SPECIALITY_EDIT = "claim/specialities/speciality";
 const ROUTE_PRESCRIBERS = "claim/prescribers";
-const ROUTE_PRESCRIBER_EDIT = "claim/prescriberEdit"
+const ROUTE_PRESCRIBER_EDIT = "claim/prescriberEdit";
+const ROUTE_PREAUTHORIZATIONS = "claim/preAuthorizations";
+const ROUTE_PREAUTHORIZATION_EDIT = "claim/preAuthorizationEdit";
 
 const DEFAULT_CONFIG = {
   "translations": [
@@ -194,6 +200,8 @@ const DEFAULT_CONFIG = {
     },
   ],
   "refs": [
+    { key: "claim.route.preauthorizations", ref: ROUTE_PREAUTHORIZATIONS }, 
+    { key: "claim.route.preauthorizationEdit", ref: ROUTE_PREAUTHORIZATION_EDIT },
     { key: "claim.route.prescriberEdit", ref: ROUTE_PRESCRIBER_EDIT },
     { key: "claim.route.prescribers", ref: ROUTE_PRESCRIBERS },
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
@@ -219,6 +227,8 @@ const DEFAULT_CONFIG = {
       ],
     },
     { key: "claim.ClaimOfficerPicker", ref: ClaimOfficerPicker },
+    { key: "claim.PreAuthFilterPicker", ref: PreAuthFilterPicker },
+    { key: "claim.RejectionDialog", ref: RejectionDialog },
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },
@@ -245,6 +255,8 @@ const DEFAULT_CONFIG = {
     { key: "claim.YesNoPicker", ref: YesNoPicker}
   ],
   "core.Router": [
+    { path: ROUTE_PREAUTHORIZATION_EDIT + "/:claim_uuid?", component: PreauthorizationEditPage },
+    { path: ROUTE_PREAUTHORIZATIONS, component: PreauthorizationsPage },
     { path: ROUTE_PRESCRIBER_EDIT + "/:prescriber_uuid?", component: PrescriberEditPage },
     { path: ROUTE_PRESCRIBERS, component: PrescribersPage },
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
