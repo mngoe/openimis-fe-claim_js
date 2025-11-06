@@ -292,7 +292,7 @@ class PreauthorizationForm extends Component {
       !this.state.claim.referHF
     )
     return false;
-    if (!this.state.claim.datePreAuthorizationEmergency&&this.state.claim.visitType=="E"&&this.state.claim.isPreAuthorization=="E") {
+    if (!this.state.claim.datePreAuthorizationEmergency&&this.state.claim.visitType=="E") {
       
     }
     // if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false;
