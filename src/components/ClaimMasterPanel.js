@@ -148,7 +148,7 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     let ro = readOnly || !!forReview || !!forFeedback;
-    let isPreAuthorization = edited.isPreAuthorization;
+    let isPreAuthorization = !!edited.isPreAuthorization;
     return (
       <Grid container>
         <ControlledField
