@@ -299,7 +299,7 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false,preAuth = false } = this.props;
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false,preAuth = false , claim} = this.props;
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
@@ -352,7 +352,7 @@ class ClaimChildPanel extends Component {
           <PublishedComponent
             readOnly={!!forReview || readOnly}
             pubRef={picker}
-            preAuth={preAuth}
+            preAuth={claim.isPreAuthorization}
             filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
             value={i[type]}
@@ -721,6 +721,7 @@ class ClaimChildPanel extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
+  claim: state.claim.claim,
   fetchingPricelist: !!state.medical_pricelist && state.medical_pricelist.fetchingPricelist,
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
