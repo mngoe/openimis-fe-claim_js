@@ -352,7 +352,7 @@ class ClaimChildPanel extends Component {
           <PublishedComponent
             readOnly={!!forReview || readOnly}
             pubRef={picker}
-            preAuth={claim.isPreAuthorization}
+            preAuth={!!claim?.isPreAuthorization}
             filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
             value={i[type]}
