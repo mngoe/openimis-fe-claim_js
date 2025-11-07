@@ -178,6 +178,7 @@ class ClaimSearcher extends Component {
   headers = () => {
     var result = [
       "claimSummaries.code",
+      "claimSummaries.preAuthcode",
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.prescriber",
@@ -241,6 +242,7 @@ class ClaimSearcher extends Component {
   itemFormatters = () => {
     var result = [
       (c) => c.code,
+      (c) => c?.codePreAuthorization,
       (c) => (
         <PublishedComponent
           readOnly={true}
