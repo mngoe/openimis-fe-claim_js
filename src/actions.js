@@ -599,7 +599,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     ${!!claim.patientCondition ? `patientCondition: "${formatGQLString(claim.patientCondition)}"` : ""}
     ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
     preAuthorization: ${claim.preAuthorization}
-    isPreAuthorization: ${claim.isPreAuthorization}
+    isPreAuthorization: ${!!claim.isPreAuthorization}
     ${claim.datePreAuthorizationEmergency? `datePreAuthorizationEmergency: "${claim.datePreAuthorizationEmergency}" `: ""}
  `;
 }
