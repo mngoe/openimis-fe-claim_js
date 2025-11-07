@@ -394,6 +394,23 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={2} className={classes.item}>
+          <TextInput
+            module="claim"
+            label="ClaimFilter.preAuthNo"
+            name="preAuthNo"
+            value={this._filterTextFieldValue("preAuthNo")}
+            onChange={(v) =>
+              this.debouncedOnChangeFilter([
+                {
+                  id: "preAuthNo",
+                  value: v,
+                  filter: !!v ? `codePreAuthorization_Icontains: "${v}"` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
         <Grid item xs={3} className={classes.item}>
           <TextInput
             module="claim"
