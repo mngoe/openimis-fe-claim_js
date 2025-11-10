@@ -57,7 +57,7 @@ class HealthFacilitiesPage extends Component {
   canSubmitSelected = (selection) =>
     !!selection &&
     selection.length &&
-    selection.filter((s) => s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
+    selection.filter((s) => !!s.code && s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
       selection.length;
 
   canSubmitAll = (selection) => !selection || selection.length == 0;
