@@ -629,7 +629,7 @@ class PreauthorizationForm extends Component {
           <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
           <Fab
           color="secondary"
-          onClick={() =>this.sendToNormalClaim(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          onClick={() =>this.sendToNormalClaim(this.state.claim,"SubmitClaimsToNormal.mutationLabel")}
           >
            <CheckIcon style={{ color: "green" }} />
             
