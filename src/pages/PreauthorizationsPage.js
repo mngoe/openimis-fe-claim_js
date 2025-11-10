@@ -17,9 +17,9 @@ import {
   Helmet,
   clearCurrentPaginationPage,
 } from "@openimis/fe-core";
-import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll } from "../actions";
+import { submitPreAuthorization, del, selectHealthFacility, submitAll } from "../actions";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
+import PreauthorizationSearcher from "../components/PreauthorizationSearcher";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
@@ -29,7 +29,7 @@ const styles = (theme) => ({
   fab: theme.fab,
 });
 
-class HealthFacilitiesPage extends Component {
+class PreAuthorizationsPage extends Component {
   constructor(props) {
     super(props);
     let defaultFilters = props.modulesManager.getConf("fe-claim", "healthFacilities.defaultFilters", {
@@ -57,19 +57,19 @@ class HealthFacilitiesPage extends Component {
   canSubmitSelected = (selection) =>
     !!selection &&
     selection.length &&
-    selection.filter((s) => !!s.code && s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
+    selection.filter((s) => s.statusPreAuthorization === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
       selection.length;
 
-  canSubmitAll = (selection) => !selection || selection.length == 0;
+  // canSubmitAll = (selection) => !selection || selection.length == 0;
 
   submitSelected = (selection) => {
     if (selection.length === 1) {
-      this.props.submit(
+      this.props.submitPreAuthorization(
         selection,
         formatMessageWithValues(this.props.intl, "claim", "SubmitClaim.mutationLabel", { code: selection[0].code }),
       );
     } else {
-      this.props.submit(
+      this.props.submitPreAuthorization(
         selection,
         formatMessageWithValues(this.props.intl, "claim", "SubmitClaims.mutationLabel", { count: selection.length }),
         selection.map((c) => c.code),
@@ -77,15 +77,21 @@ class HealthFacilitiesPage extends Component {
     }
   };
 
-  submitAll = (selection) => {
-    let filters = this.props.selectedFilters;
-    if (selection.length === 0) {
-      this.props.submitAll(
-        filters,
-        formatMessageWithValues(this.props.intl, "claim", "SubmitAllClaims.mutationLabel", { "claims": "All" }),
-      );
-    }
-  };
+  // submitAll = (selection) => {
+  //   // let filters = this.props.selectedFilters;
+  //   if (selection.length === 0) {
+
+  //     this.props.submitPreAuthorization(
+  //       selection,
+  //       formatMessage(this.props.intl, "claim", "SubmitClaims.mutationLabel.all"),
+  //     );
+
+  //     // this.props.submitAll(
+  //     //   filters,
+  //     //   formatMessageWithValues(this.props.intl, "claim", "SubmitAllClaims.mutationLabel", { "claims": "All" }),
+  //     // );
+  //   }
+  // };
 
   canDeleteSelected = (selection) =>
     !!selection && selection.length && selection.filter((s) => s.status === 2).length === selection.length;
@@ -126,11 +132,11 @@ class HealthFacilitiesPage extends Component {
   };
 
   onDoubleClick = (c, newTab = false) => {
-    historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [c.uuid], newTab);
+    historyPush(this.props.modulesManager, this.props.history, "claim.route.preauthorizationEdit", [c.uuid], newTab);
   };
 
   onAdd = () => {
-    historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
+    historyPush(this.props.modulesManager, this.props.history, "claim.route.preauthorizationEdit");
   };
 
   canAdd = () => {
@@ -158,7 +164,7 @@ class HealthFacilitiesPage extends Component {
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
-      actions.push({ label: "claimSummaries.submitAll", enabled: this.canSubmitAll, action: this.submitAll });
+      // actions.push({ label: "claimSummaries.submitAll", enabled: this.canSubmitAll, action: this.submitAll });
       actions.push({
         label: "claimSummaries.submitSelected",
         enabled: this.canSubmitSelected,
@@ -175,7 +181,7 @@ class HealthFacilitiesPage extends Component {
     return (
       <div className={classes.page}>
         <Helmet title={formatMessage(this.props.intl, "location", "location.healthFacilities.page.title")} />
-        <ClaimSearcher
+        <PreauthorizationSearcher
           defaultFilters={this.state.defaultFilters}
           cacheFiltersKey="claimHealthFacilitiesPageFiltersCache"
           onDoubleClick={rights.includes(RIGHT_LOAD) ? this.onDoubleClick : null}
@@ -223,7 +229,7 @@ const mapDispatchToProps = (dispatch) => {
       selectHealthFacility,
       journalize,
       coreConfirm,
-      submit,
+      submitPreAuthorization,
       submitAll,
       del,
       clearCurrentPaginationPage,
@@ -234,6 +240,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default injectIntl(
   withModulesManager(
-    withHistory(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(HealthFacilitiesPage)))),
+    withHistory(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(PreAuthorizationsPage)))),
   ),
 );

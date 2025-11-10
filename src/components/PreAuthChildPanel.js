@@ -29,7 +29,7 @@ const styles = (theme) => ({
   paper: theme.paper.paper,
 });
 
-class ClaimChildPanel extends Component {
+class PreAuthChildPanel extends Component {
   state = {
     data: [],
   };
@@ -299,8 +299,17 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false,preAuth = false , claim} = this.props;
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false,preAuth = false } = this.props;
     if (!edited) return null;
+
+
+    const ispreAuth=edited.isPreAuthorization || false;
+    console.log("oasdsada"+ispreAuth)
+
+
+    console.log("edited?.statusPreAuthorization",edited?.statusPreAuthorization);
+    const trueReadOnly= edited?.statusPreAuthorization >= 8;
+    
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
         <Paper className={classes.paper}>
@@ -350,9 +359,9 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <Box minWidth={400}>
           <PublishedComponent
-            readOnly={!!forReview || readOnly}
+            readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly}
             pubRef={picker}
-            preAuth={!!claim?.isPreAuthorization}
+            preAuth={preAuth}
             filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
             value={i[type]}
@@ -365,7 +374,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
-          readOnly={!!forReview || readOnly || (type === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S)}
+          readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly || (type === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S)}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
           error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
@@ -374,7 +383,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <AmountInput
-          readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
+          readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly || this.fixedPricesAtEnter}
           value={i[type] === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S ? this.state.data[idx].service?.priceAsked : i.priceAsked}
           decimal={true}
           allowDecimals= {this.isDecimalPrice}
@@ -383,7 +392,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <TextInput
-          readOnly={!!forReview || readOnly}
+          readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly}
           value={i.explanation}
           error={
             this.explanationRequiredIfQuantityAboveThreshold &&
@@ -412,14 +421,14 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <Box minWidth={400}>
               <TextInput
-                readOnly={!!forReview || readOnly || true}
+                readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly || true}
                 value={u.service.name}
               />
             </Box>
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={!!forReview || readOnly}
+              readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (!i.service.manualPrice) {
@@ -469,14 +478,14 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <Box minWidth={400}>
                 <TextInput
-                  readOnly={!!forReview || readOnly || true}
+                  readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly || true}
                   value={u.item.name}
                 />
               </Box>
             </TableCell>
             <TableCell>
               <NumberInput
-                readOnly={!!forReview || readOnly}
+                readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (!i.service.manualPrice) {
@@ -530,14 +539,14 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <Box minWidth={400}>
               <TextInput
-                readOnly={!!forReview || readOnly || true}
+                readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly || true}
                 value={u.service.name}
               />
             </Box>
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={readOnly}
+              readOnly={ispreAuth?trueReadOnly:readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (!i.service.manualPrice){
@@ -587,14 +596,14 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <Box minWidth={400}>
                 <TextInput
-                  readOnly={!!forReview || readOnly || true}
+                  readOnly={ispreAuth?trueReadOnly:!!forReview || readOnly || true}
                   value={u.item.name}
                 />
               </Box>
             </TableCell>
             <TableCell>
               <NumberInput
-                readOnly={readOnly}
+                readOnly={ispreAuth?trueReadOnly:readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (!i.service.manualPrice){
@@ -640,7 +649,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
-          readOnly={!forReview && readOnly}
+          readOnly={ispreAuth?trueReadOnly:!forReview && readOnly}
           value={i.qtyApproved}
           max={parseInt(i.qtyProvided)}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}
@@ -650,7 +659,7 @@ class ClaimChildPanel extends Component {
         headers.push(`edit.${type}s.appPrice`);
         itemFormatters.push((i, idx) => (
           <AmountInput
-            readOnly={!forReview && readOnly}
+            readOnly={ispreAuth?trueReadOnly:!forReview && readOnly}
             value={i.priceApproved}
             decimal={true}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
@@ -673,7 +682,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
-          readOnly={!forReview && readOnly}
+          readOnly={ispreAuth?trueReadOnly:!forReview && readOnly}
           value={i.justification}
           onChange={(v) => this._onChange(idx, "justification", v)}
         />
@@ -684,7 +693,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={!i.product?.uuid}
+            readOnly={ispreAuth?trueReadOnly:!i.product?.uuid}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
@@ -709,7 +718,7 @@ class ClaimChildPanel extends Component {
           itemFormatters={itemFormatters}
           subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
-          onDelete={!forReview && !readOnly && this._onDelete}
+          onDelete={ispreAuth?trueReadOnly:!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
           subServiceHeaders={subServiceHeaders}
           disableDeleteOnEmptyRow
@@ -721,10 +730,9 @@ class ClaimChildPanel extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-  claim: state.claim.claim,
   fetchingPricelist: !!state.medical_pricelist && state.medical_pricelist.fetchingPricelist,
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
 });
 
-export default withModulesManager(injectIntl(withTheme(withStyles(styles)(connect(mapStateToProps)(ClaimChildPanel)))));
+export default withModulesManager(injectIntl(withTheme(withStyles(styles)(connect(mapStateToProps)(PreAuthChildPanel)))));

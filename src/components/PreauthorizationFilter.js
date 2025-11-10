@@ -331,21 +331,21 @@ class Details extends Component {
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
-            pubRef="claim.ClaimStatusPicker"
-            name="claimStatus"
-            value={filters["claimStatus"] && filters["claimStatus"]["value"]}
+            pubRef="claim.PreAuthFilterPicker"
+            name="claimPreAuthStatus"
+            value={filters["claimPreAuthStatus"] && filters["claimPreAuthStatus"]["value"]}
             onChange={(v, s) =>
               onChangeFilters([
                 {
-                  id: "claimStatus",
+                  id: "claimPreAuthStatus",
                   value: v,
-                  filter: !!v ? `status: ${v}` : null,
+                  filter: !!v ? `statusPreAuthorization: ${v}` : null,
                 },
               ])
             }
           />
         </Grid>
-        <Grid item xs={1} className={classes.item}>
+        {/* <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.FeedbackStatusPicker"
             name="feedbackStatus"
@@ -360,8 +360,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={1} className={classes.item}>
+        </Grid> */}
+        {/* <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.ReviewStatusPicker"
             name="reviewStatus"
@@ -376,34 +376,17 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={2} className={classes.item}>
           <TextInput
             module="claim"
-            label="ClaimFilter.claimNo"
-            name="claimNo"
-            value={this._filterTextFieldValue("claimNo")}
+            label="ClaimFilter.claimPreAuthNo"
+            name="claimPreAuthNo"
+            value={this._filterTextFieldValue("claimPreAuthNo")}
             onChange={(v) =>
               this.debouncedOnChangeFilter([
                 {
-                  id: "claimNo",
-                  value: v,
-                  filter: !!v ? `code_Icontains: "${v}"` : null,
-                },
-              ])
-            }
-          />
-        </Grid>
-        <Grid item xs={2} className={classes.item}>
-          <TextInput
-            module="claim"
-            label="ClaimFilter.preAuthNo"
-            name="preAuthNo"
-            value={this._filterTextFieldValue("preAuthNo")}
-            onChange={(v) =>
-              this.debouncedOnChangeFilter([
-                {
-                  id: "preAuthNo",
+                  id: "claimPreAuthNo",
                   value: v,
                   filter: !!v ? `codePreAuthorization_Icontains: "${v}"` : null,
                 },
@@ -462,7 +445,7 @@ class Details extends Component {
             }
           />
         </Grid>
-        <Grid item xs={3}>
+        {/* <Grid item xs={3}>
           <Grid container>
             <Grid item xs={6} className={classes.item}>
               <PublishedComponent
@@ -499,21 +482,21 @@ class Details extends Component {
               />
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
         <Grid item xs={3}>
           <Grid container>
             <Grid item xs={6} className={classes.item}>
               <PublishedComponent
                 pubRef="core.DatePicker"
-                value={(filters["claimDateFrom"] && filters["claimDateFrom"]["value"]) || null}
+                value={(filters["datePreAuthorizationFrom"] && filters["datePreAuthorizationFrom"]["value"]) || null}
                 module="claim"
-                label="ClaimFilter.claimedDateFrom"
+                label="ClaimFilter.datePreAuthorization"
                 onChange={(d) =>
                   onChangeFilters([
                     {
-                      id: "claimDateFrom",
+                      id: "datePreAuthorizationFrom",
                       value: d,
-                      filter: !!d ? `dateClaimed_Gte: "${d}"` : null,
+                      filter: !!d ? `datePreAuthorization_Gte: "${d}T00:00:00"` : null,
                     },
                   ])
                 }
@@ -522,15 +505,15 @@ class Details extends Component {
             <Grid item xs={6} className={classes.item}>
               <PublishedComponent
                 pubRef="core.DatePicker"
-                value={(filters["claimDateTo"] && filters["claimDateTo"]["value"]) || null}
+                value={(filters["datePreAuthorizationTo"] && filters["datePreAuthorizationTo"]["value"]) || null}
                 module="claim"
-                label="ClaimFilter.claimedDateTo"
+                label="ClaimFilter.datePreAuthorizationTo"
                 onChange={(d) =>
                   onChangeFilters([
                     {
-                      id: "claimDateTo",
+                      id: "datePreAuthorizationTo",
                       value: d,
-                      filter: !!d ? `dateClaimed_Lte: "${d}"` : null,
+                      filter: !!d ? `datePreAuthorization_Lte: "${d}T23:59:59"` : null,
                     },
                   ])
                 }
@@ -538,7 +521,7 @@ class Details extends Component {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={3}>
+        {/* <Grid item xs={3}>
           <Grid container>
             <Grid item xs={6} className={classes.item}>
               <PublishedComponent
@@ -575,10 +558,11 @@ class Details extends Component {
               />
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
         <Grid item xs={3} className={classes.item}>
           <PublishedComponent
             pubRef="medical.ServicePicker"
+            preAuth={true}
             value={(filters["medicalService"] && filters["medicalService"]["value"]) || null}
             name="medicalService"
             label={formatMessage(intl, "claim", "medicalService")}
@@ -596,6 +580,7 @@ class Details extends Component {
         <Grid item xs={3} className={classes.item}>
           <PublishedComponent
             pubRef="medical.ItemPicker"
+            preAuth={true}
             value={(filters["medicalItem"] && filters["medicalItem"]["value"]) || null}
             name="medicalItem"
             label={formatMessage(intl, "claim", "medicalItem")}
@@ -643,7 +628,7 @@ class Details extends Component {
             }
           />
         </Grid>
-        <Grid item xs={1} className={classes.item}>
+        {/* <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.CareTypePicker"
             name="careType"
@@ -659,7 +644,7 @@ class Details extends Component {
             }
             }
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
@@ -676,7 +661,7 @@ class Details extends Component {
             }
           />
         </Grid>
-        {this.showPreAuthorization && (
+        {/* {this.showPreAuthorization && (
           <Grid item xs={1} className={classes.item}>
             <PublishedComponent
               pubRef="claim.YesNoPicker"
@@ -693,7 +678,7 @@ class Details extends Component {
               }
             />
           </Grid>
-        )}
+        )} */}
         <Grid item xs={1} className={classes.item}>
           <ControlledField
             module="claim"
@@ -750,7 +735,7 @@ class Details extends Component {
   }
 }
 
-class ClaimFilter extends Component {
+class PreauthorizationFilter extends Component {
   render() {
     const { classes } = this.props;
     return (
@@ -762,4 +747,4 @@ class ClaimFilter extends Component {
   }
 }
 
-export default withModulesManager(injectIntl(withTheme(withStyles(styles)(ClaimFilter))));
+export default withModulesManager(injectIntl(withTheme(withStyles(styles)(PreauthorizationFilter))));
