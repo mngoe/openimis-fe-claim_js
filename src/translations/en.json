@@ -430,5 +430,6 @@
   "claim.attachment.defineType": "You must define the predefined Type or clean the attachment",
   "claim.pre-authorization-code": "Pre Authorization Code",
   "claim.pre-authorization-date": "Pre Authorization Date",
-  "claim.datePreAuthorizationEmergency": "Emergency call date"
+  "claim.datePreAuthorizationEmergency": "Emergency call date",
+  "claimSummaries.preAuthCode": "Pre Authorization Code"
 }
