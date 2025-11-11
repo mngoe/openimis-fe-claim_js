@@ -564,7 +564,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
   const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    ${isAutogenerateEnabled ? `code : "${claimCodePlaceholder}" ` : claim.code?`code : "${claimCodePlaceholder}" `:""}
+    ${isAutogenerateEnabled ? `code : "${claimCodePlaceholder}" ` : claim.code?`code : "${claim.code}" `:""}
     ${claim.codePreAuthorization? `codePreAuthorization: "${claim.codePreAuthorization}" `: ""}
     autogenerate: ${!!isAutogenerateEnabled}
     insureeId: ${decodeId(claim.insuree.id)}

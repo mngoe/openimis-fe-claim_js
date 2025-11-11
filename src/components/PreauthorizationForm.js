@@ -476,7 +476,10 @@ class PreauthorizationForm extends Component {
  handleRejectionSubmit = (claim, rejectionReason) => {
   console.log("Rejecting claim:", claim.uuid, "Reason:", rejectionReason);
     // TODO: Call your rejection mutation here
-    this.props.rejectClaimPreAuthorization(claim, rejectionReason,"RejectClaimsPreAuth.mutationLabel");
+    this.props.rejectClaimPreAuthorization(claim, rejectionReason,
+      formatMessageWithValues(this.props.intl, "claim", "RejectClaimsPreAuth.mutationLabel", {
+        code: claim?.codePreAuthorization,
+      }));
     
     this.setState({ 
       rejectionClaim: null,
@@ -611,7 +614,10 @@ class PreauthorizationForm extends Component {
           <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
           <Fab
           color="secondary"
-          onClick={() =>this.sendToMedical(this.state.claim,"SubmitClaimsToMedical.mutationLabel")}
+          onClick={() =>this.sendToMedical(this.state.claim,
+            formatMessageWithValues(this.props.intl, "claim", "SubmitClaimsToMedical.mutationLabel", {
+              code: claim?.codePreAuthorization,
+            }))}
           >
             <CheckIcon />
             
@@ -629,7 +635,10 @@ class PreauthorizationForm extends Component {
           <span style={{ display: "flex", gap: "8px", alignItems: "center" }}> 
           <Fab
           color="secondary"
-          onClick={() =>this.sendToNormalClaim(this.state.claim,"SubmitClaimsToNormal.mutationLabel")}
+          onClick={() =>this.sendToNormalClaim(this.state.claim,
+            formatMessageWithValues(this.props.intl, "claim", "SubmitClaimsToNormal.mutationLabel", {
+              code: claim?.codePreAuthorization,
+            }))}
           >
            <CheckIcon style={{ color: "green" }} />
             

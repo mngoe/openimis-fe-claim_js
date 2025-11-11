@@ -490,7 +490,7 @@ class Details extends Component {
                 pubRef="core.DatePicker"
                 value={(filters["datePreAuthorizationFrom"] && filters["datePreAuthorizationFrom"]["value"]) || null}
                 module="claim"
-                label="ClaimFilter.datePreAuthorization"
+                label="ClaimFilter.datePreAuthorizationFrom"
                 onChange={(d) =>
                   onChangeFilters([
                     {
