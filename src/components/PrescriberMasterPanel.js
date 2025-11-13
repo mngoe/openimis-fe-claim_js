@@ -171,7 +171,7 @@ class PrescriberMasterPanel extends FormPanel {
             id="prescrber.nin"
             field={
                 <Grid item xs={3} className={classes.item}>
-                    <NumberInput
+                    <TextInput
                     module="claim"
                     required={true}
                     label="prescriber.nin"
