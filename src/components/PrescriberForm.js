@@ -105,7 +105,9 @@ class PrescriberForm extends Component {
   canSave = () => {
     if (!!this.state.prescriber.codeError) return false;
     if (!this.props.isPresciberCodeValid) return false;
-    if (!this.state.prescriber.nin && this.state.prescriber.nin.length !== 7 && this.state.prescriber.nin.length !== 9) return false;
+    if (!this.state.prescriber?.nin || (this.state.prescriber.nin.length !== 7 && this.state.prescriber.nin.length !== 9)) {
+      return false;
+    }
     if (!this.state.prescriber.code||!this.state.prescriber.lastName||!this.state.prescriber.otherNames||!this.state.prescriber.nin||
       !this.state.prescriber.status||!this.state.prescriber.speciality||!this.state.prescriber.mainHealthFacility||
       !this.state.prescriber.entryDate) return false;
