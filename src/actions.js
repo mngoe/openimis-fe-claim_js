@@ -760,3 +760,29 @@ export function getUserClaimAdmin(lastName, otherNames){
   );
   return graphql(payload, "CLAIM_USER_ADMIN");
 }
+
+export function fetchUserRoles(){
+  const payload = formatQuery(
+    "user",
+    null,
+    [
+      "id",
+      "iUser{roles{id name}}"
+    ]
+  );
+  return graphql(payload, "USER_ROLES");
+}
+
+export function reject(claims, rejectReason, clientMutationLabel, clientMutationDetails = null) {
+  console.log(claims);
+  let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${rejectReason}"`;
+  let mutation = formatMutation("rejectClaims", variables, clientMutationLabel, clientMutationDetails);
+  var requestedDateTime = new Date();
+  claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_REJECT_CLAIMS_RESP", "CLAIM_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
+    requestedDateTime,
+  });
+}

@@ -345,6 +345,7 @@
     "claim.claimTdrNumber.F": "Negatif",
     "claim.edit.multipleCsPolicies": "Problème avec l'assuré. Merci de contacter l'administrateur",
     "claim.rejectionCode": "Code de rejet",
+    "claim.rejectionCode.-2": "-2",
     "claim.rejectionCode.-1": "-1",
   "claim.rejectionCode.0": "0",
   "claim.rejectionCode.1": "1",
