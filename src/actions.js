@@ -158,6 +158,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "uuid",
     "code",
     "jsonExt",
+    "dateTo",
     "dateClaimed",
     "dateProcessed",
     "feedbackStatus",
