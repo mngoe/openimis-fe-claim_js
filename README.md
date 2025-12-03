@@ -101,6 +101,7 @@ None
 - `claimForm.claimTypeReferSymbol`, used for checking referHF option, indicate which letter represents referal. Default R.
 - `claimForm.autoGenerateClaimCode`, boolean to enable autogenerating claim code by the backend. Default false.
 - `claimForm.numberOfAdditionalDiagnosis`, integer to enable required number of additional diagnoses. Default 4, up to 4 supported.
+- `claimForm.useMainDiagnosis`, boolean to enable use of main diagnosis. Default false.
 - `claimForm.isExplanationMandatoryForIPD`, boolean to enable check for required explanation if visit type is IPD. Default false.
 - `claimForm.isCareTypeMandatory`, boolean to set CareType (in/out patient) field to mandatory. It removes "any" option. Default false.
 - `reviews.defaultFilters`, default filters for claim review searcher. The code snippet below sets the default values for 'Claim Status' and 'Claimed Less Than' in the Review page. Specifically, it sets 'Claim Status' to the value of 4 (which means 'Checked') and 'Claimed Less Than' to a value of 1,000,000.
