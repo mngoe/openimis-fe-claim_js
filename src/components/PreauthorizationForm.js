@@ -109,6 +109,7 @@ class PreauthorizationForm extends Component {
     );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "ClaimForm.claimTypeReferSymbol", "R");
+    this.useMainDiagnosis = props.modulesManager.getConf("fe-claim", "claimForm.useMainDiagnosis", false);
     this.autoGenerateClaimCode = props.modulesManager.getConf(
       "fe-claim",
       "ClaimForm.autoGenerateClaimCode",
