@@ -67,6 +67,7 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.numberOfAdditionalDiagnosis",
       DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
     );
+    this.useMainDiagnosis = props.modulesManager.getConf("fe-claim", "claimForm.useMainDiagnosis", false);
     this.isExplanationMandatoryForIPD = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.isExplanationMandatoryForIPD",
@@ -275,7 +276,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        {!forFeedback && (
+        {(!forFeedback && this.useMainDiagnosis) && (
           <ControlledField
             module="claim"
             id="Claim.mainDiagnosis"
