@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import {
   useModulesManager,
@@ -8,6 +8,7 @@ import {
   useGraphqlQuery,
 } from "@openimis/fe-core";
 import { DEFAULT } from "../constants";
+import { setCurrentClaimAdmin } from "../actions";
 
 
 const ClaimAdminPicker = (props) => {
@@ -30,6 +31,9 @@ const ClaimAdminPicker = (props) => {
   } = props;
   const userHealthFacilityId = useSelector((state) =>
     state?.loc?.userHealthFacilityFullPath?.uuid
+  );
+  const i_user = useSelector((state) =>
+    state?.core?.user?.username
   );
 
   const modulesManager = useModulesManager();
@@ -79,11 +83,19 @@ const ClaimAdminPicker = (props) => {
     },
   );
 
+  const dispatch = useDispatch();
   const formatClaimAdmin = (claimAdmin) => {
     return renderLastNameFirst
       ? `${claimAdmin.code} ${claimAdmin.lastName} ${claimAdmin.otherNames}`
       : `${claimAdmin.code} ${claimAdmin.otherNames} ${claimAdmin.lastName}`;
   };
+  const claimAdmins = data?.claimAdmins?.edges.map((edge) => edge.node) || [];
+
+  for (const admin of claimAdmins) {
+    if (admin.code === i_user) {
+      dispatch(setCurrentClaimAdmin(admin));
+    }
+  }
 
   return (
     <Autocomplete
@@ -95,7 +107,7 @@ const ClaimAdminPicker = (props) => {
       withLabel={withLabel}
       withPlaceholder={withPlaceholder}
       readOnly={readOnly}
-      options={data?.claimAdmins?.edges.map((edge) => edge.node) ?? []}
+      options={claimAdmins}
       isLoading={isLoading}
       value={value}
       getOptionLabel={(option) => formatClaimAdmin(option)}
