@@ -10,6 +10,7 @@ import {
 
 function reducer(
   state = {
+    currentClaimAdmin: null,
     fetchingClaimAttachments: false,
     fetchedClaimAttachments: false,
     errorClaimAttachments: null,
@@ -140,6 +141,11 @@ function reducer(
         fetchingClaims: false,
         errorClaims: formatServerError(action.payload),
       };
+    case "CLAIM_SET_CURRENT_CLAIM_ADMIN": {
+      const currentClaimAdmin = action.payload;
+      s = { ...state, currentClaimAdmin };
+      return s;
+    }
     case "CLAIM_CLAIM_CLEAR":
       return {
         ...state,

@@ -57,6 +57,12 @@ export function claimCodeValidationClear() {
   };
 }
 
+export function setCurrentClaimAdmin(admin) {
+  return (dispatch) => {
+    dispatch({ type: "CLAIM_SET_CURRENT_CLAIM_ADMIN", payload: admin });
+  };
+}
+
 export function claimCodeSetValid() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_SET_VALID` });
