@@ -136,8 +136,6 @@ class HealthFacilitiesPage extends Component {
   };
 
   canAdd = () => {
-    if (!this.props.claimAdmin) return false;
-    if (!this.props.claimHealthFacility) return false;
     return true;
   };
 
