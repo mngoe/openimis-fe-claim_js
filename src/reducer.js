@@ -11,6 +11,7 @@ import {
 function reducer(
   state = {
     prescriber:{},
+    currentClaimAdmin: null,
     fetchingPrescriber:false,
     fetchedPrescriber:false,
     errorPrescriber:false,
@@ -301,6 +302,11 @@ function reducer(
         fetchingClaims: false,
         errorClaims: formatServerError(action.payload),
       };
+    case "CLAIM_SET_CURRENT_CLAIM_ADMIN": {
+      const currentClaimAdmin = action.payload;
+      s = { ...state, currentClaimAdmin };
+      return s;
+    }
     case "CLAIM_CLAIM_CLEAR":
       return {
         ...state,
