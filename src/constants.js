@@ -36,6 +36,7 @@ export const RIGHT_DELETE = 111004;
 export const RIGHT_LOAD = 111005;
 export const RIGHT_PRINT = 111006;
 export const RIGHT_SUBMIT = 111007;
+export const RIGHT_SUBMIT_PREAUTH = 111019;
 export const RIGHT_CLAIMREVIEW = 111008;
 export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;

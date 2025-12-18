@@ -18,7 +18,7 @@ import {
   clearCurrentPaginationPage,
 } from "@openimis/fe-core";
 import { submitPreAuthorization, del, selectHealthFacility, submitAll } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
+import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME,RIGHT_SUBMIT_PREAUTH } from "../constants";
 import PreauthorizationSearcher from "../components/PreauthorizationSearcher";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
@@ -161,9 +161,9 @@ class PreAuthorizationsPage extends Component {
 
   render() {
     const { intl, classes, rights, generatingPrint } = this.props;
-    if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
+    if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT_PREAUTH).length) return null;
     let actions = [];
-    if (rights.includes(RIGHT_SUBMIT)) {
+    if (rights.includes(RIGHT_SUBMIT_PREAUTH)) {
       // actions.push({ label: "claimSummaries.submitAll", enabled: this.canSubmitAll, action: this.submitAll });
       actions.push({
         label: "claimSummaries.submitSelected",

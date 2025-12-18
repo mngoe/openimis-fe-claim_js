@@ -109,6 +109,7 @@ class PreauthorizationForm extends Component {
     );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "ClaimForm.claimTypeReferSymbol", "R");
+    this.useMainDiagnosis = props.modulesManager.getConf("fe-claim", "claimForm.useMainDiagnosis", false);
     this.autoGenerateClaimCode = props.modulesManager.getConf(
       "fe-claim",
       "ClaimForm.autoGenerateClaimCode",
@@ -306,7 +307,7 @@ class PreauthorizationForm extends Component {
     // }
     // if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     // if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
-    if (!this.state.claim.icd) return false;
+    if (!this.state.claim.icd && this.useMainDiagnosis) return false;
     // if (
     //   (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
     //   (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
