@@ -117,6 +117,7 @@ None
     }
   }
 - `claimForm.showOrdinalNumber`, show "number" column as a first column in claim searcher and item/services table. Default false.
+- `claimForm.useMainDiagnosis`, boolean to enable use of main diagnosis. Default false.
 - `claimForm.isClaimedDateFixed`, set Date Claimed to current date and set field to read only while creating new claim. Default false.
 - `claimForm.quantityMaxValue`, defines the max number of provided quantity. By default: __10.000__.
 - `ClaimMasterPanelExt.isAdditionalPanelEnabled`: Determines whether to display additional panels, including information about the insuree and details about claim related to the same diagnosis. By default: __false__.
