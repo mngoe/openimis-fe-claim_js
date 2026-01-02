@@ -51,6 +51,11 @@ export function claimCodeValidationCheck(mm, variables) {
   );
 }
 
+export function setCurrentClaimAdmin(admin) {
+  return (dispatch) => {
+    dispatch({ type: "CLAIM_SET_CURRENT_CLAIM_ADMIN", payload: admin });
+  };
+}
 
 export function claimPreAuthorizationCodeValidationCheck(mm, variables) {
   return graphqlWithVariables(
