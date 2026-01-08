@@ -29,6 +29,7 @@
   "claim.claimStatus.4": "Checked",
   "claim.claimStatus.8": "Processed",
   "claim.claimStatus.16": "Valuated",
+  "claim.claimStatus.32": "Reset",
   "claim.ClaimFilter.claimNo": "Claim No.",
   "claim.ClaimFilter.insureeCHFID": "Insuree No.",
   "claim.expiryDate": "Expiry Date",
