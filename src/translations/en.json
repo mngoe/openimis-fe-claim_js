@@ -72,7 +72,7 @@
   "claim.feedbackSex.null": "",
   "claim.feedbackSex.Masculin": "Male",
   "claim.feedbackSex.Feminin": "Female",
-  "claim.feedbackAge":"Age",
+  "claim.feedbackAge": "Age",
   "claim.reviewStatus": "Review Status",
   "claim.reviewStatus.null": "Any",
   "claim.reviewStatus.1": "Idle",
@@ -361,6 +361,7 @@
   "claim.programPicker.placeholder": "program",
   "claim.edit.multipleCsPolicies": "An error occured with this insuree. Please contact the administrator",
   "claim.rejectionCode": "Rejection code",
+  "claim.rejectionCode.-2": "-2",
   "claim.rejectionCode.-1": "-1",
   "claim.rejectionCode.0": "0",
   "claim.rejectionCode.1": "1",
@@ -383,5 +384,10 @@
   "claim.rejectionCode.18": "18",
   "claim.rejectionCode.19": "19",
   "claim.rejectionCode.null": " ",
+  "claimSummaries.rejectSelected": "Reject Selected",
+  "claim.rejectReason": "Reject reason",
+  "claim.validate": "Validate",
+  "claim.cancel": "Cancel",
+  "claim.RejectClaim.mutationLabel": "Reject claims"
   "claim.edit.items.qtyAdjusted": "Qty Adjusted"
 }

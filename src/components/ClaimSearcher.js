@@ -319,7 +319,7 @@ class ClaimSearcher extends Component {
     selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
     !selection.includes(claim);
 
-  isRestoredClaim = (claim) => claim?.restore;
+  isRestoredClaim = (claim) => claim?.restoreId;
 
   showRestored = (showRestored) => {
     this.setState({ showRestored });
