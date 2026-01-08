@@ -10,6 +10,7 @@ export const CLAIM_TDR = ["T","F"];
 export const CLAIM_DETAIL_REJECTED_STATUS = 2;
 export const STATUS_REJECTED = 1;
 export const STATUS_ENTERED = 2;
+export const STATUS_RESET = 32;
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 // NULL - all claims, 1 - with attachments, 2 - without attachments
