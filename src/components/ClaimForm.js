@@ -42,6 +42,7 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   RIGHT_CLAIMREVIEW,
+  STATUS_RESET,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -539,7 +540,7 @@ class ClaimForm extends Component {
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.renew"),
       },
       {
-        condition: claim_uuid && isHealthFacilityPage,
+        condition: claim_uuid && isHealthFacilityPage && this.state.claim?.status !== STATUS_RESET,
         content: (
           <span>
             <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.duplicate()}>

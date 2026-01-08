@@ -1,8 +1,8 @@
 import _ from "lodash";
 
 export const CLAIM_STATUS = [1, 2, 4, 8, 16, 32];
-export const REVIEW_STATUS = [1, 2, 4, 8, 16];
-export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
+export const REVIEW_STATUS = [1, 2, 4, 8, 16, 32];
+export const FEEDBACK_STATUS = [1, 2, 4, 8, 16, 32];
 export const FEEDBACK_SEX = ["Masculin", "Feminin"];
 export const APPROVAL_STATUS = [1, 2];
 export const CLAIM_TDR = ["T","F"];
@@ -10,6 +10,7 @@ export const CLAIM_TDR = ["T","F"];
 export const CLAIM_DETAIL_REJECTED_STATUS = 2;
 export const STATUS_REJECTED = 1;
 export const STATUS_ENTERED = 2;
+export const STATUS_RESET = 32;
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 // NULL - all claims, 1 - with attachments, 2 - without attachments
