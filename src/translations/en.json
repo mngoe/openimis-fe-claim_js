@@ -388,6 +388,7 @@
   "claim.rejectReason": "Reject reason",
   "claim.validate": "Validate",
   "claim.cancel": "Cancel",
-  "claim.RejectClaim.mutationLabel": "Reject claims"
-  "claim.edit.items.qtyAdjusted": "Qty Adjusted"
+  "claim.RejectClaim.mutationLabel": "Reject claims",
+  "claim.edit.items.qtyAdjusted": "Qty Adjusted",
+  "claim.claimStatus.32": "Reset"
 }
