@@ -330,7 +330,8 @@ class ClaimChildPanel extends Component {
       fetchingPricelist, 
       readOnly = false, 
       resetServices,
-      isRestored
+      isRestored,
+      isDuplicate
     } = this.props;    if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
@@ -755,7 +756,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={isRestored ? subServicesItemsFormattersReview : subServicesItemsFormatters}
+          subServicesItemsFormatters={isRestored || isDuplicate ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
