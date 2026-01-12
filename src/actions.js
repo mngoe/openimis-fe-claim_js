@@ -293,6 +293,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
       ? `attachments: ${formatAttachments(mm, claim.attachments)}`
       : ""
     }
+    ${!!claim.pregnancyAge ? `pregnancyAge: ${claim.pregnancyAge}` : ""}
   `;
 }
 
@@ -355,6 +356,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "program {id code idProgram nameProgram validityDateFrom}",
     "testNumber",
     "tdr",
+    "pregnancyAge",
     "jsonExt",
   ];
   if (!!forFeedback) {
