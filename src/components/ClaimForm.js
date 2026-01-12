@@ -381,7 +381,7 @@ class ClaimForm extends Component {
     this.setState({ claim, newClaim: false });
   };
 
-  changeProgram = () => {
+  resetServicesItems = () => {
     if (!!this.state.claim.services || !!this.state.claim.items) {
       this.setState({ resetServices: this.state.reset + 1 });
     }
@@ -600,7 +600,7 @@ class ClaimForm extends Component {
               openDirty={save || forReview}
               additionalTooltips={tooltips}
               resetServices={this.state.resetServices}
-              changeProgram= {this.changeProgram}
+              resetServicesItems= {this.resetServicesItems}
               {...editingProps}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />

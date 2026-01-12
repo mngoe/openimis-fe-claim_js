@@ -786,3 +786,16 @@ export function fetchUserRoles() {
   );
   return graphql(payload, "USER_ROLES");
 }
+
+export function fetchPregnancyAge(claimDateTo, familyId, product){
+  var dateTo = new Date(claimDateTo);
+  var formattedDate = dateTo.toISOString();
+  const payload = formatQuery(
+    "pregnancyAge",
+    [`claimDateTo: "${formattedDate}"`, `familyId: ${decodeId(familyId)}`, `product: ${decodeId(product)}`],
+    [
+      "pregnancyAge"
+    ]
+  );
+  return graphql(payload, "CLAIM_POLICY_PREGNANCY_AGE");
+}
