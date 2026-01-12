@@ -22,7 +22,8 @@ import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
   claimHealthFacilitySet,
   clearClaim,
-  validateClaimCode
+  validateClaimCode,
+  fetchPregnancyAge
 } from "../actions";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
@@ -128,6 +129,9 @@ class ClaimMasterPanel extends FormPanel {
 
     if (programName == "Chèque Santé" || programName == "Cheque Santé") {
       let activeOrInactivePolicies = [];
+      var productId = "";
+      var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo : "";
+      var familyId = !!edited && edited.insuree != undefined ? edited.insuree.family.id : "";
       insureePolicies.forEach(function (policy) {
         if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom ){
           if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
@@ -138,8 +142,10 @@ class ClaimMasterPanel extends FormPanel {
       var length = activeOrInactivePolicies.length
       if(length > 1){
         policyNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
+        productId = activeOrInactivePolicies[length - 1].policy.product.id;
       } else if(activeOrInactivePolicies.length == 1){
         policyNumber = activeOrInactivePolicies[0].policy.policyNumber;
+        productId = activeOrInactivePolicies[0].policy.product.id;
       } else{
         policyNumber = ""
       }
@@ -147,6 +153,9 @@ class ClaimMasterPanel extends FormPanel {
         v = policyNumber + v
       }
       edited[`prefix`] = policyNumber
+      if(dateTo != "" && familyId != "" && productId != ""){
+        this.props.fetchPregnancyAge(dateTo, familyId, productId);
+      }
     } else {
       var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
       var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
@@ -229,7 +238,8 @@ class ClaimMasterPanel extends FormPanel {
       restore,
       isRestored,
       isDuplicate,
-      changeProgram
+      resetServicesItems, 
+      pregnancyAge
     } = this.props;
     const {policyNumber, codeClaim, claimCode, claimPrefix, claimCodeError} = this.state;
     if (!edited) return null;
@@ -418,7 +428,7 @@ class ClaimMasterPanel extends FormPanel {
                 onChange={(v) => {
                   this.debounceUpdateCode("");
                   this.onChangeValue("program", v);
-                  changeProgram();
+                  resetServicesItems();
                 }}
                 required={true}
               />
@@ -466,6 +476,24 @@ class ClaimMasterPanel extends FormPanel {
             />
           )
         }
+        {chequeNumber != undefined && chequeNumber != null && pregnancyAge != undefined && pregnancyAge != null && (
+          <ControlledField
+            module="policy"
+            id="Claim.policyPregnancyAge"
+            field={
+              <Grid item xs={2} className={classes.item}>
+                <TextInput
+                  module="policy"
+                  label="policy.PregnancyAge"
+                  name="pregnancyAge"
+                  value={pregnancyAge}
+                  readOnly={true}
+                  reset={reset}
+                />
+              </Grid>
+            }
+          />
+        )}
         {chequeNumber != undefined && chequeNumber != null && (
           <ControlledField
             module="policy"
@@ -766,6 +794,7 @@ const mapStateToProps = (state) => ({
   isCodeValid: state.claim.validationFields?.claimCode?.isValid,
   isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
   codeValidationError: state.claim.validationFields?.claimCode?.validationError,
+  pregnancyAge: state.claim.pregnancyAge,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -774,6 +803,7 @@ const mapDispatchToProps = (dispatch) => {
       claimHealthFacilitySet,
       clearClaim,
       validateClaimCode,
+      fetchPregnancyAge,
     },
     dispatch,
   );
