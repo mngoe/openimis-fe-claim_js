@@ -47,8 +47,7 @@ class ClaimMasterPanel extends FormPanel {
     claimCodeError: null,
     codeClaim: null,
     claimPrefix: null,
-    policyNumber: null,
-    csProdId: null
+    policyNumber: null
   };
 
   constructor(props) {
@@ -153,7 +152,9 @@ class ClaimMasterPanel extends FormPanel {
         v = policyNumber + v
       }
       edited[`prefix`] = policyNumber
-      this.props.fetchPregnancyAge(dateTo, familyId, productId);
+      if(dateTo != "" && familyId != "" && productId != ""){
+        this.props.fetchPregnancyAge(dateTo, familyId, productId);
+      }
     } else {
       var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
       var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
