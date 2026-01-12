@@ -106,6 +106,8 @@ class ClaimMasterPanel extends FormPanel {
             codeError: null,
           });
         }
+    } else if(prevProps.fetchedPregnancyAge !== this.props.fetchedPregnancyAge && !!this.props.fetchedPregnancyAge){
+      this.updateAttribute('pregnancyAge', this.props.pregnancyAge)
     }
   }
 
@@ -483,7 +485,7 @@ class ClaimMasterPanel extends FormPanel {
                   module="policy"
                   label="policy.PregnancyAge"
                   name="pregnancyAge"
-                  value={pregnancyAge}
+                  value={!!edited && !!edited.pregnancyAge ? edited.pregnancyAge : pregnancyAge}
                   readOnly={true}
                   reset={reset}
                 />
@@ -791,7 +793,8 @@ const mapStateToProps = (state) => ({
   isCodeValid: state.claim.validationFields?.claimCode?.isValid,
   isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
   codeValidationError: state.claim.validationFields?.claimCode?.validationError,
-  pregnancyAge: state.claim.pregnancyAge
+  pregnancyAge: state.claim.pregnancyAge,
+  fetchedPregnancyAge: state.claim.fetchedPregnancyAge,
 });
 
 const mapDispatchToProps = (dispatch) => {
