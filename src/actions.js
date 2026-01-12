@@ -356,6 +356,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "program {id code idProgram nameProgram validityDateFrom}",
     "testNumber",
     "tdr",
+    "pregnancyAge",
     "jsonExt",
   ];
   if (!!forFeedback) {
