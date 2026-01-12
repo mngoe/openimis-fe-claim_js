@@ -293,6 +293,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
       ? `attachments: ${formatAttachments(mm, claim.attachments)}`
       : ""
     }
+    ${!!claim.pregnancyAge ? `pregnancyAge: ${claim.pregnancyAge}` : ""}
   `;
 }
 
