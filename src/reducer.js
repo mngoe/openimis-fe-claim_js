@@ -60,7 +60,11 @@ function reducer(
     userRoles: null,
     fetchingUserRoles: false,
     fetchedUserRoles: false,
-    errorUserRoles: null
+    errorUserRoles: null,
+    pregnancyAge: null,
+    fetchingPregnancyAge: false,
+    fetchedPregnancyAge: false,
+    errorPregnancyAge: null,
   },
   action,
 ) {
@@ -396,6 +400,29 @@ function reducer(
         fetchingUserRoles: false,
         fetchedUserRoles: false,
         errorUserRoles: formatGraphQLError(action.payload)
+      }
+    case "CLAIM_POLICY_PREGNANCY_AGE_REQ":
+      return {
+        ...state,
+        fetchingPregnancyAge: true,
+        fetchedPregnancyAge: false,
+        pregnancyAge: null,
+        errorPregnancyAge: null
+      }
+    case "CLAIM_POLICY_PREGNANCY_AGE_RESP":
+      return {
+        ...state,
+        fetchingPregnancyAge: false,
+        fetchedPregnancyAge: true,
+        pregnancyAge: action.payload.data.pregnancyAge.pregnancyAge,
+        errorPregnancyAge: formatGraphQLError(action.payload)
+      }
+    case "CLAIM_POLICY_PREGNANCY_AGE_ERR":
+      return {
+        ...state,
+        fetchingPregnancyAge: false,
+        fetchedPregnancyAge: false,
+        errorPregnancyAge: formatGraphQLError(action.payload)
       }
     case "CLAIM_MUTATION_REQ":
       return dispatchMutationReq(state, action);

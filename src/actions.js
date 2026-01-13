@@ -293,6 +293,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
       ? `attachments: ${formatAttachments(mm, claim.attachments)}`
       : ""
     }
+    ${!!claim.pregnancyAge ? `pregnancyAge: ${claim.pregnancyAge}` : ""}
   `;
 }
 
@@ -355,6 +356,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "program {id code idProgram nameProgram validityDateFrom}",
     "testNumber",
     "tdr",
+    "pregnancyAge",
     "jsonExt",
   ];
   if (!!forFeedback) {
@@ -785,4 +787,17 @@ export function reject(claims, rejectReason, clientMutationLabel, clientMutation
     clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
     requestedDateTime,
   });
+}
+
+export function fetchPregnancyAge(claimDateTo, familyId, product){
+  var dateTo = new Date(claimDateTo);
+  var formattedDate = dateTo.toISOString();
+  const payload = formatQuery(
+    "pregnancyAge",
+    [`claimDateTo: "${formattedDate}"`, `familyId: ${decodeId(familyId)}`, `product: ${decodeId(product)}`],
+    [
+      "pregnancyAge"
+    ]
+  );
+  return graphql(payload, "CLAIM_POLICY_PREGNANCY_AGE");
 }
