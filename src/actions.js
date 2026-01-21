@@ -294,6 +294,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
       : ""
     }
     ${!!claim.pregnancyAge ? `pregnancyAge: ${claim.pregnancyAge}` : ""}
+    source: "WEB"
   `;
 }
 
@@ -358,6 +359,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "tdr",
     "pregnancyAge",
     "jsonExt",
+    "source",
   ];
   if (!!forFeedback) {
     projections.push(

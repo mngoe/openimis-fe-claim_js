@@ -185,7 +185,7 @@ class ClaimForm extends Component {
 
   _duplicateClaim(claim) {
     const restoredClaim = this._restoreClaim(claim);
-    return { ...restoredClaim, insuree: null, code: "", restore: null };
+    return { ...restoredClaim, insuree: null, code: "", restore: null, source: "WEB" };
   }
 
   componentDidMount() {
