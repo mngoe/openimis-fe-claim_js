@@ -130,12 +130,13 @@ class ClaimMasterPanel extends FormPanel {
       var familyId = !!edited && edited.insuree != undefined ? edited.insuree.family.id : "";
       insureePolicies.forEach(function (policy) {
         if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom) {
-          if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+          if ((policy.policy.status == 2 || policy.policy.status == 8 || policy.policy.status == 4) && policy.policy.policyNumber != null) {
             activeOrInactivePolicies.push(policy)
           }
         }
       })
       var length = activeOrInactivePolicies.length
+      console.log(activeOrInactivePolicies)
       if (length > 1) {
         chequeNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
         productId = activeOrInactivePolicies[length - 1].policy.product.id;
@@ -268,7 +269,7 @@ class ClaimMasterPanel extends FormPanel {
       let activeOrInactivePolicies = [];
       insureePolicies.forEach(function (policy) {
         if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom) {
-          if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+          if ((policy.policy.status == 2 || policy.policy.status == 8 || policy.policy.status == 4) && policy.policy.policyNumber != null) {
             activeOrInactivePolicies.push(policy)
           }
         }
