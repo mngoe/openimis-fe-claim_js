@@ -475,7 +475,7 @@ class ClaimMasterPanel extends FormPanel {
             />
           )
         }
-        {chequeNumber != undefined && chequeNumber != null && pregnancyAge != undefined && pregnancyAge != null && (
+        {chequeNumber != undefined && chequeNumber != null && (
           <ControlledField
             module="policy"
             id="Claim.policyPregnancyAge"
@@ -485,7 +485,7 @@ class ClaimMasterPanel extends FormPanel {
                   module="policy"
                   label="policy.PregnancyAge"
                   name="pregnancyAge"
-                  value={!!edited && !!edited.pregnancyAge ? edited.pregnancyAge : pregnancyAge}
+                  value={!!edited && !!edited.pregnancyAge ? edited.pregnancyAge : pregnancyAge }
                   readOnly={true}
                   reset={reset}
                 />
