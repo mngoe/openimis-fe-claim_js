@@ -116,11 +116,10 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
-    const {claimCode, claimPrefix } = this.state;
     let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
-    var prefix = claimPrefix;
+    var prefix;
     var suffix = v;
-    var code = claimCode;
+    var code;
     var chequeNumber;
     var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
     const { edited } = this.props;
@@ -150,18 +149,20 @@ class ClaimMasterPanel extends FormPanel {
         prefix = chequeNumber
         code = chequeNumber + suffix
       }
+      edited[`prefix`] = chequeNumber
       if (dateTo != "" && familyId != "" && productId != "") {
         this.props.fetchPregnancyAge(dateTo, familyId, productId);
       }
     } else {
-      var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
-      var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
-      var codeFosa = this.props.edited.healthFacility ? this.props.edited.healthFacility.code : "";
+      var programCode = edited.program ? edited.program.code.substring(0, 3) : "";
+      var dateTo = edited.dateTo ? edited.dateTo.substring(0, 4) : "";
+      var codeFosa = edited.healthFacility ? edited.healthFacility.code : "";
       var csuNumber = `${codeFosa}.${dateTo}.${programCode}.`;
       if (csuNumber != undefined) {
         prefix = csuNumber
         code = csuNumber + suffix
       }
+      edited[`prefix`] = csuNumber
     }
     this.setState(
       {
