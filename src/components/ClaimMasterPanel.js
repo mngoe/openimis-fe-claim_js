@@ -136,7 +136,6 @@ class ClaimMasterPanel extends FormPanel {
         }
       })
       var length = activeOrInactivePolicies.length
-      console.log(activeOrInactivePolicies)
       if (length > 1) {
         chequeNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
         productId = activeOrInactivePolicies[length - 1].policy.product.id;
