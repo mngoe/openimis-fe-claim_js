@@ -83,3 +83,4 @@ export const STORAGE_KEY_ADMIN = 'admin';
 
 export const REJECTION_CODE = _.range(-2, 19);
 export const STATUS_DONE = 8;
+export const STATUS_BYPASS = 16;

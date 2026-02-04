@@ -33,7 +33,7 @@ import {
   skipReview,
   process,
 } from "../actions";
-import { RIGHT_UPDATE, RIGHT_FEEDBACK, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, MODULE_NAME, STATUS_DONE } from "../constants";
+import { RIGHT_UPDATE, RIGHT_FEEDBACK, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, MODULE_NAME, STATUS_DONE, STATUS_BYPASS } from "../constants";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 
 const CLAIM_REVIEWS_FILTER_CONTRIBUTION_KEY = "claim.ReviewsFilter";
@@ -438,7 +438,7 @@ class ReviewsPage extends Component {
   };
 
   canProcessSelected = (selection) =>
-    !!selection && selection.length && selection.filter((s) => s.status === STATUS_DONE || s.reviewStatus === STATUS_DONE).length === selection.length;
+    !!selection && selection.length && selection.filter((s) => s.status === STATUS_DONE && (s.reviewStatus === STATUS_DONE || s.reviewStatus === STATUS_BYPASS)).length === selection.length;
 
   processSelected = (selection) => {
     this._labelMutation(selection, "ProcessClaim.mutationLabel", "ProcessClaims.mutationLabel", this.props.process);
