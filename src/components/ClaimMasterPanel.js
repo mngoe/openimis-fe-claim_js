@@ -137,7 +137,7 @@ class ClaimMasterPanel extends FormPanel {
       var familyId = !!edited && edited.insuree != undefined ? edited.insuree.family.id : "";
       insureePolicies.forEach(function (policy) {
         if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom ){
-          if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+          if ((policy.policy.status == 2 || policy.policy.status == 8 || policy.policy.status == 4) && policy.policy.policyNumber != null) {
             activeOrInactivePolicies.push(policy)
           }
         }
@@ -274,7 +274,7 @@ class ClaimMasterPanel extends FormPanel {
       let activeOrInactivePolicies = [];
       insureePolicies.forEach(function (policy) {
         if(policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom){
-          if ((policy.policy.status == 2 || policy.policy.status == 8) && policy.policy.policyNumber != null) {
+          if ((policy.policy.status == 2 || policy.policy.status == 8 || policy.policy.status == 4) && policy.policy.policyNumber != null) {
             activeOrInactivePolicies.push(policy)
           }
         }
