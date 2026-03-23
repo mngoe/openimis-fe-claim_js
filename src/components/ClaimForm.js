@@ -42,6 +42,7 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   RIGHT_CLAIMREVIEW,
+  STATUS_RESET,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -184,7 +185,7 @@ class ClaimForm extends Component {
 
   _duplicateClaim(claim) {
     const restoredClaim = this._restoreClaim(claim);
-    return { ...restoredClaim, insuree: null, code: "", restore: null };
+    return { ...restoredClaim, insuree: null, code: "", restore: null, source: "WEB" };
   }
 
   componentDidMount() {
@@ -380,7 +381,7 @@ class ClaimForm extends Component {
     this.setState({ claim, newClaim: false });
   };
 
-  changeProgram = () => {
+  resetServicesItems = () => {
     if (!!this.state.claim.services || !!this.state.claim.items) {
       this.setState({ resetServices: this.state.reset + 1 });
     }
@@ -544,7 +545,7 @@ class ClaimForm extends Component {
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.renew"),
       },
       {
-        condition: claim_uuid && isHealthFacilityPage,
+        condition: claim_uuid && isHealthFacilityPage && this.state.claim?.status !== STATUS_RESET,
         content: (
           <span>
             <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.duplicate()}>
@@ -604,7 +605,7 @@ class ClaimForm extends Component {
               openDirty={save || forReview}
               additionalTooltips={tooltips}
               resetServices={this.state.resetServices}
-              changeProgram= {this.changeProgram}
+              resetServicesItems= {this.resetServicesItems}
               {...editingProps}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
