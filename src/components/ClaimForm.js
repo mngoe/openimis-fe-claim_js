@@ -3,7 +3,6 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
-import * as Sentry from "@sentry/react";
 
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
@@ -262,7 +261,6 @@ class ClaimForm extends Component {
   };
 
   canSave = (forFeedback,forReview) => {
-    Sentry.captureException(new Error(`cansave claim: ${this.state.claim}`));
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;

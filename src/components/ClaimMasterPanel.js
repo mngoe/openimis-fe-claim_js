@@ -31,6 +31,7 @@ import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
 import TdrNumberPicker from "../pickers/tdrNumberPicker";
 import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import * as Sentry from "@sentry/react";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -116,13 +117,14 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
-    let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
+    const { edited } = this.props;
+    Sentry.captureException(new Error(`cansave claim: ${edited}`));
+    let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     var prefix;
     var suffix = v;
     var code;
     var chequeNumber;
-    var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
-    const { edited } = this.props;
+    var programName = edited?.program ? this.props.edited?.program?.nameProgram : "";
     if (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
       let activeOrInactivePolicies = [];
       var productId = "";
