@@ -123,9 +123,12 @@ class ClaimMasterPanel extends FormPanel {
     var suffix = v;
     var code;
     var chequeNumber;
-    var programName = edited?.program ? this.props.edited?.program?.nameProgram : "";
+    var programName = edited?.program ? edited?.program?.nameProgram : "";
     if(isRestored && (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9")){
-      Sentry.captureException(new Error(`cansave claim: ${edited}`));
+      Sentry.captureMessage("Restored CS claim Info", {
+        level: "info",
+        extra: edited
+      });
     }
     if (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
       let activeOrInactivePolicies = [];
