@@ -261,7 +261,6 @@ class ClaimForm extends Component {
   };
 
   canSave = (forFeedback,forReview) => {
-    console.log(this.state.claim)
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
