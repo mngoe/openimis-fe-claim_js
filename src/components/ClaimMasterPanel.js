@@ -125,11 +125,9 @@ class ClaimMasterPanel extends FormPanel {
     var chequeNumber;
     var programName = edited?.program ? edited?.program?.nameProgram : "";
     if(isRestored && (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9")){
-      Sentry.captureMessage( "cansave claim",{
+      Sentry.captureMessage( "Claim info",{
         level: "info",
-        extra: {
-          edited
-        }
+        extra: edited
       })
     }
     if (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
