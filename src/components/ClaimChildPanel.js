@@ -142,36 +142,32 @@ class ClaimChildPanel extends Component {
     this._onEditedChanged(data);
   };
 
+  _getPricelistValue = (collectionKey, valueId, fallbackValue) => {
+    const pricelistId = this.props?.edited?.healthFacility?.[`${this.props.type}sPricelist`]?.id;
+    if (!pricelistId) {
+      return fallbackValue;
+    }
+    return this.props?.[collectionKey]?.[pricelistId]?.[valueId] ?? fallbackValue;
+  };
+
   _price = (v) => {
-    let id = decodeId(v.id)
-    return this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][id] || v.price;
-}
+    let id = decodeId(v?.id);
+    return this._getPricelistValue(`${this.props.type}sPricelists`, id, v?.price);
+  };
 
   _code = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.code
-    );
+    let id = decodeId(v?.id);
+    return this._getPricelistValue(`${this.props.type}sPricelists`, id, v?.code);
   };
 
   _serviceSet = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.serviceserviceSet
-    );
+    let id = decodeId(v?.id);
+    return this._getPricelistValue("servicesPricelists", id, v?.serviceserviceSet);
   };
 
   _serviceLinked = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.servicesLinked
-    );
+    let id = decodeId(v?.id);
+    return this._getPricelistValue("servicesPricelists", id, v?.servicesLinked);
   };
 
   _onChangeItem = (idx, attr, v) => {
