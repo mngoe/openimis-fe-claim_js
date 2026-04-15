@@ -19,7 +19,7 @@ import {
   PublishedComponent
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll, fetchUserRoles } from "../actions";
+import { submit, del, selectHealthFacility, submitAll, fetchUserRoles, selectClaimAdmin } from "../actions";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME, ROLE_REJECT } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
@@ -61,7 +61,7 @@ class HealthFacilitiesPage extends Component {
     !!selection &&
     selection.length &&
     selection.filter((s) => s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
-    selection.length;
+      selection.length;
 
   canSubmitAll = (selection) => !selection || selection.length == 0;
 
@@ -128,18 +128,20 @@ class HealthFacilitiesPage extends Component {
     this.setState({ confirmedAction }, confirm);
   };
 
-  rejectSelected = (selection) => {
-    this.setState({ showRejectReasonDialog: true, rejectedClaimsSelected: selection })
-  }
-
   canRejectSelected = (selection) =>
     !!selection && selection.length && selection.filter((s) => s.status === 2).length === selection.length;
+
+  rejectSelected = (selection) => {
+    this.setState({ showRejectReasonDialog: true, rejectedClaimsSelected: selection });
+  }
 
   onDoubleClick = (c, newTab = false) => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [c.uuid], newTab);
   };
 
   onAdd = () => {
+    this.props.selectClaimAdmin(this.props.userClaimAdminInfos);
+    this.props.selectHealthFacility(this.props.userHealthFacilityFullPath);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
@@ -235,8 +237,8 @@ class HealthFacilitiesPage extends Component {
 
 const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
-  userRoles: state.claim.userRoles,
   claimAdmin: state.claim.claimAdmin,
+  userClaimAdminInfos: state.claim.userClaimAdminInfos,
   claimHealthFacility: state.claim.claimHealthFacility,
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   submittingMutation: state.claim.submittingMutation,
@@ -245,12 +247,14 @@ const mapStateToProps = (state) => ({
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
+  userRoles: state.claim.userRoles
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       selectHealthFacility,
+      selectClaimAdmin,
       journalize,
       coreConfirm,
       submit,
