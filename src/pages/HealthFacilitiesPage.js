@@ -19,7 +19,7 @@ import {
   PublishedComponent
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll, fetchUserRoles } from "../actions";
+import { submit, del, selectHealthFacility, submitAll, fetchUserRoles, selectClaimAdmin } from "../actions";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME, ROLE_REJECT } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
@@ -140,6 +140,8 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
+    this.props.selectClaimAdmin(this.props.userClaimAdminInfos);
+    this.props.selectHealthFacility(this.props.userHealthFacilityFullPath);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
@@ -236,6 +238,7 @@ class HealthFacilitiesPage extends Component {
 const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   claimAdmin: state.claim.claimAdmin,
+  userClaimAdminInfos: state.claim.userClaimAdminInfos,
   claimHealthFacility: state.claim.claimHealthFacility,
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   submittingMutation: state.claim.submittingMutation,
@@ -251,6 +254,7 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       selectHealthFacility,
+      selectClaimAdmin,
       journalize,
       coreConfirm,
       submit,
