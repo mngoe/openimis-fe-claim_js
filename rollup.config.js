@@ -21,6 +21,7 @@ export default {
     /^@date-io\/.*/,
     /^@material-ui\/.*/,
     /^@openimis.*/,
+    /^@sentry.*/,
     "classnames",
     "clsx",
     "history",
