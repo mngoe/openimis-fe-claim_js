@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux";
 import _ from "lodash";
 import _debounce from "lodash/debounce";
 import { injectIntl } from "react-intl";
+import * as Sentry from "@sentry/react";
 
 import { Grid, Divider, Checkbox, FormControlLabel } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
@@ -43,6 +44,18 @@ class Head extends Component {
     if(!!this.props.user && this.props.user != null){
       let lastName = this.props.user?.last_name;
       let otherNames = this.props.user?.other_names;
+      Sentry.captureMessage("claim.getUserClaimAdmin called", {
+        level: "info",
+        tags: {
+          module: "claim",
+          feature: "claim_admin_resolution",
+        },
+        extra: {
+          userId: this.props.user?.id,
+          lastName,
+          otherNames,
+        },
+      });
       this.props.getUserClaimAdmin(lastName,otherNames);
     }
   }
