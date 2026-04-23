@@ -17,10 +17,9 @@ import {
   AmountInput,
   Contributions,
 } from "@openimis/fe-core";
-import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion, getUserClaimAdmin } from "../actions";
+import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
-const CLAIM_ADMIN_ROLE = "Claim Administrator";
 
 const styles = (theme) => ({
   dialogTitle: theme.dialog.title,
@@ -38,21 +37,6 @@ class Head extends Component {
   state = {
     reset: 0,
   };
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if(!this.props.user?.last_name || !this.props.user?.other_names ) return;
-    
-    if(!_.isEqual(prevProps.userRoles, this.props.userRoles)
-      && this.props.userRoles?.length > 0 
-      && !this.props.userClaimAdminInfos) {
-      if(this.props.userRoles?.find(r => r.name === CLAIM_ADMIN_ROLE)) {
-        this.props.getUserClaimAdmin(this.props.user?.last_name, this.props.user?.other_names);
-      }
-    }
-    if(!prevProps.userClaimAdminInfos && !!this.props.userClaimAdminInfos){
-      this.props.selectClaimAdmin(this.props.userClaimAdminInfos)
-    }
-  }
 
   _filterValue = (k) => {
     const { filters } = this.props;
@@ -304,7 +288,6 @@ const mapDispatchToProps = (dispatch) => {
       selectHealthFacility,
       selectDistrict,
       selectRegion,
-      getUserClaimAdmin,
     },
     dispatch,
   );

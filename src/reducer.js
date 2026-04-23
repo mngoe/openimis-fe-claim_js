@@ -52,14 +52,6 @@ function reducer(
       },
       error: null,
     },
-    userClaimAdminInfos: null,
-    fetchingUserClaimAdminInfos: false,
-    fetchedUserClaimAdminInfos: false,
-    errorUserClaimAdminInfos: null,
-    userRoles: null,
-    fetchingUserRoles: false,
-    fetchedUserRoles: false,
-    errorUserRoles: null,
     pregnancyAge: null,
     fetchingPregnancyAge: false,
     fetchedPregnancyAge: false,
@@ -354,52 +346,6 @@ function reducer(
           },
         },
       };
-    case "CLAIM_USER_ADMIN_REQ":
-      return {
-        ...state,
-        fetchingUserClaimAdminInfos: true,
-        fetchedUserClaimAdminInfos: false,
-        userClaimAdminInfos: null,
-        errorUserClaimAdminInfos: null,
-      }
-    case "CLAIM_USER_ADMIN_RESP":
-      return {
-        ...state,
-        fetchingUserClaimAdminInfos: false,
-        fetchedUserClaimAdminInfos: true,
-        userClaimAdminInfos: action.payload.data.claimAdmins.edges[0].node,
-        errorUserClaimAdminInfos: formatGraphQLError(action.payload),
-      }
-    case "CLAIM_USER_ADMIN_ERR":
-      return {
-        ...state,
-        fetchingUserClaimAdminInfos: false,
-        fetchedUserClaimAdminInfos: false,
-        errorUserClaimAdminInfos: formatGraphQLError(action.payload)
-      }
-    case "USER_ROLES_REQ":
-      return {
-        ...state,
-        fetchingUserRoles: true,
-        fetchedUserRoles: false,
-        userRoles: null,
-        errorUserRoles: null
-      }
-    case "USER_ROLES_RESP":
-      return {
-        ...state,
-        fetchingUserRoles: false,
-        fetchedUserRoles: true,
-        userRoles: action.payload.data.user.iUser.roles,
-        errorUserRoles: formatGraphQLError(action.payload)
-      }
-    case "USER_ROLES_ERR":
-      return {
-        ...state,
-        fetchingUserRoles: false,
-        fetchedUserRoles: false,
-        errorUserRoles: formatGraphQLError(action.payload)
-      }
     case "CLAIM_POLICY_PREGNANCY_AGE_REQ":
       return {
         ...state,
