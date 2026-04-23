@@ -19,11 +19,12 @@ import {
   PublishedComponent
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll, fetchUserRoles, selectClaimAdmin } from "../actions";
+import { submit, del, selectHealthFacility, submitAll, selectClaimAdmin } from "../actions";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME, ROLE_REJECT } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
+const CLAIM_ADMIN_ROLE = "Claim Administrator";
 
 const styles = (theme) => ({
   page: theme.page,
@@ -47,6 +48,32 @@ class HealthFacilitiesPage extends Component {
       rejectedClaimsSelected: []
     };
   }
+
+  iUIsClaimAdmin = () => {
+    const { user } = this.props;
+    return Boolean(user?.i_user?.roles?.find(
+      r => r.name === "Claim Administrator"
+    ) && !!user?.claim_admin);
+  }
+
+  componentDidMount = () => {
+    const { module } = this.props;
+    if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+    
+    if(this.iUIsClaimAdmin()) {
+      this.props.selectClaimAdmin(this.props.user?.claim_admin);
+      this.props.selectHealthFacility(this.props.user?.claim_admin?.healthFacility);
+    }
+  };
+
+  componentWillUnmount = () => {
+    const { location, history } = this.props;
+    const {
+      location: { pathname },
+    } = history;
+    const urlPath = location.pathname;
+    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
+  };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.submittingMutation && !this.props.submittingMutation) {
@@ -140,29 +167,14 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
-    this.props.selectClaimAdmin(this.props.userClaimAdminInfos);
-    this.props.selectHealthFacility(this.props.userClaimAdminInfos?.healthFacility);
+    this.props.selectClaimAdmin(this.props.user.claim_admin);
+    this.props.selectHealthFacility(this.props.user.claim_admin?.healthFacility);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
   canAdd = () => {
-    if (!this.props.userClaimAdminInfos) return false;
+    if (!this.iUIsClaimAdmin()) return false;
     return true;
-  };
-
-  componentDidMount = () => {
-    const { module } = this.props;
-    if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
-    this.props.fetchUserRoles();
-  };
-
-  componentWillUnmount = () => {
-    const { location, history } = this.props;
-    const {
-      location: { pathname },
-    } = history;
-    const urlPath = location.pathname;
-    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
   };
 
   render() {
@@ -246,7 +258,7 @@ const mapStateToProps = (state) => ({
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
-  userRoles: state.claim.userRoles
+  user: state.core.user,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -260,7 +272,6 @@ const mapDispatchToProps = (dispatch) => {
       submitAll,
       del,
       clearCurrentPaginationPage,
-      fetchUserRoles
     },
     dispatch,
   );

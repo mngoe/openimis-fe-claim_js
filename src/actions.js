@@ -779,18 +779,6 @@ export function getUserClaimAdmin(lastName, otherNames) {
   return graphql(payload, "CLAIM_USER_ADMIN");
 }
 
-export function fetchUserRoles() {
-  const payload = formatQuery(
-    "user",
-    null,
-    [
-      "id",
-      "iUser{roles{id name}}"
-    ]
-  );
-  return graphql(payload, "USER_ROLES");
-}
-
 export function fetchPregnancyAge(claimDateTo, familyId, product){
   var dateTo = new Date(claimDateTo);
   var formattedDate = dateTo.toISOString();
