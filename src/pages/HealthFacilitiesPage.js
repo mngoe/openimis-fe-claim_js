@@ -6,6 +6,7 @@ import { Fab, Tooltip } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 import AddIcon from "@material-ui/icons/Add";
+import * as Sentry from "@sentry/react";
 import {
   withHistory,
   historyPush,

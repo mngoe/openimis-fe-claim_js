@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux";
 import _ from "lodash";
 import _debounce from "lodash/debounce";
 import { injectIntl } from "react-intl";
+import * as Sentry from "@sentry/react";
 
 import { Grid, Divider, Checkbox, FormControlLabel, CircularProgress } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
