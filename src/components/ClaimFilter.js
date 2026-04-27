@@ -6,7 +6,7 @@ import _debounce from "lodash/debounce";
 import { injectIntl } from "react-intl";
 import * as Sentry from "@sentry/react";
 
-import { Grid, Divider, Checkbox, FormControlLabel } from "@material-ui/core";
+import { Grid, Divider, Checkbox, FormControlLabel, CircularProgress } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 
 import {
@@ -17,9 +17,8 @@ import {
   TextInput,
   AmountInput,
   Contributions,
-  ProgressOrError
 } from "@openimis/fe-core";
-import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion, getUserClaimAdmin } from "../actions";
+import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
 
@@ -39,30 +38,6 @@ class Head extends Component {
   state = {
     reset: 0,
   };
-  componentDidMount(){
-    if(!!this.props.user && this.props.user != null){
-      let lastName = this.props.user?.last_name;
-      let otherNames = this.props.user?.other_names;
-      Sentry.captureMessage("claim.getUserClaimAdmin called", {
-        level: "info",
-        tags: {
-          module: "claim",
-          feature: "claim_admin_resolution",
-        },
-        extra: {
-          userId: this.props.user?.id,
-          lastName,
-          otherNames,
-        },
-      });
-      this.props.getUserClaimAdmin(lastName,otherNames);
-    }
-  }
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if(!prevProps.userClaimAdminInfos && !!this.props.userClaimAdminInfos){
-      this.props.selectClaimAdmin(this.props.userClaimAdminInfos)
-    }
-  }
 
   _filterValue = (k) => {
     const { filters } = this.props;
@@ -190,7 +165,7 @@ class Head extends Component {
       filters, 
       onChangeFilters, 
       userHealthFacilityId,
-      userClaimAdminInfos,
+      fetchingUserClaimAdminInfos,
       claimAdmin,
       claimHealthFacility,
       claimDistrict,
@@ -244,6 +219,11 @@ class Head extends Component {
             </Grid>
           }
         />
+        {fetchingUserClaimAdminInfos ? (
+          <Grid item xs={2} className={classes.item}>
+            <CircularProgress />
+          </Grid>
+        ) : (
         <ControlledField
           module="claim"
           id="ClaimFilter.claimAdmin"
@@ -262,7 +242,7 @@ class Head extends Component {
               />
             </Grid>
           }
-        />
+        />)}
         <ControlledField
           module="claim"
           id="ClaimFilter.batchRun"
@@ -294,10 +274,12 @@ const mapStateToProps = (state) => ({
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
   user: state.core.user ? state.core.user.i_user : null,
   userClaimAdminInfos: state.claim?.userClaimAdminInfos,
+  fetchingUserClaimAdminInfos: state.claim?.fetchingUserClaimAdminInfos,
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   claimDistrict: state.claim.claimDistrict,
-  claimRegion: state.claim.claimRegion
+  claimRegion: state.claim.claimRegion,
+  userRoles: state.claim.userRoles
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -307,7 +289,6 @@ const mapDispatchToProps = (dispatch) => {
       selectHealthFacility,
       selectDistrict,
       selectRegion,
-      getUserClaimAdmin
     },
     dispatch,
   );

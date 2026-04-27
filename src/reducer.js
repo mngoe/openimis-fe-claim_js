@@ -53,14 +53,6 @@ function reducer(
       },
       error: null,
     },
-    userClaimAdminInfos: null,
-    fetchingUserClaimAdminInfos: false,
-    fetchedUserClaimAdminInfos: false,
-    errorUserClaimAdminInfos: null,
-    userRoles: null,
-    fetchingUserRoles: false,
-    fetchedUserRoles: false,
-    errorUserRoles: null,
     pregnancyAge: null,
     fetchingPregnancyAge: false,
     fetchedPregnancyAge: false,
@@ -355,67 +347,6 @@ function reducer(
           },
         },
       };
-    case "CLAIM_USER_ADMIN_REQ":
-      return {
-        ...state,
-        fetchingUserClaimAdminInfos: true,
-        fetchedUserClaimAdminInfos: false,
-        userClaimAdminInfos: null,
-        errorUserClaimAdminInfos: null,
-      }
-    case "CLAIM_USER_ADMIN_RESP":
-      var claimAdminEdges = action.payload?.data?.claimAdmins?.edges || [];
-      var resolvedUserClaimAdmin = claimAdminEdges.length > 0 ? claimAdminEdges[0]?.node || null : null;
-      Sentry.captureMessage("claim.CLAIM_USER_ADMIN_RESP", {
-        level: claimAdminEdges.length > 0 ? "info" : "warning",
-        tags: {
-          module: "claim",
-          feature: "claim_admin_resolution",
-          claim_admin_resolution: claimAdminEdges.length > 0 ? "resolved" : "empty_result",
-        },
-        extra: {
-          edgesLength: claimAdminEdges.length,
-          adminUuid: resolvedUserClaimAdmin?.uuid,
-          hfUuid: resolvedUserClaimAdmin?.healthFacility?.uuid,
-        },
-      });
-      return {
-        ...state,
-        fetchingUserClaimAdminInfos: false,
-        fetchedUserClaimAdminInfos: true,
-        userClaimAdminInfos: resolvedUserClaimAdmin,
-        errorUserClaimAdminInfos: formatGraphQLError(action.payload),
-      }
-    case "CLAIM_USER_ADMIN_ERR":
-      return {
-        ...state,
-        fetchingUserClaimAdminInfos: false,
-        fetchedUserClaimAdminInfos: false,
-        errorUserClaimAdminInfos: formatGraphQLError(action.payload)
-      }
-    case "USER_ROLES_REQ":
-      return {
-        ...state,
-        fetchingUserRoles: true,
-        fetchedUserRoles: false,
-        userRoles: null,
-        errorUserRoles: null
-      }
-    case "USER_ROLES_RESP":
-      return {
-        ...state,
-        fetchingUserRoles: false,
-        fetchedUserRoles: true,
-        userRoles: action.payload.data.user.iUser.roles,
-        errorUserRoles: formatGraphQLError(action.payload)
-      }
-    case "USER_ROLES_ERR":
-      return {
-        ...state,
-        fetchingUserRoles: false,
-        fetchedUserRoles: false,
-        errorUserRoles: formatGraphQLError(action.payload)
-      }
     case "CLAIM_POLICY_PREGNANCY_AGE_REQ":
       return {
         ...state,
