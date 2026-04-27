@@ -54,7 +54,7 @@ class HealthFacilitiesPage extends Component {
     const { user } = this.props;
     return Boolean(user?.i_user?.roles?.find(
       r => r.name === "Claim Administrator"
-    ) && !!user?.claimAdmin);
+    ) && !!user?.claim_admin);
   }
 
   componentDidMount = () => {

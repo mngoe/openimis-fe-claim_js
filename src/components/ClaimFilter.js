@@ -165,7 +165,6 @@ class Head extends Component {
       filters, 
       onChangeFilters, 
       userHealthFacilityId,
-      fetchingUserClaimAdminInfos,
       claimAdmin,
       claimHealthFacility,
       claimDistrict,
@@ -219,11 +218,6 @@ class Head extends Component {
             </Grid>
           }
         />
-        {fetchingUserClaimAdminInfos ? (
-          <Grid item xs={2} className={classes.item}>
-            <CircularProgress />
-          </Grid>
-        ) : (
         <ControlledField
           module="claim"
           id="ClaimFilter.claimAdmin"
@@ -242,7 +236,7 @@ class Head extends Component {
               />
             </Grid>
           }
-        />)}
+        />
         <ControlledField
           module="claim"
           id="ClaimFilter.batchRun"
@@ -273,13 +267,10 @@ const mapStateToProps = (state) => ({
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
   user: state.core.user ? state.core.user.i_user : null,
-  userClaimAdminInfos: state.claim?.userClaimAdminInfos,
-  fetchingUserClaimAdminInfos: state.claim?.fetchingUserClaimAdminInfos,
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   claimDistrict: state.claim.claimDistrict,
-  claimRegion: state.claim.claimRegion,
-  userRoles: state.claim.userRoles
+  claimRegion: state.claim.claimRegion
 });
 
 const mapDispatchToProps = (dispatch) => {
