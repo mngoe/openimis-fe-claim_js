@@ -62,8 +62,13 @@ class HealthFacilitiesPage extends Component {
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
     
     if(this.iUIsClaimAdmin()) {
+<<<<<<< feature-36195
+      this.props.selectClaimAdmin(this.props.user?.claim_admin);
+      this.props.selectHealthFacility(this.props.user?.claim_admin?.healthFacility);
+=======
       this.props.selectClaimAdmin(this.props.user?.claimAdmin);
       this.props.selectHealthFacility(this.props.user?.claimAdmin?.healthFacility);
+>>>>>>> test-csu
     }
   };
 
@@ -168,8 +173,13 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
+<<<<<<< feature-36195
+    this.props.selectClaimAdmin(this.props.user.claim_admin);
+    this.props.selectHealthFacility(this.props.user.claim_admin?.healthFacility);
+=======
     this.props.selectClaimAdmin(this.props.user.claimAdmin);
     this.props.selectHealthFacility(this.props.user.claimAdmin?.healthFacility);
+>>>>>>> test-csu
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
