@@ -18,7 +18,7 @@ import {
   Contributions,
   ProgressOrError,
 } from "@openimis/fe-core";
-import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion, getUserClaimAdmin } from "../actions";
+import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
 
@@ -38,21 +38,6 @@ class Head extends Component {
   state = {
     reset: 0,
   };
-
-  componentDidMount(){
-    if(!!this.props.user && this.props.user != null){
-      let lastName = this.props.user?.last_name;
-      let otherNames = this.props.user?.other_names;
-      this.props.getUserClaimAdmin(lastName,otherNames);
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if(!prevProps.userClaimAdminInfos && !!this.props.userClaimAdminInfos){
-      this.props.selectClaimAdmin(this.props.userClaimAdminInfos)
-    }
-
-  }
 
   _filterValue = (k) => {
     const { filters } = this.props;
@@ -179,8 +164,7 @@ class Head extends Component {
       classes, 
       filters, 
       onChangeFilters, 
-      userHealthFacilityId, 
-      userClaimAdminInfos,
+      userHealthFacilityId,
       claimAdmin,
       claimHealthFacility,
       claimDistrict,
@@ -283,7 +267,6 @@ const mapStateToProps = (state) => ({
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
   user: state.core.user ? state.core.user.i_user : null,
-  userClaimAdminInfos: state.claim?.userClaimAdminInfos,
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   claimDistrict: state.claim.claimDistrict,
@@ -297,7 +280,6 @@ const mapDispatchToProps = (dispatch) => {
       selectHealthFacility,
       selectDistrict,
       selectRegion,
-      getUserClaimAdmin
     },
     dispatch,
   );
