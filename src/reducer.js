@@ -7,7 +7,6 @@ import {
   formatServerError,
   formatGraphQLError,
 } from "@openimis/fe-core";
-import * as Sentry from "@sentry/react";
 
 function reducer(
   state = {
@@ -365,26 +364,11 @@ function reducer(
         errorUserClaimAdminInfos: null,
       }
     case "CLAIM_USER_ADMIN_RESP":
-      var claimAdminEdges = action.payload?.data?.claimAdmins?.edges || [];
-      var resolvedUserClaimAdmin = claimAdminEdges.length > 0 ? claimAdminEdges[0]?.node || null : null;
-      Sentry.captureMessage("claim.CLAIM_USER_ADMIN_RESP", {
-        level: claimAdminEdges.length > 0 ? "info" : "warning",
-        tags: {
-          module: "claim",
-          feature: "claim_admin_resolution",
-          claim_admin_resolution: claimAdminEdges.length > 0 ? "resolved" : "empty_result",
-        },
-        extra: {
-          edgesLength: claimAdminEdges.length,
-          adminUuid: resolvedUserClaimAdmin?.uuid,
-          hfUuid: resolvedUserClaimAdmin?.healthFacility?.uuid,
-        },
-      });
       return {
         ...state,
         fetchingUserClaimAdminInfos: false,
         fetchedUserClaimAdminInfos: true,
-        userClaimAdminInfos: resolvedUserClaimAdmin,
+        userClaimAdminInfos: action.payload.data.claimAdmins.edges[0].node,
         errorUserClaimAdminInfos: formatGraphQLError(action.payload),
       }
     case "CLAIM_USER_ADMIN_ERR":

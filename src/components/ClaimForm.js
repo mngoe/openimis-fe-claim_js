@@ -3,7 +3,6 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
-import * as Sentry from "@sentry/react";
 
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
@@ -136,36 +135,13 @@ class ClaimForm extends Component {
   }
 
   _newClaim() {
-    const storedHealthFacility = JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
-    const storedAdmin = JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
     let claim = {};
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      storedHealthFacility;
+      JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? storedAdmin;
-    const healthFacilitySource = this?.state?.claim?.healthFacility
-      ? "state"
-      : this.props.claimHealthFacility
-      ? "props"
-      : storedHealthFacility
-      ? "localStorage"
-      : "none";
-    const adminSource = this?.state?.claim?.admin ? "state" : this.props.claimAdmin ? "props" : storedAdmin ? "localStorage" : "none";
-    Sentry.captureMessage("claim._newClaim source", {
-      level: "info",
-      tags: {
-        module: "claim",
-        feature: "claim_create_prefill",
-      },
-      extra: {
-        adminSource,
-        healthFacilitySource,
-        adminUuid: claim.admin?.uuid,
-        healthFacilityUuid: claim.healthFacility?.uuid,
-      },
-    });
+      this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());

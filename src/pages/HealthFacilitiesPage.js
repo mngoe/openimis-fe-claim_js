@@ -6,7 +6,6 @@ import { Fab, Tooltip } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 import AddIcon from "@material-ui/icons/Add";
-import * as Sentry from "@sentry/react";
 import {
   withHistory,
   historyPush,
@@ -141,67 +140,14 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
-    const connectedAdmin = this.props.userClaimAdminInfos;
-    const selectedAdmin = this.props.claimAdmin;
-    const selectedHealthFacility = this.props.claimHealthFacility;
-    const userHealthFacility = this.props.userHealthFacilityFullPath;
-
-    Sentry.captureMessage("claim.onAdd snapshot", {
-      level: "info",
-      tags: {
-        module: "claim",
-        feature: "claim_create_prefill",
-      },
-      extra: {
-        userClaimAdminUuid: connectedAdmin?.uuid,
-        claimAdminUuid: selectedAdmin?.uuid,
-        userHealthFacilityUuid: userHealthFacility?.uuid,
-        claimHealthFacilityUuid: selectedHealthFacility?.uuid,
-      },
-    });
-
-    if (!connectedAdmin) {
-      Sentry.captureMessage("claim.onAdd blocked: connected claim admin missing", {
-        level: "warning",
-        tags: {
-          module: "claim",
-          feature: "claim_create_prefill",
-          claim_admin_resolution: "missing_at_add",
-        },
-        extra: {
-          claimAdminUuid: selectedAdmin?.uuid,
-          claimHealthFacilityUuid: selectedHealthFacility?.uuid,
-          userHealthFacilityUuid: userHealthFacility?.uuid,
-        },
-      });
-      window.alert(formatMessage(this.props.intl, "claim", "newClaim.adminAndHFRequired"));
-      return;
-    }
-
-    const healthFacilityToUse = connectedAdmin?.healthFacility || userHealthFacility || selectedHealthFacility;
-    if (!connectedAdmin?.healthFacility && healthFacilityToUse) {
-      Sentry.captureMessage("claim.onAdd health facility fallback used", {
-        level: "warning",
-        tags: {
-          module: "claim",
-          feature: "claim_create_prefill",
-          health_facility_source: connectedAdmin ? "fallback" : "none",
-        },
-        extra: {
-          connectedAdminUuid: connectedAdmin?.uuid,
-          fallbackHealthFacilityUuid: healthFacilityToUse?.uuid,
-        },
-      });
-    }
-
-    this.props.selectClaimAdmin(connectedAdmin);
-    this.props.selectHealthFacility(healthFacilityToUse || null);
+    this.props.selectClaimAdmin(this.props.userClaimAdminInfos);
+    this.props.selectHealthFacility(this.props.userHealthFacilityFullPath);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
   canAdd = () => {
-    if (!this.props.userClaimAdminInfos) return false;
-    if (!(this.props.userClaimAdminInfos?.healthFacility || this.props.userHealthFacilityFullPath || this.props.claimHealthFacility)) return false;
+    if (!this.props.claimAdmin) return false;
+    if (!this.props.claimHealthFacility) return false;
     return true;
   };
 
