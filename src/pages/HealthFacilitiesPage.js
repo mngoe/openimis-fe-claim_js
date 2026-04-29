@@ -272,6 +272,7 @@ const mapStateToProps = (state) => ({
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
   user: state.core.user,
+  userRoles: state.core.user?.i_user?.roles,
 });
 
 const mapDispatchToProps = (dispatch) => {
