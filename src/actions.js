@@ -749,34 +749,6 @@ export function generate(uuid) {
   };
 }
 
-export function getUserClaimAdmin(lastName, otherNames){
-  const payload = formatPageQuery(
-    "claimAdmins",
-    [`lastName: "${lastName}"`,`otherNames: "${otherNames}"`],
-    [
-      "id",
-        "uuid",
-        "code",
-        "lastName",
-        "otherNames",
-        "healthFacility{id, uuid, code, name, level, servicesPricelist{id, uuid}, itemsPricelist{id, uuid}, location{id, uuid, code, name, parent{id, uuid, code, name}}}"
-    ],
-  );
-  return graphql(payload, "CLAIM_USER_ADMIN");
-}
-
-export function fetchUserRoles(){
-  const payload = formatQuery(
-    "user",
-    null,
-    [
-      "id",
-      "iUser{roles{id name}}"
-    ]
-  );
-  return graphql(payload, "USER_ROLES");
-}
-
 export function reject(claims, rejectReason, clientMutationLabel, clientMutationDetails = null) {
   console.log(claims);
   let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${rejectReason}"`;
