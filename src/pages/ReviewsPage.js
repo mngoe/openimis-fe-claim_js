@@ -478,7 +478,7 @@ class ReviewsPage extends Component {
 
   feedbackColFormatter = (c) => (
     <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
-      <Grid item style={{ flex: 1, minWidth: 0 }}>
+      <Grid item>
         <PublishedComponent
           pubRef="claim.FeedbackStatusPicker"
           withLabel={false}
@@ -552,7 +552,7 @@ class ReviewsPage extends Component {
     }
   };
   reviewColFormatter = (c) => (
-    <Grid container justify="flex-end" alignItems="center">
+    <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
       <Grid item>
         <PublishedComponent
           pubRef="claim.ReviewStatusPicker"
