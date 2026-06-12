@@ -477,7 +477,7 @@ class ReviewsPage extends Component {
   provideFeedback = (c) => historyPush(this.props.modulesManager, this.props.history, "claim.route.feedback", [c.uuid]);
 
   feedbackColFormatter = (c) => (
-    <Grid container justify="flex-end" alignItems="center">
+    <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
       <Grid item>
         <PublishedComponent
           pubRef="claim.FeedbackStatusPicker"
@@ -552,7 +552,7 @@ class ReviewsPage extends Component {
     }
   };
   reviewColFormatter = (c) => (
-    <Grid container justify="flex-end" alignItems="center">
+    <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
       <Grid item>
         <PublishedComponent
           pubRef="claim.ReviewStatusPicker"
