@@ -212,11 +212,11 @@ class ClaimForm extends Component {
       var claim = this.props.claim;
       if(claim){
         claim.jsonExt = !!claim.jsonExt ? JSON.parse(claim.jsonExt) : {};
+        this.setState(
+          { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
+          this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
+        );
       }
-      this.setState(
-        { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
-        this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
-      );
     } else if (prevProps.claim_uuid && !this.props.claim_uuid && this.state.isDuplicate) {
       this.setState({
         claim: this._duplicateClaim(this.state.claim),
