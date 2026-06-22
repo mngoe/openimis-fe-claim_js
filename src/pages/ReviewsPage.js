@@ -553,7 +553,7 @@ class ReviewsPage extends Component {
   };
   reviewColFormatter = (c) => (
     <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="claim.ReviewStatusPicker"
           withLabel={false}
