@@ -118,6 +118,8 @@ class ClaimSearcher extends Component {
           "",
           "",
           "",
+          "",
+          "",
           <Typography noWrap={true}>
             <FormattedMessage
               module="claim"
