@@ -478,7 +478,7 @@ class ReviewsPage extends Component {
 
   feedbackColFormatter = (c) => (
     <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
-      <Grid>
+      <Grid item>
         <PublishedComponent
           pubRef="claim.FeedbackStatusPicker"
           withLabel={false}
@@ -491,7 +491,7 @@ class ReviewsPage extends Component {
         />
       </Grid>
       {!!this.props.rights.includes(RIGHT_FEEDBACK) && (
-        <Grid>
+        <Grid item>
           <Tooltip title={formatMessage(this.props.intl, "claim", "feedbackButton.tooltip")}>
             <IconButton onClick={(e) => this.provideFeedback(c)}>
               <FeedbackIcon />
@@ -553,7 +553,7 @@ class ReviewsPage extends Component {
   };
   reviewColFormatter = (c) => (
     <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
-      <Grid>
+      <Grid item>
         <PublishedComponent
           pubRef="claim.ReviewStatusPicker"
           withLabel={false}
@@ -566,7 +566,7 @@ class ReviewsPage extends Component {
         />
       </Grid>
       {!!this.props.rights.includes(RIGHT_CLAIMREVIEW) && (
-        <Grid>
+        <Grid item>
           <Tooltip title={formatMessage(this.props.intl, "claim", "reviewButton.tooltip")}>
             <IconButton onClick={(e) => this.review(c)}>
               <ReviewIcon />
