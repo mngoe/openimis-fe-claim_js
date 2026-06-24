@@ -109,8 +109,7 @@ class ClaimSearcher extends Component {
       : formatMessage(this.props.intl, "claim", `reviewStatus.${c.reviewStatus}`);
 
   preHeaders = (selection) => {
-    var result = selection.length
-      ? [
+    var result = [
           "",
           "",
           "",
@@ -166,8 +165,7 @@ class ClaimSearcher extends Component {
           </Typography>,
           "",
           "",
-        ]
-      : ["\u200b", "", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
+        ]; //fixing pre headers row height!
     if (this.claimAttachments) {
       result.push("");
     }
