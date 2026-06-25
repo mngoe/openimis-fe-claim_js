@@ -1,11 +1,24 @@
 import { Grid } from "@material-ui/core";
 import { PublishedComponent, useModulesManager, useTranslations } from "@openimis/fe-core";
-import React from "react";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
 
 const ClaimsOverviewReport = (props) => {
-  const { values, setValues } = props;
+  const { values, setValues, user } = props;
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
+  const readOnly = !!user && !!user.claim_admin && !!user.claim_admin.healthFacility;
+  
+  useEffect(() => {
+    if(user?.claim_admin?.healthFacility){
+      setValues({
+        ...values,
+        region: user.claim_admin.healthFacility.location.parent,
+        district: user.claim_admin.healthFacility.location,
+        hf: user.claim_admin.healthFacility
+      })
+    }
+  }, [user]);
 
   return (
     <Grid container direction="column" spacing={1}>
@@ -42,6 +55,7 @@ const ClaimsOverviewReport = (props) => {
           value={values.region}
           locationLevel={0}
           label={formatMessage("ClaimsOverviewReport.region")}
+          readOnly={readOnly}
         />
       </Grid>
       <Grid item>
@@ -57,6 +71,7 @@ const ClaimsOverviewReport = (props) => {
           parentLocation={values.region}
           locationLevel={1}
           label={formatMessage("ClaimsOverviewReport.district")}
+          readOnly={readOnly}
         />
       </Grid>
       <Grid item>
@@ -67,6 +82,7 @@ const ClaimsOverviewReport = (props) => {
           district={values.district}
           value={values.hf}
           label={formatMessage("ClaimsOverviewReport.hf")}
+          readOnly={readOnly}
         />
       </Grid>
       <Grid item>
@@ -90,4 +106,8 @@ const ClaimsOverviewReport = (props) => {
   );
 };
 
-export default ClaimsOverviewReport;
+const mapStateToProps = (state) => ({
+  user: state.core.user
+})
+
+export default connect(mapStateToProps)(ClaimsOverviewReport);
