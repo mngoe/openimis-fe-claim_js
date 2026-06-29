@@ -1,25 +1,12 @@
 import { Grid } from "@material-ui/core";
 import { PublishedComponent, useModulesManager, useTranslations, ConstantBasedPicker } from "@openimis/fe-core";
-import React, { useEffect } from "react";
+import React from "react";
 import {PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTERS} from "../constants";
-import { connect } from "react-redux";
 
 const ClaimsPrimaryOperationalIndicators = (props) => {
-  const { values, setValues, user } = props;
+  const { values, setValues } = props;
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
-  const readOnly = !!user && !!user.claim_admin && !!user.claim_admin.healthFacility;
-
-  useEffect(() => {
-    if (user?.claim_admin?.healthFacility) {
-      setValues((prevValues) => ({
-        ...prevValues,
-        region: user.claim_admin.healthFacility.location.parent,
-        district: user.claim_admin.healthFacility.location,
-        hf: user.claim_admin.healthFacility,
-      }));
-    }
-  }, [user]);
 
   return (
     <Grid container direction="column" spacing={1}>
@@ -53,7 +40,6 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           value={values.region}
           locationLevel={0}
           label={formatMessage("ClaimsPrimaryOperationalIndicators.region")}
-          readOnly={readOnly}
         />
       </Grid>
       <Grid item>
@@ -69,7 +55,6 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           parentLocation={values.region}
           locationLevel={1}
           label={formatMessage("ClaimsPrimaryOperationalIndicators.district")}
-          readOnly={readOnly}
         />
       </Grid>
       <Grid item>
@@ -80,7 +65,6 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           district={values.district}
           value={values.hf}
           label={formatMessage("ClaimsPrimaryOperationalIndicators.hf")}
-          readOnly={readOnly}
         />
       </Grid>
       <Grid item>
@@ -116,8 +100,4 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  user: state.core.user
-})
-
-export default connect(mapStateToProps)(ClaimsPrimaryOperationalIndicators);
+export default ClaimsPrimaryOperationalIndicators;
