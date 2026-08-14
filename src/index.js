@@ -30,6 +30,7 @@ import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperation
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import RejectionCodePicker from "./pickers/RejectionCodePicker";
 import RejectionReasonDialog from "./components/RejectionReasonDialog";
+import ClaimSearcher from "./components/ClaimSearcher";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -143,6 +144,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.route.feedback", ref: ROUTE_CLAIM_FEEDBACK },
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
+    { key: "claim.ClaimSearcher", ref: ClaimSearcher },
     { key: "claim.ClaimProgramPicker", ref: ClaimProgramPicker},
     {
       key: "claim.ClaimAdminPicker.projection",
