@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import _, { filter, initial } from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
+import { IconButton, Typography, Tooltip, Badge, Checkbox } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
 import { Searcher } from "@openimis/fe-core";
@@ -216,6 +216,10 @@ class ClaimSearcher extends Component {
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
     ];
+    if(this.props.forAudit) {
+      result.push("claimSummaries.category");
+      result.push("claimSummaries.audited");
+    }
     if (this.claimAttachments) {
       result.push("claimSummaries.claimAttachments");
     }
@@ -282,6 +286,10 @@ class ClaimSearcher extends Component {
       (c) => formatAmount(this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
+    if(this.props.forAudit) {
+      result.push((c) => c?.category ?? 1);
+      result.push((c) => <Checkbox color="primary" checked={c.audited} readOnly />);
+    }
     if (this.claimAttachments) {
       result.push(
         (c) =>
@@ -348,6 +356,10 @@ class ClaimSearcher extends Component {
       cacheFiltersKey,
       onDoubleClick,
       actionsContributionKey,
+      filterPane,
+      canFetch,
+      onChangeFilters,
+      forAudit = false,
     } = this.props;
 
     let count = !!this.state.random && this.state.random.value;
@@ -369,7 +381,7 @@ class ClaimSearcher extends Component {
           canSelectAll={this.canSelectAll}
           defaultFilters={defaultFilters}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={ClaimFilter}
+          FilterPane={filterPane || ClaimFilter}
           FilterExt={FilterExt}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={claims}
@@ -381,7 +393,11 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={this.isDefaultFetchClaimActivated == false  && searchInitiated ? this.fetch : this.isDefaultFetchClaimActivated == true ? this.fetch : () => {}}
+          fetch={
+            this.isDefaultFetchClaimActivated == false  && searchInitiated ? this.fetch : 
+            this.isDefaultFetchClaimActivated == true ? this.fetch : 
+            canFetch ? this.fetch : null
+          }
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
@@ -401,7 +417,7 @@ class ClaimSearcher extends Component {
           actionsContributionKey={actionsContributionKey}
           canFetch={false}
           showOrdinalNumber={this.showOrdinalNumber}
-          onChangeFilters={this.onFiltersApplied}
+          onChangeFilters={onChangeFilters || this.onFiltersApplied}
         />
       </Fragment>
     );
