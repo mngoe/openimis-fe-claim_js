@@ -357,7 +357,7 @@ class ClaimSearcher extends Component {
       onDoubleClick,
       actionsContributionKey,
       filterPane,
-      canFetch,
+      canFetch = false,
       onChangeFilters,
       forAudit = false,
     } = this.props;
@@ -396,7 +396,7 @@ class ClaimSearcher extends Component {
           fetch={
             this.isDefaultFetchClaimActivated == false  && searchInitiated ? this.fetch : 
             this.isDefaultFetchClaimActivated == true ? this.fetch : 
-            canFetch ? this.fetch : null
+            canFetch ? this.fetch : ()=>{}
           }
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
