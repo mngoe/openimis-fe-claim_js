@@ -85,7 +85,7 @@ class ClaimSearcher extends Component {
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
 
   fetch = (prms) => {
-    this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
+    this.props.forAudit ? this.props.fetchClaimsSample() : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
   };
 
   rowIdentifier = (r) => r.uuid;
@@ -139,60 +139,60 @@ class ClaimSearcher extends Component {
   preHeaders = (selection) => {
     var result = selection.length
       ? [
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          <Typography noWrap={true}>
-            <FormattedMessage
-              module="claim"
-              id="claimSummaries.selection.claimed"
-              values={{
-                claimed: (
-                  <b>
-                    {formatAmount(
-                      this.props.intl,
-                      selection.reduce((acc, v) => {
-                        if (v.claimed) {
-                          return acc + parseFloat(v.claimed);
-                        } else {
-                          return acc;
-                        }
-                      }, 0),
-                    )}
-                  </b>
-                ),
-              }}
-            />
-          </Typography>,
-          <Typography noWrap={true}>
-            <FormattedMessage
-              module="claim"
-              id="claimSummaries.selection.approved"
-              values={{
-                approved: (
-                  <b>
-                    {formatAmount(
-                      this.props.intl,
-                      selection.reduce((acc, v) => {
-                        if (v.approved) {
-                          return acc + parseFloat(v.approved);
-                        } else {
-                          return acc;
-                        }
-                      }, 0),
-                    )}
-                  </b>
-                ),
-              }}
-            />
-          </Typography>,
-          "",
-          "",
-        ]
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        <Typography noWrap={true}>
+          <FormattedMessage
+            module="claim"
+            id="claimSummaries.selection.claimed"
+            values={{
+              claimed: (
+                <b>
+                  {formatAmount(
+                    this.props.intl,
+                    selection.reduce((acc, v) => {
+                      if (v.claimed) {
+                        return acc + parseFloat(v.claimed);
+                      } else {
+                        return acc;
+                      }
+                    }, 0),
+                  )}
+                </b>
+              ),
+            }}
+          />
+        </Typography>,
+        <Typography noWrap={true}>
+          <FormattedMessage
+            module="claim"
+            id="claimSummaries.selection.approved"
+            values={{
+              approved: (
+                <b>
+                  {formatAmount(
+                    this.props.intl,
+                    selection.reduce((acc, v) => {
+                      if (v.approved) {
+                        return acc + parseFloat(v.approved);
+                      } else {
+                        return acc;
+                      }
+                    }, 0),
+                  )}
+                </b>
+              ),
+            }}
+          />
+        </Typography>,
+        "",
+        "",
+      ]
       : ["\u200b", "", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
     if (this.claimAttachments) {
       result.push("");
@@ -216,7 +216,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
     ];
-    if(this.props.forAudit) {
+    if (this.props.forAudit) {
       result.push("claimSummaries.category");
       result.push("claimSummaries.audited");
     }
@@ -286,8 +286,8 @@ class ClaimSearcher extends Component {
       (c) => formatAmount(this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
-    if(this.props.forAudit) {
-      result.push((c) => c?.category ?? 1);
+    if (this.props.forAudit) {
+      result.push((c) => c.claimCategory);
       result.push((c) => <Checkbox color="primary" checked={c.audited} readOnly />);
     }
     if (this.claimAttachments) {
@@ -360,6 +360,7 @@ class ClaimSearcher extends Component {
       canFetch = false,
       onChangeFilters,
       forAudit = false,
+      fetchClaimsSample,
     } = this.props;
 
     let count = !!this.state.random && this.state.random.value;
@@ -394,9 +395,9 @@ class ClaimSearcher extends Component {
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
           fetch={
-            this.isDefaultFetchClaimActivated == false  && searchInitiated ? this.fetch : 
-            this.isDefaultFetchClaimActivated == true ? this.fetch : 
-            canFetch ? this.fetch : ()=>{}
+            this.isDefaultFetchClaimActivated == false && searchInitiated ? this.fetch :
+              this.isDefaultFetchClaimActivated == true ? this.fetch :
+                canFetch ? this.fetch : () => { }
           }
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
@@ -424,15 +425,28 @@ class ClaimSearcher extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  claims: state.claim.claims,
-  claimsPageInfo: state.claim.claimsPageInfo,
-  fetchingClaims: state.claim.fetchingClaims,
-  fetchedClaims: state.claim.fetchedClaims,
-  errorClaims: state.claim.errorClaims,
-  servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
-  itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
-});
+const mapStateToProps = (state, ownProps) => {
+  if (ownProps.forAudit) {
+    return {
+      claims: ownProps.claims || [],
+      claimsPageInfo: ownProps.claimsPageInfo || { totalCount: 0 },
+      fetchingClaims: ownProps.fetchingClaims || false,
+      fetchedClaims: ownProps.fetchedClaims || false,
+      errorClaims: ownProps.errorClaims || null,
+      servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
+      itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
+    };
+  }
+  return {
+    claims: state.claim.claims,
+    claimsPageInfo: state.claim.claimsPageInfo,
+    fetchingClaims: state.claim.fetchingClaims,
+    fetchedClaims: state.claim.fetchedClaims,
+    errorClaims: state.claim.errorClaims,
+    servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
+    itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ fetchClaimSummaries }, dispatch);
