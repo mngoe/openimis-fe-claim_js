@@ -73,7 +73,7 @@ class ClaimChildPanel extends Component {
       data.forEach((d) => !!d.services && (d.subServices = d.services));
       data.forEach((d) => !!d.items && (d.subItems = d.items));
     }
-    if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
+    if (!this.props.forReview && !this.props.forAudit && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
     }
     return data;
@@ -100,7 +100,7 @@ class ClaimChildPanel extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.edited_id && !this.props.edited_id && !(this.props.isDuplicate || this.props.isRestored)) {
       let data = [];
-      if (!this.props.forReview) {
+      if (!this.props.forReview && !this.props.forAudit) {
         data.push({});
       }
       this.setState({ data, reset: this.state.reset + 1 });
@@ -328,8 +328,11 @@ class ClaimChildPanel extends Component {
       readOnly = false, 
       resetServices,
       isRestored,
-      isDuplicate
+      isDuplicate,
+      forAudit = false,
     } = this.props;    if (!edited) return null;
+    // En mode audit, tous les champs sauf qtyAudited sont en lecture seule
+    const isReadOnly = readOnly || forAudit;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
         <Paper className={classes.paper}>
@@ -378,7 +381,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <Box minWidth={400}>
           <PublishedComponent
-            readOnly={!!forReview || readOnly}
+            readOnly={!!forReview || isReadOnly}
             pubRef={picker}
             filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
@@ -403,7 +406,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <AmountInput
-          readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
+          readOnly={!!forReview || isReadOnly || this.fixedPricesAtEnter}
           value={!!forReview ? i.priceAsked : this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
@@ -411,7 +414,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <TextInput
-          readOnly={!!forReview || readOnly}
+          readOnly={!!forReview || isReadOnly}
           value={i.explanation}
           error={
             this.explanationRequiredIfQuantityAboveThreshold &&
@@ -447,7 +450,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={!!forReview || readOnly}
+              readOnly={!!forReview || isReadOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -472,16 +475,25 @@ class ClaimChildPanel extends Component {
               }
             />
           </TableCell>
-          {(!!forReview || edited.status !== 2) && (
+          {(!!forReview || forAudit || edited.status !== 2) && (
             <TableCell>
               <NumberInput
-                readOnly={readOnly}
+                readOnly={isReadOnly}
                 value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   u.qtyAdjusted = v;
                   this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
                 }}
                 displayZero={true}
+              />
+            </TableCell>
+          )}
+          {forAudit && (
+            <TableCell>
+              <NumberInput
+                readOnly={!forAudit}
+                value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
               />
             </TableCell>
           )}
@@ -512,7 +524,7 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
-                readOnly={!!forReview || readOnly}
+                readOnly={!!forReview || isReadOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -537,15 +549,24 @@ class ClaimChildPanel extends Component {
                 }
               />
             </TableCell>
-            {(!!forReview || edited.status !== 2) && (
+            {(!!forReview || forAudit || edited.status !== 2) && (
               <TableCell>
                 <NumberInput
-                  readOnly={readOnly}
+                  readOnly={isReadOnly}
                   value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed? u.qtyDisplayed : "0"}
                   onChange={(v) => {
                     u.qtyAdjusted = v;
                     this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
                   }}
+                />
+              </TableCell>
+            )}
+            {forAudit && (
+              <TableCell>
+                <NumberInput
+                  readOnly={!forAudit}
+                  value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                  onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
                 />
               </TableCell>
             )}
@@ -580,7 +601,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={readOnly}
+              readOnly={isReadOnly}
               value={ !!u.qtyDisplayed ? u.qtyDisplayed : "0" }
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -611,6 +632,15 @@ class ClaimChildPanel extends Component {
               value={u.priceAsked}
             />
           </TableCell>
+          {forAudit && (
+            <TableCell>
+              <NumberInput
+                readOnly={!forAudit}
+                value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
+              />
+            </TableCell>
+          )}
         </tr>
       ))),
       (i, idx) => (i.items.map((u, udx) => (
@@ -631,7 +661,7 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
-                readOnly={readOnly}
+                readOnly={isReadOnly}
                 value={ !!u.qtyDisplayed ? u.qtyDisplayed : "0" }
                 onChange={(v) => {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -656,6 +686,15 @@ class ClaimChildPanel extends Component {
                 }
               />
             </TableCell>
+            {forAudit && (
+              <TableCell>
+                <NumberInput
+                  readOnly={!forAudit}
+                  value={u.qtyAudited ?? u.qtyAdjusted ?? "0"}
+                  onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
+                />
+              </TableCell>
+            )}
             <TableCell>
               <AmountInput
                 readOnly={true}
@@ -667,7 +706,7 @@ class ClaimChildPanel extends Component {
       ))
     ]
 
-    if (!!forReview || edited.status !== 2) {
+    if (!!forReview || forAudit || edited.status !== 2) {
       if (!this.fixedPricesAtReview) {
         preHeaders.push("");
       }
@@ -681,7 +720,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
-          readOnly={!forReview && readOnly}
+          readOnly={!forReview && isReadOnly}
           value={i.qtyApproved}
           max={parseInt(i.qtyProvided)}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}
@@ -691,7 +730,7 @@ class ClaimChildPanel extends Component {
         headers.push(`edit.${type}s.appPrice`);
         itemFormatters.push((i, idx) => (
           <AmountInput
-            readOnly={!forReview && readOnly}
+            readOnly={!forReview && isReadOnly}
             value={i.priceApproved}
             decimal={true}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
@@ -714,19 +753,23 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
-          readOnly={!forReview && readOnly}
+          readOnly={!forReview && isReadOnly}
           value={i.justification}
           onChange={(v) => this._onChange(idx, "justification", v)}
         />
       ));
     }
-    if (!!forReview || edited.status !== 2) {
+    if (!!forReview || forAudit || edited.status !== 2) {
       headers.push(`edit.${type}s.status`, `edit.${type}s.rejectionReason`);
-      subServiceHeaders.push(`edit.items.qtyAdjusted`,`edit.items.appPrice`)
+      subServiceHeaders.push(`edit.items.qtyAdjusted`);
+      if (forAudit) {
+        subServiceHeaders.push(`edit.items.qtyAudited`);
+      }
+      subServiceHeaders.push(`edit.items.appPrice`)
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={readOnly}
+            readOnly={isReadOnly}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
@@ -753,7 +796,7 @@ class ClaimChildPanel extends Component {
           itemFormatters={itemFormatters}
           subServicesItemsFormatters={isRestored || isDuplicate ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
-          onDelete={!forReview && !readOnly && this._onDelete}
+          onDelete={!forReview && !isReadOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
           subServiceHeaders={subServiceHeaders}
           disableDeleteOnEmptyRow
