@@ -69,10 +69,6 @@ class ClaimSearcher extends Component {
     ) {
       this.scheduleCanFetchClaimDetails();
     }
-    // Mettre à jour initialFitlers lorsque les defaultFilters changent (changement de mission)
-    if (this.props.defaultFilters !== prevProps.defaultFilters) {
-      this.setState({ initialFitlers: this.props.defaultFilters });
-    }
   }
 
   scheduleCanFetchClaimDetails = () => {
@@ -89,7 +85,7 @@ class ClaimSearcher extends Component {
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
 
   fetch = (prms) => {
-    this.props.forAudit ? this.props.fetchClaimsSample() : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
+    this.props.forAudit ? this.props.fetchClaimsSample(prms) : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
   };
 
   rowIdentifier = (r) => r.uuid;
@@ -368,8 +364,6 @@ class ClaimSearcher extends Component {
       forAudit = false,
       fetchClaimsSample,
     } = this.props;
-
-    console.log("defaultFilters", defaultFilters);
 
     let count = !!this.state.random && this.state.random.value;
     const { searchInitiated } = this.state;

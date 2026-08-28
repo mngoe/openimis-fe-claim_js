@@ -564,7 +564,8 @@ class ClaimForm extends Component {
           rights.includes(RIGHT_RESTORE) &&
           claim_uuid &&
           isHealthFacilityPage &&
-          this.state.claim?.status === STATUS_REJECTED,
+          this.state.claim?.status === STATUS_REJECTED &&
+          !forAudit,
         content: (
           <span>
             <Fab color="primary" onClick={(e) => this.restore()}>
