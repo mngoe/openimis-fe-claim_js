@@ -333,7 +333,7 @@ class ClaimChildPanel extends Component {
     } = this.props; if (!edited) return null;
     // En mode audit, tous les champs sauf qtyAudited sont en lecture seule
     const isReadOnly = readOnly || forAudit;
-    const isAudited = edited.status === STATUS_AUDITED;
+    const isAudited = !!edited.audited;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
         <Paper className={classes.paper}>

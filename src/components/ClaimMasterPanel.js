@@ -37,7 +37,7 @@ import {
   DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, 
   IN_PATIENT_STRING, 
   AUDIT_REJECTION_MOTIF, 
-  STATUS_AUDITED 
+  AUDIT_STATUS_REJECTED
 } from "../constants";
 import * as Sentry from "@sentry/react";
 
@@ -278,7 +278,7 @@ class ClaimMasterPanel extends FormPanel {
     // }
 
     let ro = readOnly || !!forReview || !!forFeedback || !!forAudit;
-    let roAudit = edited.status === STATUS_AUDITED;
+    let roAudit = !!edited.audited;
 
     var chequeNumber = policyNumber;
     var prefix = !!claimPrefix ? claimPrefix : "";
@@ -827,7 +827,7 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-            {edited.auditStatus === "R" && (
+            {edited.auditStatus === AUDIT_STATUS_REJECTED && (
               <Fragment>
                 <ControlledField
                   module="claim"
