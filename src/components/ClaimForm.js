@@ -8,6 +8,7 @@ import * as Sentry from "@sentry/react";
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
+import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import ReplayIcon from "@material-ui/icons/Replay";
 import PrintIcon from "@material-ui/icons/ListAlt";
 import AttachIcon from "@material-ui/icons/AttachFile";
@@ -44,6 +45,7 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   STATUS_RESET,
+  STATUS_AUDITED,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -285,6 +287,18 @@ class ClaimForm extends Component {
   };
 
   canSave = (forFeedback,forReview) => {
+    const {claim} = this.state;
+
+    // En mode audit, on ne vérifie que les champs d'audit
+    if (this.props.forAudit) {
+      if (!claim.auditStatus) return false;
+      if (claim.auditStatus === "R") {
+        if (!claim.rejectionMotive) return false;
+        if (claim.rejectionMotive === 10 && !claim.rejectionReasonAfterAudit) return false;
+      }
+      return true;
+    }
+
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -439,6 +453,7 @@ class ClaimForm extends Component {
         })
         .catch((error) => {
           console.error("[ERROR]: Failed to save claim", error);
+          this.setState({ isSaving: false });
         });
     });
   };
@@ -457,6 +472,12 @@ class ClaimForm extends Component {
   _deliverReview = (claim) => {
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
+
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
 
   restore = () => {
     const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
@@ -496,16 +517,17 @@ class ClaimForm extends Component {
       back,
       forReview = false,
       forFeedback = false,
+      forAudit = false,
       isHealthFacilityPage = false,
       classes,
     } = this.props;
-    const { claim, claim_uuid, lockNew, isSaved } = this.state;
+    const { claim, claim_uuid, lockNew, isSaved, isSaving } = this.state;
     const nameProgram = claim?.program?.nameProgram
 
-    let readOnly =
+    let readOnly = 
       lockNew ||
       isSaved ||
-      (!forReview && !forFeedback && claim.status !== 2) ||
+      (!forReview && !forFeedback && !forAudit && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
@@ -553,7 +575,7 @@ class ClaimForm extends Component {
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.restore"),
       },
       {
-        condition: isSaved,
+        condition: !forAudit && isSaved,
         content: (
           <span>
             <Fab color="primary" onClick={(e) => this.resetForm()}>
@@ -564,7 +586,7 @@ class ClaimForm extends Component {
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.renew"),
       },
       {
-        condition: claim_uuid && isHealthFacilityPage && this.state.claim?.status !== STATUS_RESET,
+        condition: !forAudit && claim_uuid && isHealthFacilityPage && this.state.claim?.status !== STATUS_RESET,
         content: (
           <span>
             <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.duplicate()}>
@@ -574,6 +596,21 @@ class ClaimForm extends Component {
         ),
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
+      {
+        condition:
+          forAudit &&
+          claim_uuid &&
+          !isSaving &&
+          this.state.claim?.status !== STATUS_AUDITED,
+        content: (
+          <span>
+            <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.deliverAudit()}>
+              <AssignmentTurnedInIcon />
+            </Fab>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.Audit.validateAudit.fab.tooltip")
+      }
     ];
 
     const editingProps = {
@@ -585,8 +622,8 @@ class ClaimForm extends Component {
       reset: this.state.reset,
       back: back,
       forcedDirty: this.state.forcedDirty,
-      add: !!add && !this.state.newClaim ? this._add : null,
-      save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
+      add: !forAudit && !!add && !this.state.newClaim ? this._add : null,
+      save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly && !forAudit ? forReview ? this._saveReview : this._save : null,
       fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
@@ -596,6 +633,7 @@ class ClaimForm extends Component {
       readOnly: readOnly,
       forReview: forReview,
       forFeedback: forFeedback,
+      forAudit: forAudit,
       onEditedChanged: this.onEditedChanged,
     };
     return (

@@ -168,3 +168,45 @@ export function approvedAmount(r) {
   }
   return totalPrice;
 }
+export function auditedAmount(r) {
+  if (r.status === 2) return 0;
+  let totalPrice = 0;
+  if ('item' in r) {
+    let qty = r.qtyAudited ?? r.qtyAdjusted ?? r.qtyProvided ?? 0;
+    let price = r.priceApproved ?? r.priceAsked ?? 0;
+    return parseInt(qty) * parseFloat(price);
+  } else {
+    if (r?.service) {
+      let currentPackageType = r.service.packagetype;
+      if (currentPackageType == SERVICE_TYPE_PP_S) {
+        let price = r.priceApproved ?? r.priceAsked ?? 0;
+        totalPrice += parseFloat(price);
+      } else {
+        const getAuditedQty = (subItem) => parseInt(subItem.qtyAudited ?? subItem.qtyAdjusted ?? subItem.qtyDisplayed ?? 0);
+        if (r?.services) {
+          r.services.forEach(subItem => {
+            const qty = getAuditedQty(subItem);
+            if (currentPackageType == SERVICE_TYPE_PP_F && subItem.qtyProvided < qty) {
+              totalPrice += parseInt(subItem.qtyProvided) * parseFloat(subItem.priceAsked);
+            } else {
+              totalPrice += qty * parseFloat(subItem.priceAsked);
+            }
+          });
+        }
+        if (r?.items) {
+          r.items.forEach(subItem => {
+            const qty = getAuditedQty(subItem);
+            if (currentPackageType == SERVICE_TYPE_PP_F && subItem.qtyProvided < qty) {
+              totalPrice += parseInt(subItem.qtyProvided) * parseFloat(subItem.priceAsked);
+            } else {
+              totalPrice += qty * parseFloat(subItem.priceAsked);
+            }
+          });
+        }
+      }
+      r.priceAudited = totalPrice;
+      return totalPrice;
+    }
+  }
+  return totalPrice;
+}
