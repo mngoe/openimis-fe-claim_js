@@ -45,7 +45,6 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   STATUS_RESET,
-  STATUS_AUDITED,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -602,7 +601,7 @@ class ClaimForm extends Component {
           forAudit &&
           claim_uuid &&
           !isSaving &&
-          this.state.claim?.status !== STATUS_AUDITED,
+          !this.state.claim.audited,
         content: (
           <span>
             <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.deliverAudit()}>
