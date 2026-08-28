@@ -601,7 +601,7 @@ class ClaimForm extends Component {
           forAudit &&
           claim_uuid &&
           !isSaving &&
-          !this.state.claim.audited,
+          !this.state.claim?.audited,
         content: (
           <span>
             <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.deliverAudit()}>
