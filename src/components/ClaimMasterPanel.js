@@ -31,7 +31,14 @@ import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
 import TdrNumberPicker from "../pickers/tdrNumberPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING, AUDIT_REJECTION_MOTIF } from "../constants";
+import { 
+  CLAIM_DETAIL_REJECTED_STATUS, 
+  DEFAULT, 
+  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, 
+  IN_PATIENT_STRING, 
+  AUDIT_REJECTION_MOTIF, 
+  STATUS_AUDITED 
+} from "../constants";
 import * as Sentry from "@sentry/react";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
@@ -265,12 +272,13 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    edited.audited = _.round(totalAudited, 2);
+    edited.amountAudited = _.round(totalAudited, 2);
     // if (edited.code && this.claimPrefix) {
     //   edited.code = edited.code.replace(edited.insuree?.chfId, '');
     // }
 
     let ro = readOnly || !!forReview || !!forFeedback || !!forAudit;
+    let roAudit = edited.status === STATUS_AUDITED;
 
     var chequeNumber = policyNumber;
     var prefix = !!claimPrefix ? claimPrefix : "";
@@ -665,7 +673,7 @@ class ClaimMasterPanel extends FormPanel {
                 id="Claim.audited"
                 field={
                   <Grid item xs={1} className={classes.item}>
-                    <AmountInput value={totalAudited} module="claim" label="audited" readOnly={true} />
+                    <AmountInput value={edited.amountAudited} module="claim" label="audited" readOnly={true} />
                   </Grid>
                 }
               />
@@ -813,7 +821,7 @@ class ClaimMasterPanel extends FormPanel {
                     label="auditStatus"
                     value={edited.auditStatus}
                     onChange={(v) => this.updateAttribute("auditStatus", v)}
-                    readOnly={false}
+                    readOnly={roAudit || !forAudit}
                     required={true}
                   />
                 </Grid>
@@ -835,7 +843,7 @@ class ClaimMasterPanel extends FormPanel {
                           label: formatMessage(intl, "claim", `auditRejectionMotif.${v}`),
                         }))}
                         onChange={(v) => this.updateAttribute("rejectionMotive", v)}
-                        readOnly={false}
+                        readOnly={roAudit || !forAudit}
                         required={true}
                       />
                     </Grid>
@@ -852,7 +860,7 @@ class ClaimMasterPanel extends FormPanel {
                           label="auditRejectionReason"
                           value={edited.rejectionReasonAfterAudit}
                           onChange={(v) => this.updateAttribute("rejectionReasonAfterAudit", v)}
-                          readOnly={false}
+                          readOnly={roAudit || !forAudit}
                           required={true}
                         />
                       </Grid>

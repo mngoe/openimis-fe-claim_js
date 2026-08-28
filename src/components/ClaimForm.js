@@ -45,6 +45,7 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   STATUS_RESET,
+  STATUS_AUDITED,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -596,7 +597,11 @@ class ClaimForm extends Component {
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
       {
-        condition: forAudit && claim_uuid && !isSaving,
+        condition:
+          forAudit &&
+          claim_uuid &&
+          !isSaving &&
+          this.state.claim?.status !== STATUS_AUDITED,
         content: (
           <span>
             <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.deliverAudit()}>

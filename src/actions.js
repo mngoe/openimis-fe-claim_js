@@ -299,6 +299,9 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `auditStatus: "${claim.auditStatus}"` : ""}
     ${claim.rejectionMotive !== null && claim.rejectionMotive !== undefined ? `rejectionMotive: ${claim.rejectionMotive}` : ""}
     ${claim.rejectionReasonAfterAudit !== null && claim.rejectionReasonAfterAudit !== undefined ? `rejectionReasonAfterAudit: "${formatGQLString(claim.rejectionReasonAfterAudit)}"` : ""}
+    ${claim.amountAudited !== null && claim.amountAudited !== undefined ? `amountAudited: "${claim.amountAudited}"`: ""}
+    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `status: 64` : ""}
+    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `audited: true` : ""}
   `;
 }
 
