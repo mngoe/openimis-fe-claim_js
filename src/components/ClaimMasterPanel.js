@@ -18,7 +18,7 @@ import {
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
-import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import { claimedAmount, approvedAmount, auditedAmount } from "../helpers/amounts";
 import {
   claimHealthFacilitySet,
   clearClaim,
@@ -30,7 +30,7 @@ import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
 import TdrNumberPicker from "../pickers/tdrNumberPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING, AUDIT_STATUS, AUDIT_STATUS_REJECTED } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -236,6 +236,7 @@ class ClaimMasterPanel extends FormPanel {
       readOnly = false,
       forReview,
       forFeedback,
+      forAudit,
       isCodeValid,
       isCodeValidating,
       codeValidationError,
@@ -250,19 +251,23 @@ class ClaimMasterPanel extends FormPanel {
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
+    let totalAudited = 0;
     let tdr;
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
+      totalAudited += edited.items.reduce((sum, r) => sum + auditedAmount(r), 0);
     }
     if (edited.services) {
       totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
+      totalAudited += edited.services.reduce((sum, r) => sum + auditedAmount(r), 0);
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
+    edited.priceAudited = _.round(totalAudited, 2);
 
-    let ro = readOnly || !!forReview || !!forFeedback;
+    let ro = readOnly || !!forReview || !!forFeedback || !!forAudit;
 
     var chequeNumber = policyNumber;
     var prefix = !!claimPrefix ? claimPrefix : "";
@@ -747,7 +752,7 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-            {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
+            {(!!forReview || forAudit || this.showAdjustmentAtEnter || edited.status >= 4) && (
               <ControlledField
                 module="claim"
                 id="Claim.adjustment"
@@ -764,6 +769,86 @@ class ClaimMasterPanel extends FormPanel {
                   </Grid>
                 }
               />
+            )}
+            {(!!forAudit) && (
+              <Fragment>
+                <ControlledField
+                  module="claim"
+                  id="Claim.auditStatus"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="claim.AuditStatusPicker"
+                        value={edited.auditStatus}
+                        withNull={false}
+                        withLabel={false}
+                        onChange={(v) => this.updateAttribute("auditStatus", v)}
+                      />
+                    </Grid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.amountAudited"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <AmountInput
+                        module="claim"
+                        label="amountAudited"
+                        value={edited.priceAudited}
+                        readOnly={true}
+                        decimal={true}
+                      />
+                    </Grid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.rejectionReasonAfterAudit"
+                  field={
+                    <Grid item xs={4} className={classes.item}>
+                      <TextInput
+                        module="claim"
+                        label="rejectionReasonAfterAudit"
+                        value={edited.rejectionReasonAfterAudit}
+                        reset={reset}
+                        onChange={(v) => this.updateAttribute("rejectionReasonAfterAudit", v)}
+                        readOnly={ro}
+                      />
+                    </Grid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.rejectionMotive"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="claim.RejectionCodePicker"
+                        value={edited.rejectionMotive}
+                        withNull={true}
+                        onChange={(v) => this.updateAttribute("rejectionMotive", v)}
+                      />
+                    </Grid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.billReference"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <TextInput
+                        module="claim"
+                        label="billReference"
+                        value={edited.billReference}
+                        reset={reset}
+                        onChange={(v) => this.updateAttribute("billReference", v)}
+                        readOnly={ro}
+                      />
+                    </Grid>
+                  }
+                />
+              </Fragment>
             )}
           </Fragment>
         )}

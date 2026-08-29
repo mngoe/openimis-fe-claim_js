@@ -13,7 +13,7 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash";
 import _uuid from "lodash-uuid";
-import { CLAIMS_WITH_AT_LEAST_ENTERED_STATUS, DEFAULT } from "./constants";
+import { AUDIT_STATUS_ADOPTED, CLAIMS_WITH_AT_LEAST_ENTERED_STATUS, DEFAULT, STATUS_AUDITED, STATUS_REJECTED } from "./constants";
 
 export function selectClaimAdmin(admin) {
   return (dispatch) => {
@@ -230,6 +230,7 @@ export function formatDetailSubService(type, detail) {
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
     ${detail.qtyAdjusted !== null ? `qtyAdjusted: "${_.round(detail.qtyAdjusted, 2).toFixed(2)}"` : ""}
+    ${detail.qtyAudited !== null && detail.qtyAudited !== undefined ? `qtyAudited: "${_.round(detail.qtyAudited, 2).toFixed(2)}"` : ""}
   },`;
 }
 
@@ -295,6 +296,12 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     }
     ${!!claim.pregnancyAge ? `pregnancyAge: ${claim.pregnancyAge}` : ""}
     source: "WEB"
+    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `auditStatus: "${claim.auditStatus}"` : ""}
+    ${claim.rejectionMotive !== null && claim.rejectionMotive !== undefined ? `rejectionMotive: ${claim.rejectionMotive}` : ""}
+    ${claim.rejectionReasonAfterAudit !== null && claim.rejectionReasonAfterAudit !== undefined ? `rejectionReasonAfterAudit: "${formatGQLString(claim.rejectionReasonAfterAudit)}"` : ""}
+    ${claim.amountAudited !== null && claim.amountAudited !== undefined ? `amountAudited: "${claim.amountAudited}"`: ""}
+    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `status: ${claim.auditStatus == AUDIT_STATUS_ADOPTED ? STATUS_AUDITED : STATUS_REJECTED }` : ""}
+    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `audited: true` : ""}
   `;
 }
 
@@ -360,6 +367,12 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "pregnancyAge",
     "jsonExt",
     "source",
+    "auditStatus",
+    "rejectionMotive",
+    "rejectionReasonAfterAudit",
+    "amountAudited",
+    "claimCategory",
+    "audited"
   ];
   if (!!forFeedback) {
     projections.push(
@@ -370,8 +383,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
       "services{" +
 
       "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
-      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided qtyAdjusted }" +
-      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted }" +
+      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided qtyAdjusted qtyAudited }" +
+      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted qtyAudited }" +
       "}",
       "items{" +
       "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +

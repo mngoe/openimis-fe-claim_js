@@ -477,6 +477,7 @@ class ClaimForm extends Component {
       back,
       forReview = false,
       forFeedback = false,
+      forAudit = false,
       isHealthFacilityPage = false,
       classes,
     } = this.props;
@@ -523,7 +524,8 @@ class ClaimForm extends Component {
           rights.includes(RIGHT_RESTORE) &&
           claim_uuid &&
           isHealthFacilityPage &&
-          this.state.claim?.status === STATUS_REJECTED,
+          this.state.claim?.status === STATUS_REJECTED &&
+          !forAudit,
         content: (
           <span>
             <Fab color="primary" onClick={(e) => this.restore()}>
@@ -555,6 +557,21 @@ class ClaimForm extends Component {
         ),
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
+      {
+        condition:
+          forAudit &&
+          claim_uuid &&
+          !isSaving &&
+          !this.state.claim?.audited,
+        content: (
+          <span>
+            <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.deliverAudit()}>
+              <CheckIcon />
+            </Fab>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
+      },
     ];
 
     const editingProps = {
@@ -577,6 +594,7 @@ class ClaimForm extends Component {
       readOnly: readOnly,
       forReview: forReview,
       forFeedback: forFeedback,
+      forAudit: forAudit,
       onEditedChanged: this.onEditedChanged,
     };
     return (

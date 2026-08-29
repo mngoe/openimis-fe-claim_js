@@ -167,3 +167,49 @@ export function approvedAmount(r) {
   }
   return totalPrice;
 }
+
+export function auditedAmount(r) {
+  let totalPrice = 0;
+  if (Object?.keys(r)?.length !== 0) {
+    if ("item" in r) {
+      const qtyAudited = r.qtyAudited ?? r.qtyProvided ?? 0;
+      return qtyAudited * parseFloat(r.priceAsked);
+    } else {
+      if (r?.service) {
+        if (Object?.keys(r.service)?.length !== 0) {
+          let currentPackageType = r.service.packagetype;
+
+          if (currentPackageType === SERVICE_TYPE_PP_S) {
+            totalPrice += parseFloat(r.service.price);
+          } else {
+            const getAuditedQty = (subItem) => subItem.qtyAudited ?? subItem.qtyAdjusted ?? subItem.qtyDisplayed ?? subItem.qtyProvided ?? 0;
+
+            if (r?.services) {
+              r.services.forEach((subItem) => {
+                const qty = getAuditedQty(subItem);
+                if (currentPackageType === SERVICE_TYPE_PP_F && subItem.qtyProvided < qty) {
+                  totalPrice += parseInt(subItem.qtyProvided) * parseFloat(subItem.priceAsked);
+                } else {
+                  totalPrice += qty * parseFloat(subItem.priceAsked);
+                }
+              });
+            }
+            if (r?.items) {
+              r.items.forEach((subItem) => {
+                const qty = getAuditedQty(subItem);
+                if (currentPackageType === SERVICE_TYPE_PP_F && subItem.qtyProvided < qty) {
+                  totalPrice += parseInt(subItem.qtyProvided) * parseFloat(subItem.priceAsked);
+                } else {
+                  totalPrice += qty * parseFloat(subItem.priceAsked);
+                }
+              });
+            }
+          }
+          r.priceAudited = totalPrice;
+          return totalPrice;
+        }
+      }
+    }
+  }
+  return totalPrice;
+}

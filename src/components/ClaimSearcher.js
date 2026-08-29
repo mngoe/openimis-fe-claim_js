@@ -85,7 +85,7 @@ class ClaimSearcher extends Component {
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
 
   fetch = (prms) => {
-    this.props.forAudit ? this.props.fetchClaimsSample() : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
+    this.props.forAudit ? this.props.fetchClaimsSample(prms) : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
   };
 
   rowIdentifier = (r) => r.uuid;
@@ -220,6 +220,10 @@ class ClaimSearcher extends Component {
       result.push("claimSummaries.category");
       result.push("claimSummaries.audited");
     }
+    if (this.props.forAudit) {
+      result.push("claimSummaries.category");
+      result.push("claimSummaries.audited");
+    }
     if (this.claimAttachments) {
       result.push("claimSummaries.claimAttachments");
     }
@@ -290,6 +294,10 @@ class ClaimSearcher extends Component {
       result.push((c) => c.claimCategory);
       result.push((c) => <Checkbox color="primary" checked={c.audited} readOnly />);
     }
+    if (this.props.forAudit) {
+      result.push((c) => c?.category ?? 1);
+      result.push((c) => <Checkbox color="primary" checked={c.audited} readOnly />);
+    }
     if (this.claimAttachments) {
       result.push(
         (c) =>
@@ -318,7 +326,7 @@ class ClaimSearcher extends Component {
     return result;
   };
 
-  rowLocked = (selection, claim) => !!claim.clientMutationId;
+  rowLocked = (selection, claim) => !!claim.clientMutationId || (this.props.forAudit && claim.status >= 64);
 
   rowHighlighted = (selection, claim) => !!this.highlightAmount && claim.claimed > this.highlightAmount;
 

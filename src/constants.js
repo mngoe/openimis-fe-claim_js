@@ -84,5 +84,15 @@ export const STORAGE_KEY_ADMIN = 'admin';
 export const REJECTION_CODE = _.range(-2, 19);
 export const STATUS_CHECKED = 4;
 export const STATUS_PROCESSED = 8;
+export const STATUS_AUDITED = 64;
 export const REVIEW_STATUS_DONE = 8;
 export const REVIEW_STATUS_BYPASS = 16;
+
+export const AUDIT_STATUS = [
+  { value: 1, label: "audit.status.audited" },
+  { value: 2, label: "audit.status.underReview" },
+  { value: 4, label: "audit.status.declined" },
+  { value: 8, label: "audit.status.adjusted" },
+];
+export const AUDIT_STATUS_ADOPTED = "A";
+export const AUDIT_STATUS_REJECTED = "R";
