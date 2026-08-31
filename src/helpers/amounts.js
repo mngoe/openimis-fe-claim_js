@@ -204,7 +204,7 @@ export function auditedAmount(r) {
           });
         }
       }
-      r.priceAudited = totalPrice;
+      r.amountAudited = totalPrice;
       return totalPrice;
     }
   }
