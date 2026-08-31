@@ -275,6 +275,7 @@ class ClaimMasterPanel extends FormPanel {
     edited.priceAudited = _.round(totalAudited, 2);
 
     let ro = readOnly || !!forReview || !!forFeedback || !!forAudit;
+    let roAudit = !!edited.audited;
 
     var chequeNumber = policyNumber;
     var prefix = !!claimPrefix ? claimPrefix : "";

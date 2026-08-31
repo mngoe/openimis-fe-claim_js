@@ -13,7 +13,7 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash";
 import _uuid from "lodash-uuid";
-import { AUDIT_STATUS_ADOPTED, CLAIMS_WITH_AT_LEAST_ENTERED_STATUS, DEFAULT, STATUS_AUDITED, STATUS_REJECTED } from "./constants";
+import { AUDIT_STATUS_ADOPTED, CLAIMS_WITH_AT_LEAST_ENTERED_STATUS, DEFAULT } from "./constants";
 
 export function selectClaimAdmin(admin) {
   return (dispatch) => {
@@ -300,7 +300,6 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     ${claim.rejectionMotive !== null && claim.rejectionMotive !== undefined ? `rejectionMotive: ${claim.rejectionMotive}` : ""}
     ${claim.rejectionReasonAfterAudit !== null && claim.rejectionReasonAfterAudit !== undefined ? `rejectionReasonAfterAudit: "${formatGQLString(claim.rejectionReasonAfterAudit)}"` : ""}
     ${claim.amountAudited !== null && claim.amountAudited !== undefined ? `amountAudited: "${claim.amountAudited}"`: ""}
-    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `status: ${claim.auditStatus == AUDIT_STATUS_ADOPTED ? STATUS_AUDITED : STATUS_REJECTED }` : ""}
     ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `audited: true` : ""}
   `;
 }
