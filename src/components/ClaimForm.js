@@ -13,6 +13,7 @@ import AttachIcon from "@material-ui/icons/AttachFile";
 import RestorePageIcon from "@material-ui/icons/RestorePage";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import CachedIcon from "@material-ui/icons/Cached";
+import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 
 import {
   Contributions,
@@ -43,6 +44,7 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   STATUS_RESET,
+  AUDIT_STATUS_REJECTED
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -212,7 +214,7 @@ class ClaimForm extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.fetchedClaim !== this.props.fetchedClaim && !!this.props.fetchedClaim) {
       var claim = this.props.claim;
-      claim.jsonExt = !!claim.jsonExt && claim.jsonExt !={} ? JSON.parse(claim.jsonExt) : {};
+      claim.jsonExt = !!claim.jsonExt && claim.jsonExt != {} ? JSON.parse(claim.jsonExt) : {};
       this.setState(
         { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
         this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
@@ -260,7 +262,18 @@ class ClaimForm extends Component {
     return true;
   };
 
-  canSave = (forFeedback,forReview) => {
+  canSave = (forFeedback, forReview) => {
+    const {claim} = this.state;
+
+    // En mode audit, on ne vérifie que les champs d'audit
+    if (this.props.forAudit) {
+      if (!claim.auditStatus) return false;
+      if (claim.auditStatus === AUDIT_STATUS_REJECTED) {
+        if (!claim.rejectionMotive) return false;
+        if (!claim.rejectionReasonAfterAudit) return false;
+      }
+      return true;
+    }
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -276,18 +289,18 @@ class ClaimForm extends Component {
     if (!this.state.claim.dateFrom) return false;
     if (!this.state.claim.dateTo) return false;
     if (!this.state.claim.program) return false;
-    if(this.state.claim.program?.code == "PAL"){
+    if (this.state.claim.program?.code == "PAL") {
       if (!this.state.claim.testNumber) return false;
       if (!this.state.claim.tdr) return false;
     }
-    if(!this.state.claim.uuid){
-      if(!this.state.claim.prefix) return false;
+    if (!this.state.claim.uuid) {
+      if (!this.state.claim.prefix) return false;
     }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if(!this.state.claim_uuid){
-      if (!this.state.claim.code ) return false;
+    if (!this.state.claim_uuid) {
+      if (!this.state.claim.code) return false;
     }
 
     if (this.state.claim.services !== undefined) {
@@ -365,9 +378,9 @@ class ClaimForm extends Component {
   };
 
   NAME_PROGRAM = {
-    Chèque_Sante : "Chèque Santé",
-    Cheque_Sante : "Cheque Santé",
-    Vih : "VIH",
+    Chèque_Sante: "Chèque Santé",
+    Cheque_Sante: "Cheque Santé",
+    Vih: "VIH",
   }
 
   reload = () => {
@@ -415,6 +428,7 @@ class ClaimForm extends Component {
         })
         .catch((error) => {
           console.error("[ERROR]: Failed to save claim", error);
+          this.setState({ isSaving: false });
         });
     });
   };
@@ -438,6 +452,12 @@ class ClaimForm extends Component {
     this.props.history.replace(`/${routeRef}`);
     this.setState({ isDuplicate: true });
   };
+
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
 
   restore = () => {
     const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
@@ -477,10 +497,11 @@ class ClaimForm extends Component {
       back,
       forReview = false,
       forFeedback = false,
+      forAudit = false,
       isHealthFacilityPage = false,
       classes,
     } = this.props;
-    const { claim, claim_uuid, lockNew, isSaved } = this.state;
+    const { claim, claim_uuid, lockNew, isSaved, isSaving } = this.state;
     const nameProgram = claim?.program?.nameProgram
 
     let readOnly =
@@ -523,7 +544,8 @@ class ClaimForm extends Component {
           rights.includes(RIGHT_RESTORE) &&
           claim_uuid &&
           isHealthFacilityPage &&
-          this.state.claim?.status === STATUS_REJECTED,
+          this.state.claim?.status === STATUS_REJECTED &&
+          !forAudit,
         content: (
           <span>
             <Fab color="primary" onClick={(e) => this.restore()}>
@@ -555,6 +577,21 @@ class ClaimForm extends Component {
         ),
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
+      {
+        condition:
+          forAudit &&
+          claim_uuid &&
+          !isSaving &&
+          !this.state.claim?.audited,
+        content: (
+          <span>
+            <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.deliverAudit()}>
+              <AssignmentTurnedInIcon />
+            </Fab>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.Audit.validateAudit.fab.tooltip")
+      }
     ];
 
     const editingProps = {
@@ -568,7 +605,7 @@ class ClaimForm extends Component {
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
       save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
-      fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon/>,
+      fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
       canSave: (e) => this.canSave(forFeedback, forReview),
@@ -577,6 +614,7 @@ class ClaimForm extends Component {
       readOnly: readOnly,
       forReview: forReview,
       forFeedback: forFeedback,
+      forAudit: forAudit,
       onEditedChanged: this.onEditedChanged,
     };
     return (
@@ -601,11 +639,11 @@ class ClaimForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram ==  this.NAME_PROGRAM.Chèque_Sante ) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram == this.NAME_PROGRAM.Chèque_Sante) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}
               resetServices={this.state.resetServices}
-              resetServicesItems= {this.resetServicesItems}
+              resetServicesItems={this.resetServicesItems}
               {...editingProps}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />

@@ -18,7 +18,7 @@ import {
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
-import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import { claimedAmount, approvedAmount, auditedAmount } from "../helpers/amounts";
 import {
   claimHealthFacilitySet,
   clearClaim,
@@ -30,7 +30,14 @@ import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
 import TdrNumberPicker from "../pickers/tdrNumberPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import { 
+  CLAIM_DETAIL_REJECTED_STATUS, 
+  DEFAULT, 
+  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, 
+  IN_PATIENT_STRING, 
+  AUDIT_REJECTION_MOTIF, 
+  AUDIT_STATUS_REJECTED 
+} from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -106,7 +113,7 @@ class ClaimMasterPanel extends FormPanel {
           codeError: null,
         });
       }
-    } else if(prevProps.fetchedPregnancyAge !== this.props.fetchedPregnancyAge && !!this.props.fetchedPregnancyAge){
+    } else if (prevProps.fetchedPregnancyAge !== this.props.fetchedPregnancyAge && !!this.props.fetchedPregnancyAge) {
       this.updateAttribute('pregnancyAge', this.props.pregnancyAge)
     }
   }
@@ -136,20 +143,20 @@ class ClaimMasterPanel extends FormPanel {
       var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo : "";
       var familyId = !!edited && edited.insuree != undefined ? edited.insuree.family.id : "";
       insureePolicies.forEach(function (policy) {
-        if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom ){
+        if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom) {
           if ((policy.policy.status == 2 || policy.policy.status == 8 || policy.policy.status == 4) && policy.policy.policyNumber != null) {
             activeOrInactivePolicies.push(policy)
           }
         }
       })
       var length = activeOrInactivePolicies.length
-      if(length > 1){
+      if (length > 1) {
         chequeNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
         productId = activeOrInactivePolicies[length - 1].policy.product.id;
-      } else if(activeOrInactivePolicies.length == 1){
+      } else if (activeOrInactivePolicies.length == 1) {
         chequeNumber = activeOrInactivePolicies[0].policy.policyNumber;
         productId = activeOrInactivePolicies[0].policy.product.id;
-      } else{
+      } else {
         chequeNumber = ""
       }
       if (chequeNumber != undefined) {
@@ -157,7 +164,7 @@ class ClaimMasterPanel extends FormPanel {
         code = chequeNumber + suffix
       }
       edited[`prefix`] = policyNumber
-      if(dateTo != "" && familyId != "" && productId != ""){
+      if (dateTo != "" && familyId != "" && productId != "") {
         this.props.fetchPregnancyAge(dateTo, familyId, productId);
       }
     } else {
@@ -213,8 +220,8 @@ class ClaimMasterPanel extends FormPanel {
         const priceTimesQty = price * (
           parseInt(currentItem?.qtyAdjusted) ||
           parseInt(currentItem?.qtyDisplayed) ||
-          parseInt(currentItem?.qtyApproved) || 
-          parseInt(currentItem?.qtyProvided) || 
+          parseInt(currentItem?.qtyApproved) ||
+          parseInt(currentItem?.qtyProvided) ||
           0
         );
         return total + priceTimesQty;
@@ -236,6 +243,7 @@ class ClaimMasterPanel extends FormPanel {
       readOnly = false,
       forReview,
       forFeedback,
+      forAudit,
       isCodeValid,
       isCodeValidating,
       codeValidationError,
@@ -243,26 +251,31 @@ class ClaimMasterPanel extends FormPanel {
       restore,
       isRestored,
       isDuplicate,
-      resetServicesItems, 
+      resetServicesItems,
       pregnancyAge
     } = this.props;
-    const {policyNumber, claimSuffix, claimCode, claimPrefix, claimCodeError} = this.state;
+    const { policyNumber, claimSuffix, claimCode, claimPrefix, claimCodeError } = this.state;
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
+    let totalAudited = 0;
     let tdr;
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
+      totalAudited += edited.items.reduce((sum, r) => sum + auditedAmount(r), 0);
     }
     if (edited.services) {
       totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
+      totalAudited += edited.services.reduce((sum, r) => sum + auditedAmount(r), 0);
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
+    edited.amountAudited = _.round(totalAudited, 2);
 
-    let ro = readOnly || !!forReview || !!forFeedback;
+    let ro = readOnly || !!forReview || !!forFeedback || !!forAudit;
+    let roAudit = !!edited.audited;
 
     var chequeNumber = policyNumber;
     var prefix = !!claimPrefix ? claimPrefix : "";
@@ -273,18 +286,18 @@ class ClaimMasterPanel extends FormPanel {
       let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
       let activeOrInactivePolicies = [];
       insureePolicies.forEach(function (policy) {
-        if(policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom){
+        if (policy.policy.effectiveDate <= edited.dateFrom && policy.policy.expiryDate >= edited.dateFrom) {
           if ((policy.policy.status == 2 || policy.policy.status == 8 || policy.policy.status == 4) && policy.policy.policyNumber != null) {
             activeOrInactivePolicies.push(policy)
           }
         }
       })
       var length = activeOrInactivePolicies.length
-      if(length > 1){
+      if (length > 1) {
         chequeNumber = activeOrInactivePolicies[length - 1].policy.policyNumber
-      } else if(length == 1){
+      } else if (length == 1) {
         chequeNumber = activeOrInactivePolicies[0].policy.policyNumber;
-      }else{
+      } else {
         chequeNumber = ""
       }
 
@@ -293,13 +306,13 @@ class ClaimMasterPanel extends FormPanel {
         suffix = !!claimCode ? claimCode.replace(prefix, '') : edited.code.replace(prefix, '');
       }
     } else {
-        var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
-        var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
-        var codeFosa = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.code : "";
-        prefix = `${codeFosa}.${dateTo}.${programCode}.`;
-        if (edited.code && prefix != undefined && prefix != "") {
-          suffix = edited.code.replace(prefix, '');
-        }
+      var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
+      var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
+      var codeFosa = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.code : "";
+      prefix = `${codeFosa}.${dateTo}.${programCode}.`;
+      if (edited.code && prefix != undefined && prefix != "") {
+        suffix = edited.code.replace(prefix, '');
+      }
     }
     if (edited.tdr === true) {
       tdr = "T";
@@ -351,9 +364,9 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="visitDateFrom"
                 reset={reset}
-                onChange={(d)=> {
+                onChange={(d) => {
                   this.updateAttribute("dateFrom", d);
-                  if(!edited.uuid){
+                  if (!edited.uuid) {
                     this.debounceUpdateCode(suffix)
                   }
                 }}
@@ -377,7 +390,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 onChange={(d) => {
                   this.onChangeValue("dateTo", d);
-                  if(!edited.uuid){
+                  if (!edited.uuid) {
                     this.debounceUpdateCode(suffix)
                   }
                 }}
@@ -493,21 +506,21 @@ class ClaimMasterPanel extends FormPanel {
               }
             />
             <ControlledField
-            module="policy"
-            id="Claim.policyNumber"
-            field={
-              <Grid item xs={2} className={classes.item}>
-                <TextInput
-                  module="policy"
-                  label="policy.PolicyNumber"
-                  name="policyNumber"
-                  value={chequeNumber}
-                  readOnly={true}
-                  reset={reset}
-                />
-              </Grid>
-            }
-          />
+              module="policy"
+              id="Claim.policyNumber"
+              field={
+                <Grid item xs={2} className={classes.item}>
+                  <TextInput
+                    module="policy"
+                    label="policy.PolicyNumber"
+                    name="policyNumber"
+                    value={chequeNumber}
+                    readOnly={true}
+                    reset={reset}
+                  />
+                </Grid>
+              }
+            />
           </>
         )}
         {!!prefix && (<ControlledField
@@ -651,6 +664,17 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
+            {forAudit && (
+              <ControlledField
+                module="claim"
+                id="Claim.audited"
+                field={
+                  <Grid item xs={1} className={classes.item}>
+                    <AmountInput value={edited.amountAudited} module="claim" label="audited" readOnly={true} />
+                  </Grid>
+                }
+              />
+            )}
           </Fragment>
         )}
         {!this.hideSecDiagnos && !forFeedback && (
@@ -747,7 +771,7 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-            {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
+            {(!!forReview || forAudit || this.showAdjustmentAtEnter || edited.status >= 4) && (
               <ControlledField
                 module="claim"
                 id="Claim.adjustment"
@@ -764,6 +788,67 @@ class ClaimMasterPanel extends FormPanel {
                   </Grid>
                 }
               />
+            )}
+            {forAudit && (
+              <Fragment>
+                <ControlledField
+                  module="claim"
+                  id="Claim.auditStatus"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="claim.AuditStatusPicker"
+                        withLabel
+                        label="auditStatus"
+                        value={edited.auditStatus}
+                        onChange={(v) => this.updateAttribute("auditStatus", v)}
+                        readOnly={roAudit || !forAudit}
+                        required={true}
+                      />
+                    </Grid>
+                  }
+                />
+                {edited.auditStatus === AUDIT_STATUS_REJECTED && (
+                  <Fragment>
+                    <ControlledField
+                      module="claim"
+                      id="Claim.rejectionMotive"
+                      field={
+                        <Grid item xs={4} className={classes.item}>
+                          <SelectInput
+                            module="claim"
+                            label="auditRejectionMotif"
+                            value={edited.rejectionMotive}
+                            options={AUDIT_REJECTION_MOTIF.map((v) => ({
+                              value: v,
+                              label: formatMessage(intl, "claim", `auditRejectionMotif.${v}`),
+                            }))}
+                            onChange={(v) => this.updateAttribute("rejectionMotive", v)}
+                            readOnly={roAudit || !forAudit}
+                            required={true}
+                          />
+                        </Grid>
+                      }
+                    />
+                    <ControlledField
+                      module="claim"
+                      id="Claim.auditRejectionReason"
+                      field={
+                        <Grid item xs={4} className={classes.item}>
+                          <TextInput
+                            module="claim"
+                            label="auditRejectionReason"
+                            value={edited.rejectionReasonAfterAudit}
+                            onChange={(v) => this.updateAttribute("rejectionReasonAfterAudit", v)}
+                            readOnly={roAudit || !forAudit}
+                            required={true}
+                          />
+                        </Grid>
+                      }
+                    />
+                  </Fragment>
+                )}
+              </Fragment>
             )}
           </Fragment>
         )}

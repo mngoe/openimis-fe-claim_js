@@ -86,3 +86,7 @@ export const STATUS_CHECKED = 4;
 export const STATUS_PROCESSED = 8;
 export const REVIEW_STATUS_DONE = 8;
 export const REVIEW_STATUS_BYPASS = 16;
+export const AUDIT_STATUS = ["A","R"];
+export const AUDIT_REJECTION_MOTIF = [1,2,3,4,5,6,7,8,9,10];
+export const AUDIT_STATUS_ADOPTED = "A";
+export const AUDIT_STATUS_REJECTED = "R";
