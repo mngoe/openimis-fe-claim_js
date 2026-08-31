@@ -13,7 +13,7 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash";
 import _uuid from "lodash-uuid";
-import { AUDIT_STATUS_ADOPTED, CLAIMS_WITH_AT_LEAST_ENTERED_STATUS, DEFAULT } from "./constants";
+import { CLAIMS_WITH_AT_LEAST_ENTERED_STATUS, DEFAULT } from "./constants";
 
 export function selectClaimAdmin(admin) {
   return (dispatch) => {

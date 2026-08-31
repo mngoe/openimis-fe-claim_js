@@ -290,10 +290,6 @@ class ClaimSearcher extends Component {
       result.push((c) => c.claimCategory);
       result.push((c) => <Checkbox color="primary" checked={c.audited} readOnly />);
     }
-    if (this.props.forAudit) {
-      result.push((c) => c?.category ?? 1);
-      result.push((c) => <Checkbox color="primary" checked={c.audited} readOnly />);
-    }
     if (this.claimAttachments) {
       result.push(
         (c) =>
