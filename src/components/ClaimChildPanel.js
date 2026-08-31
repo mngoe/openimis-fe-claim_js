@@ -22,7 +22,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P, STATUS_AUDITED } from "../constants";
+import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
@@ -323,12 +323,12 @@ class ClaimChildPanel extends Component {
       type, 
       picker, 
       forReview,
-      forAudit, 
       fetchingPricelist, 
       readOnly = false, 
       resetServices,
       isRestored,
-      isDuplicate
+      isDuplicate,
+      forAudit = false,
     } = this.props;
     if (!edited) return null;
     const isReadOnly = readOnly || forAudit;
@@ -713,7 +713,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
-          readOnly={!forReview && readOnly}
+          readOnly={!forReview && isReadOnly}
           value={i.qtyApproved}
           max={parseInt(i.qtyProvided)}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}
@@ -723,7 +723,7 @@ class ClaimChildPanel extends Component {
         headers.push(`edit.${type}s.appPrice`);
         itemFormatters.push((i, idx) => (
           <AmountInput
-            readOnly={!forReview && readOnly}
+            readOnly={!forReview && isReadOnly}
             value={i.priceApproved}
             decimal={true}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
@@ -746,7 +746,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
-          readOnly={!forReview && readOnly}
+          readOnly={!forReview && isReadOnly}
           value={i.justification}
           onChange={(v) => this._onChange(idx, "justification", v)}
         />

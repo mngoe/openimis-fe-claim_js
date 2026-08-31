@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-export const CLAIM_STATUS = [1, 2, 4, 8, 16, 32];
+export const CLAIM_STATUS = [1, 2, 4, 8, 16, 32, 64];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_SEX = ["Masculin", "Feminin"];
@@ -87,12 +87,8 @@ export const STATUS_PROCESSED = 8;
 export const STATUS_AUDITED = 64;
 export const REVIEW_STATUS_DONE = 8;
 export const REVIEW_STATUS_BYPASS = 16;
-
-export const AUDIT_STATUS = [
-  { value: 1, label: "audit.status.audited" },
-  { value: 2, label: "audit.status.underReview" },
-  { value: 4, label: "audit.status.declined" },
-  { value: 8, label: "audit.status.adjusted" },
-];
+export const AUDIT_STATUS = ["A","R"];
+export const AUDIT_REJECTION_MOTIF = [1,2,3,4,5,6,7,8,9,10];
+export const STATUS_AUDITED = 64
 export const AUDIT_STATUS_ADOPTED = "A";
 export const AUDIT_STATUS_REJECTED = "R";
