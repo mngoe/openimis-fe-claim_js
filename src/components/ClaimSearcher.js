@@ -85,7 +85,7 @@ class ClaimSearcher extends Component {
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
 
   fetch = (prms) => {
-    this.props.forAudit ? this.props.fetchClaimsSample(prms) : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
+    this.props.forAudit && !!this.props.fetchClaimsSample ? this.props.fetchClaimsSample(prms) : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
   };
 
   rowIdentifier = (r) => r.uuid;
@@ -216,10 +216,6 @@ class ClaimSearcher extends Component {
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
     ];
-    if (this.props.forAudit) {
-      result.push("claimSummaries.category");
-      result.push("claimSummaries.audited");
-    }
     if (this.props.forAudit) {
       result.push("claimSummaries.category");
       result.push("claimSummaries.audited");
