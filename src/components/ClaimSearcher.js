@@ -318,7 +318,7 @@ class ClaimSearcher extends Component {
     return result;
   };
 
-  rowLocked = (selection, claim) => !!claim.clientMutationId || (this.props.forAudit && claim.status >= 64);
+  rowLocked = (selection, claim) => !!claim.clientMutationId || !!claim.audited;
 
   rowHighlighted = (selection, claim) => !!this.highlightAmount && claim.claimed > this.highlightAmount;
 

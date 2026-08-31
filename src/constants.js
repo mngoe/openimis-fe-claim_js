@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-export const CLAIM_STATUS = [1, 2, 4, 8, 16, 32, 64];
+export const CLAIM_STATUS = [1, 2, 4, 8, 16, 32];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_SEX = ["Masculin", "Feminin"];
@@ -84,7 +84,6 @@ export const STORAGE_KEY_ADMIN = 'admin';
 export const REJECTION_CODE = _.range(-2, 19);
 export const STATUS_CHECKED = 4;
 export const STATUS_PROCESSED = 8;
-export const STATUS_AUDITED = 64;
 export const REVIEW_STATUS_DONE = 8;
 export const REVIEW_STATUS_BYPASS = 16;
 export const AUDIT_STATUS = ["A","R"];
