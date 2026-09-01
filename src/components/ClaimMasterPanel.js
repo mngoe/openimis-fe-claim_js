@@ -31,12 +31,12 @@ import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
 import TdrNumberPicker from "../pickers/tdrNumberPicker";
-import { 
-  CLAIM_DETAIL_REJECTED_STATUS, 
-  DEFAULT, 
-  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, 
-  IN_PATIENT_STRING, 
-  AUDIT_REJECTION_MOTIF, 
+import {
+  CLAIM_DETAIL_REJECTED_STATUS,
+  DEFAULT,
+  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
+  IN_PATIENT_STRING,
+  AUDIT_REJECTION_MOTIF,
   AUDIT_STATUS_REJECTED
 } from "../constants";
 import * as Sentry from "@sentry/react";
@@ -132,8 +132,8 @@ class ClaimMasterPanel extends FormPanel {
     var code;
     var chequeNumber;
     var programName = edited?.program ? edited?.program?.nameProgram : "";
-    if(isRestored && (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9")){
-      Sentry.captureMessage( "Claim info",{
+    if (isRestored && (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9")) {
+      Sentry.captureMessage("Claim info", {
         level: "info",
         extra: edited
       })
@@ -368,7 +368,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 onChange={(d) => {
                   this.updateAttribute("dateFrom", d);
-                  if(!edited.uuid){
+                  if (!edited.uuid) {
                     this.debounceUpdateCode(suffix)
                   }
                 }}
@@ -392,7 +392,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 onChange={(d) => {
                   this.onChangeValue("dateTo", d);
-                  if(!edited.uuid){
+                  if (!edited.uuid) {
                     this.debounceUpdateCode(suffix)
                   }
                 }}
@@ -849,24 +849,22 @@ class ClaimMasterPanel extends FormPanel {
                     </Grid>
                   }
                 />
-                {edited.rejectionMotive === 10 && (
-                  <ControlledField
-                    module="claim"
-                    id="Claim.auditRejectionReason"
-                    field={
-                      <Grid item xs={4} className={classes.item}>
-                        <TextInput
-                          module="claim"
-                          label="auditRejectionReason"
-                          value={edited.rejectionReasonAfterAudit}
-                          onChange={(v) => this.updateAttribute("rejectionReasonAfterAudit", v)}
-                          readOnly={roAudit || !forAudit}
-                          required={true}
-                        />
-                      </Grid>
-                    }
-                  />
-                )}
+                <ControlledField
+                  module="claim"
+                  id="Claim.auditRejectionReason"
+                  field={
+                    <Grid item xs={4} className={classes.item}>
+                      <TextInput
+                        module="claim"
+                        label="auditRejectionReason"
+                        value={edited.rejectionReasonAfterAudit}
+                        onChange={(v) => this.updateAttribute("rejectionReasonAfterAudit", v)}
+                        readOnly={roAudit || !forAudit}
+                        required={true}
+                      />
+                    </Grid>
+                  }
+                />
               </Fragment>
             )}
           </Fragment>

@@ -238,7 +238,7 @@ class ClaimForm extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.fetchedClaim !== this.props.fetchedClaim && !!this.props.fetchedClaim) {
       var claim = this.props.claim;
-      claim.jsonExt = !!claim.jsonExt && claim.jsonExt !={} ? JSON.parse(claim.jsonExt) : {};
+      claim.jsonExt = !!claim.jsonExt && typeof claim.jsonExt === 'string' ? JSON.parse(claim.jsonExt) : (claim.jsonExt || {});
       this.setState(
         { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
         this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
@@ -292,9 +292,9 @@ class ClaimForm extends Component {
     // En mode audit, on ne vérifie que les champs d'audit
     if (this.props.forAudit) {
       if (!claim.auditStatus) return false;
-      if (claim.auditStatus === "R") {
+      if (claim.auditStatus === AUDIT_STATUS_REJECTED) {
         if (!claim.rejectionMotive) return false;
-        if (claim.rejectionMotive === 10 && !claim.rejectionReasonAfterAudit) return false;
+        if (!claim.rejectionReasonAfterAudit) return false;
       }
       return true;
     }
