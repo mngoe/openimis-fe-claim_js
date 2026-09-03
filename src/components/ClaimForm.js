@@ -557,7 +557,7 @@ class ClaimForm extends Component {
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.restore"),
       },
       {
-        condition: isSaved,
+        condition: !forAudit && isSaved,
         content: (
           <span>
             <Fab color="primary" onClick={(e) => this.resetForm()}>
@@ -568,7 +568,7 @@ class ClaimForm extends Component {
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.renew"),
       },
       {
-        condition: claim_uuid && isHealthFacilityPage && this.state.claim?.status !== STATUS_RESET,
+        condition: !forAudit && claim_uuid && isHealthFacilityPage && this.state.claim?.status !== STATUS_RESET,
         content: (
           <span>
             <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.duplicate()}>
@@ -604,7 +604,7 @@ class ClaimForm extends Component {
       reset: this.state.reset,
       back: back,
       forcedDirty: this.state.forcedDirty,
-      add: !!add && !this.state.newClaim ? this._add : null,
+      add: !forAudit && !!add && !this.state.newClaim ? this._add : null,
       save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
       fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,

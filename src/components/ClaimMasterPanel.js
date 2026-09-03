@@ -14,6 +14,7 @@ import {
   TextInput,
   decodeId,
   ValidatedTextInput,
+  SelectInput,
 } from "@openimis/fe-core";
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
