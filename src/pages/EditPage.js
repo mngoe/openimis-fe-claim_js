@@ -57,17 +57,11 @@ class EditPage extends Component {
     const { classes, modulesManager, history, rights, claim_uuid, path } = this.props;
     if (!rights.includes(RIGHT_LOAD)) return null;
 
-    const searchParams = new URLSearchParams(history.location.search);
-    const forAudit = searchParams.get("forAudit") === "true";
-    const mission_code = searchParams.get("mission_code");
-
     const isHealthFacilityPage = () => {
       return path.split("/").includes("healthFacilities");
     };
 
-    const handleBack = forAudit && mission_code
-      ? (e) => historyPush(modulesManager, history, "medical_controller.route.mission", [mission_code])
-      : (e) => historyPush(modulesManager, history, "claim.route.healthFacilities");
+    const handleBack = () => historyPush(modulesManager, history, "claim.route.healthFacilities");
 
     return (
       <div className={classes.page}>
@@ -77,7 +71,6 @@ class EditPage extends Component {
           add={rights.includes(RIGHT_ADD) ? this.add : null}
           save={rights.includes(RIGHT_LOAD) ? this.save : null}
           isHealthFacilityPage={isHealthFacilityPage()}
-          forAudit={forAudit}
         />
       </div>
     );
