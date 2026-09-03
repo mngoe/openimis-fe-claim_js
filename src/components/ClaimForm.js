@@ -45,7 +45,8 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   STATUS_RESET,
-  AUDIT_STATUS_REJECTED
+  AUDIT_STATUS_REJECTED,
+  CLAIM_MISSION_STATUS_CLOSED
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -522,14 +523,16 @@ class ClaimForm extends Component {
       forAudit = false,
       isHealthFacilityPage = false,
       classes,
+      mission,
     } = this.props;
     const { claim, claim_uuid, lockNew, isSaved, isSaving } = this.state;
     const nameProgram = claim?.program?.nameProgram
+    const isMissionClosed = forAudit && mission?.status === CLAIM_MISSION_STATUS_CLOSED;
 
     let readOnly = 
       lockNew ||
       isSaved ||
-      (!forReview && !forFeedback && !forAudit && claim.status !== 2) ||
+      (!forReview && !forFeedback && isMissionClosed && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
@@ -601,7 +604,7 @@ class ClaimForm extends Component {
       },
       {
         condition:
-          forAudit &&
+          !isMissionClosed &&
           claim_uuid &&
           !isSaving &&
           !this.state.claim?.audited,
@@ -638,6 +641,7 @@ class ClaimForm extends Component {
       forFeedback: forFeedback,
       forAudit: forAudit,
       onEditedChanged: this.onEditedChanged,
+      mission_status: mission?.status,
     };
     return (
       <div className={readOnly ? classes.lockedPage : null}>
