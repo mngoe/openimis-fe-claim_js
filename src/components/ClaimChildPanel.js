@@ -494,6 +494,7 @@ class ClaimChildPanel extends Component {
               <NumberInput
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                displayZero
                 onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
               />
             </TableCell>
@@ -567,6 +568,7 @@ class ClaimChildPanel extends Component {
                 <NumberInput
                   readOnly={isAudited || !forAudit}
                   value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                  displayZero
                   onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
                 />
               </TableCell>
@@ -638,6 +640,7 @@ class ClaimChildPanel extends Component {
               <NumberInput
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                displayZero
                 onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
               />
             </TableCell>
@@ -692,6 +695,7 @@ class ClaimChildPanel extends Component {
               <NumberInput
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? "0"}
+                displayZero
                 onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
               />
             </TableCell>

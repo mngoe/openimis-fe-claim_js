@@ -604,8 +604,7 @@ class ClaimForm extends Component {
       },
       {
         condition:
-          forAudit &&
-          mission?.status !== CLAIM_MISSION_STATUS_CLOSED &&
+          !isMissionClosed &&
           claim_uuid &&
           !isSaving &&
           !this.state.claim?.audited,
