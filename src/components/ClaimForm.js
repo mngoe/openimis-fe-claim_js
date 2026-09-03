@@ -267,6 +267,7 @@ class ClaimForm extends Component {
 
     // En mode audit, on ne vérifie que les champs d'audit
     if (this.props.forAudit) {
+      if (this.props.fetchingPricelist) return false;
       if (!claim.auditStatus) return false;
       if (claim.auditStatus === AUDIT_STATUS_REJECTED) {
         if (!claim.rejectionMotive) return false;
@@ -666,6 +667,7 @@ const mapStateToProps = (state, props) => ({
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   generating: state.claim.generating,
+  fetchingPricelist: !!state.medical_pricelist && state.medical_pricelist.fetchingPricelist,
   isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid,
 });
 
