@@ -17,15 +17,27 @@ import {
   coreConfirm,
   Helmet,
   clearCurrentPaginationPage,
-  PublishedComponent
+  PublishedComponent,
+  getUserBusinessAccessReferences,
+  hasAnyPermsInRange,
+  hasPerms,
+  hasPermsAnywhere,
+  hasUserLinkType,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import { submit, del, selectHealthFacility, submitAll, selectClaimAdmin } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME, ROLE_REJECT } from "../constants";
+import {
+  RIGHT_ADD,
+  RIGHT_LOAD,
+  RIGHT_SUBMIT,
+  RIGHT_DELETE,
+  MODULE_NAME,
+  ROLE_REJECT,
+  UBA_LINK_TYPE_CLAIM_ADMIN,
+} from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
-const CLAIM_ADMIN_ROLE = "Claim Administrator";
 
 const styles = (theme) => ({
   page: theme.page,
@@ -50,30 +62,65 @@ class HealthFacilitiesPage extends Component {
     };
   }
 
-  iUIsClaimAdmin = () => {
-    const { user } = this.props;
-    return Boolean(user?.i_user?.roles?.find(
-      r => r.name === CLAIM_ADMIN_ROLE
-    ) && !!user?.claim_admin);
-  }
+  /**
+   * Is the user a claim administrator, i.e. does a UserBusinessAccess link grant them the
+   * CLAIM_ADMIN credential on a health facility ? That link is what the backend derives
+   * the claim admin record from, so it - and no longer the name of a role, nor the
+   * standard claim administrator role being attached - is the condition.
+   *
+   * This answers "who is this user", not "may they do it": holding the credential grants
+   * nothing by itself, the rights below are what decide.
+   */
+  isClaimAdmin = () => hasUserLinkType(this.props.user, UBA_LINK_TYPE_CLAIM_ADMIN);
+
+  /**
+   * The business map of the health facilities a right may be granted on here: the one
+   * being looked at when a facility is selected, the ones the user is claim admin of
+   * otherwise. Passed to `hasPerms`, it opens the UBA path - the right sitting in the
+   * user's UBA bag and a CLAIM_ADMIN link existing on that facility - without ever
+   * granting anything the rights do not.
+   *
+   * The credential is the whole demand: which business object types it may be used on is
+   * the backend registry's to say, so no model is named here. A map without one accepts a
+   * link on the object whatever its type, and only a CLAIM_ADMIN link can match - the
+   * registry declares that credential on health facilities and validates it on write.
+   */
+  claimAdminAccessRequirements = () => {
+    const { user, claimHealthFacility } = this.props;
+    if (claimHealthFacility?.uuid) {
+      return [{ objectId: claimHealthFacility.uuid, linkTypes: UBA_LINK_TYPE_CLAIM_ADMIN }];
+    }
+    // a stored link carries the type of the object it points at: nothing to look up
+    return getUserBusinessAccessReferences(user, UBA_LINK_TYPE_CLAIM_ADMIN).map(({ model, objectId }) => [
+      model,
+      objectId,
+      UBA_LINK_TYPE_CLAIM_ADMIN,
+    ]);
+  };
+
+  /** Does the user hold `perms` globally, or on one of those health facilities ? */
+  canOnHealthFacility = (perms) =>
+    hasPerms(perms, { rights: this.props.rights, accessRequirements: this.claimAdminAccessRequirements() });
 
   componentDidMount = () => {
     const { module, user, claimAdmin, claimHealthFacility } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
     
-    if(this.iUIsClaimAdmin()) {
-      this.props.selectClaimAdmin(user?.claim_admin);
-      this.props.selectHealthFacility(user?.claim_admin?.healthFacility);
+    if (this.isClaimAdmin() && !!user?.claim_admin) {
+      // the claim admin record and its health facility are derived by the backend from
+      // the CLAIM_ADMIN links, they only have to be on the current user payload
+      this.props.selectClaimAdmin(user.claim_admin);
+      this.props.selectHealthFacility(user.claim_admin?.healthFacility);
     }
 
     Sentry.captureMessage("Claim admin check", {
       level: "info",
       extra: {
-        iUIsClaimAdmin: this.iUIsClaimAdmin(),
+        isClaimAdmin: this.isClaimAdmin(),
         user_admin_uuid: user?.claim_admin?.uuid,
         user_admin_code: user?.claim_admin?.code,
         user_admin: user?.claim_admin,
-        user_roles: user?.i_user?.roles,
+        user_business_accesses: user?.business_accesses,
         claimAdmin: claimAdmin,
         claimHealthFacility: claimHealthFacility,
       },
@@ -186,17 +233,19 @@ class HealthFacilitiesPage extends Component {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
-  canAdd = () => {
-    if (!this.iUIsClaimAdmin()) return false;
-    return true;
-  };
+  // the right to create a claim, globally or on the health facility at hand: a claim
+  // admin without RIGHT_ADD in either bag may not create one, and a user holding it
+  // globally no longer has to be a claim admin
+  canAdd = () => this.canOnHealthFacility(RIGHT_ADD);
 
   render() {
     const { intl, classes, rights, generatingPrint, userRoles } = this.props;
     const { showRejectReasonDialog, rejectedClaimsSelected } = this.state;
-    if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
+    // navigation level gate: a user holding those rights only where they are linked must
+    // still reach the page, the actions below being checked one by one
+    if (!hasAnyPermsInRange(RIGHT_ADD, RIGHT_SUBMIT, { rights, anywhere: true })) return null;
     let actions = [];
-    if (rights.includes(RIGHT_SUBMIT)) {
+    if (this.canOnHealthFacility(RIGHT_SUBMIT)) {
       actions.push({ label: "claimSummaries.submitAll", enabled: this.canSubmitAll, action: this.submitAll });
       actions.push({
         label: "claimSummaries.submitSelected",
@@ -204,7 +253,7 @@ class HealthFacilitiesPage extends Component {
         action: this.submitSelected,
       });
     }
-    if (rights.includes(RIGHT_DELETE)) {
+    if (this.canOnHealthFacility(RIGHT_DELETE)) {
       actions.push({
         label: "claimSummaries.deleteSelected",
         enabled: this.canDeleteSelected,
@@ -234,13 +283,13 @@ class HealthFacilitiesPage extends Component {
         <ClaimSearcher
           defaultFilters={this.state.defaultFilters}
           cacheFiltersKey="claimHealthFacilitiesPageFiltersCache"
-          onDoubleClick={rights.includes(RIGHT_LOAD) ? this.onDoubleClick : null}
+          onDoubleClick={this.canOnHealthFacility(RIGHT_LOAD) ? this.onDoubleClick : null}
           actions={actions}
           processing={generatingPrint}
           filterPaneContributionsKey={CLAIM_HF_FILTER_CONTRIBUTION_KEY}
           actionsContributionKey={CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY}
         />
-        {!generatingPrint && rights.includes(RIGHT_ADD) && (
+        {!generatingPrint && hasPermsAnywhere(RIGHT_ADD, { rights }) && (
           <Tooltip
             title={
               !this.canAdd()

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { Keyboard, ScreenShare, Assignment } from "@material-ui/icons";
-import { formatMessage, MainMenuContribution, withModulesManager } from "@openimis/fe-core";
+import { formatMessage, hasAnyPermsInRange, MainMenuContribution, withModulesManager } from "@openimis/fe-core";
 import { RIGHT_ADD, RIGHT_SUBMIT, RIGHT_CLAIMREVIEW, RIGHT_PROCESS } from "../constants";
 const CLAIM_MAIN_MENU_CONTRIBUTION_KEY = "claim.MainMenu";
 
@@ -10,7 +10,10 @@ class ClaimMainMenu extends Component {
   render() {
     const { rights } = this.props;
     let entries = [];
-    if (!!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) {
+    // a menu entry is a navigation level gate: a user holding those rights only on the
+    // facilities they are linked to (RoleRight.uba) must still reach the page, which then
+    // checks each action against the facility at hand
+    if (hasAnyPermsInRange(RIGHT_ADD, RIGHT_SUBMIT, { rights, anywhere: true })) {
       // RIGHT_SEARCH is shared by HF & HQ staff)
       entries.push({
         text: formatMessage(this.props.intl, "claim", "menu.healthFacilityClaims"),
@@ -18,7 +21,7 @@ class ClaimMainMenu extends Component {
         route: "/claim/healthFacilities",
       });
     }
-    if (!!rights.filter((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS).length) {
+    if (hasAnyPermsInRange(RIGHT_CLAIMREVIEW, RIGHT_PROCESS, { rights, anywhere: true })) {
       entries.push({
         text: formatMessage(this.props.intl, "claim", "menu.reviews"),
         icon: <Assignment />,

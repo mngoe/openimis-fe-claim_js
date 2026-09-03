@@ -6,9 +6,18 @@ import { Typography, Grid, Paper, IconButton, Tooltip } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
-import { useModulesManager, useTranslations, Table, useHistory, historyPush, formatAmount } from "@openimis/fe-core";
+import {
+  useModulesManager,
+  useTranslations,
+  Table,
+  useHistory,
+  historyPush,
+  formatAmount,
+  hasPerms,
+  UBA_MODEL_HEALTH_FACILITY,
+} from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
-import { MODULE_NAME } from "../constants";
+import { MODULE_NAME, RIGHT_LOAD } from "../constants";
 
 const useStyles = makeStyles((theme) => ({
   page: theme.page,
@@ -40,7 +49,14 @@ const ClaimInsureeSummary = ({ insuree }) => {
   const { formatMessage, formatMessageWithValues, formatDateFromISO } = useTranslations(MODULE_NAME, modulesManager);
 
   const { claims, fetchingClaims, errorClaims, claimsPageInfo } = useSelector((store) => store.claim);
-  const healthFacilityId = useSelector((store) => store.core.user.i_user.health_facility_id);
+
+  // may the user open that claim: the right to load one, globally or on the health
+  // facility it belongs to. It used to compare the claim's facility with the health
+  // facility field of the interactive user, which is a location scope, not an access
+  const canOpen = (claim) =>
+    hasPerms(RIGHT_LOAD, {
+      accessRequirements: [UBA_MODEL_HEALTH_FACILITY, claim?.healthFacility?.uuid],
+    });
 
   const goToClaim = (claim) => historyPush(modulesManager, history, "claim.route.claimEdit", [claim.uuid]);
 
@@ -57,7 +73,7 @@ const ClaimInsureeSummary = ({ insuree }) => {
     (claim) => (
       <Tooltip title={formatMessage("ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}>
         <IconButton
-          disabled={claim?.healthFacility?.id !== healthFacilityId}
+          disabled={!canOpen(claim)}
           onClick={() => goToClaim(claim)}
         >
           <VisibilityIcon />

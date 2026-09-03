@@ -1,6 +1,13 @@
 import _ from "lodash";
 
 export const CLAIM_STATUS = [1, 2, 4, 8, 16, 32];
+
+// The User Business Access credential this module registers in the backend registry
+// (`core.uba_link_types`, from the claim AppConfig): the code is all a client needs, the
+// business object types it may be used on being the registry's to say - the `ubaLinkTypes`
+// query, and the links the user actually holds, carry them.
+export const UBA_LINK_TYPE_CLAIM_ADMIN = "CLAIM_ADMIN";
+
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_SEX = ["Masculin", "Feminin"];
