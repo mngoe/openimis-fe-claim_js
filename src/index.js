@@ -201,3 +201,7 @@ const DEFAULT_CONFIG = {
 export const ClaimModule = (cfg) => {
   return { ...DEFAULT_CONFIG, ...cfg };
 };
+
+export { default as ClaimForm } from "./components/ClaimForm";
+export { updateClaim } from "./actions";
+export { RIGHT_LOAD } from "./constants";

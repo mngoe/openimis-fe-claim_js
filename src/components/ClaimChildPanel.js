@@ -22,7 +22,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
+import { CLAIM_MISSION_STATUS_CLOSED, DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
@@ -329,10 +329,11 @@ class ClaimChildPanel extends Component {
       isRestored,
       isDuplicate,
       forAudit = false,
+      mission_status,
     } = this.props;
     if (!edited) return null;
     const isReadOnly = readOnly || forAudit;
-    const isAudited = !!edited.audited;
+    const isAudited = !!edited.audited || mission_status === CLAIM_MISSION_STATUS_CLOSED;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
         <Paper className={classes.paper}>
@@ -493,6 +494,7 @@ class ClaimChildPanel extends Component {
               <NumberInput
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                displayZero
                 onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
               />
             </TableCell>
@@ -566,6 +568,7 @@ class ClaimChildPanel extends Component {
                 <NumberInput
                   readOnly={isAudited || !forAudit}
                   value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                  displayZero
                   onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
                 />
               </TableCell>
@@ -631,6 +634,7 @@ class ClaimChildPanel extends Component {
               <NumberInput
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                displayZero
                 onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
               />
             </TableCell>
