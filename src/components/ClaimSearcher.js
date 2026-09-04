@@ -214,6 +214,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.reviewStatus",
       "claimSummaries.claimed",
       "claimSummaries.approved",
+      `${this.props.forAudit ? "claimSummaries.audited" : ""}`,
       "claimSummaries.claimStatus",
     ];
     if (this.props.forAudit) {
@@ -284,6 +285,7 @@ class ClaimSearcher extends Component {
       (c) => this.reviewColFormatter(c),
       (c) => formatAmount(this.props.intl, c.claimed),
       (c) => formatAmount(this.props.intl, c.approved),
+      this.props.forAudit ? (c) => formatAmount(this.props.intl, c.amountAudited): null,
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
     if (this.props.forAudit) {
