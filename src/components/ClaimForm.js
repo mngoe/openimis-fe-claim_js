@@ -284,6 +284,10 @@ class ClaimForm extends Component {
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
+    // Bloquer les quantités et montants négatifs (saisie et revue) — ticket 37922
+    if (Number(d.qtyProvided) < 0 || Number(d.priceAsked) < 0) return false;
+    if (Number(d.qtyApproved) < 0 || Number(d.priceApproved) < 0) return false;
+    if (Number(d.qtyValuated) < 0 || Number(d.priceValuated) < 0) return false;
     return true;
   };
 
