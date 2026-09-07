@@ -401,7 +401,7 @@ class ClaimChildPanel extends Component {
           readOnly={!!forReview || readOnly || true}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
-          error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
+          error={i.qtyProvided < 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
           max={parseInt(i?.item?.maximumAmount) || this.quantityMaxValue}
         />
       ),
@@ -451,6 +451,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
+              min={0}
               readOnly={!!forReview || isReadOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
@@ -479,6 +480,7 @@ class ClaimChildPanel extends Component {
           {(!!forReview || forAudit || edited.status !== 2) && (
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={isReadOnly}
                 value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
@@ -492,6 +494,7 @@ class ClaimChildPanel extends Component {
           {forAudit && (
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                 displayZero
@@ -526,6 +529,7 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={!!forReview || isReadOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
@@ -554,6 +558,7 @@ class ClaimChildPanel extends Component {
             {(!!forReview || forAudit || edited.status !== 2) && (
               <TableCell>
                 <NumberInput
+                  min={0}
                   readOnly={isReadOnly}
                   value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                   onChange={(v) => {
@@ -566,6 +571,7 @@ class ClaimChildPanel extends Component {
             {forAudit && (
               <TableCell>
                 <NumberInput
+                  min={0}
                   readOnly={isAudited || !forAudit}
                   value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                   displayZero
@@ -604,6 +610,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
+              min={0}
               readOnly={isReadOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
@@ -638,6 +645,7 @@ class ClaimChildPanel extends Component {
           {forAudit && (
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                 displayZero
@@ -665,6 +673,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
+              min={0}
               readOnly={isReadOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
@@ -693,6 +702,7 @@ class ClaimChildPanel extends Component {
           {forAudit && (
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? "0"}
                 displayZero
@@ -725,6 +735,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
+          min={0}
           readOnly={!forReview && isReadOnly}
           value={i.qtyApproved}
           max={parseInt(i.qtyProvided)}
