@@ -56,6 +56,14 @@ class HealthFacilitiesPage extends Component {
     ) && !!user?.claim_admin);
   }
 
+  isDistrictManager = () => {
+    const { user } = this.props;
+    console.log("roles", user?.i_user?.roles);
+    return Boolean(user?.i_user?.roles?.find(
+      r => r.name === ROLE_REJECT
+    ));
+  }
+
   componentDidMount = () => {
     const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
@@ -178,7 +186,7 @@ class HealthFacilitiesPage extends Component {
   };
 
   render() {
-    const { intl, classes, rights, generatingPrint, userRoles } = this.props;
+    const { intl, classes, rights, generatingPrint } = this.props;
     const { showRejectReasonDialog, rejectedClaimsSelected } = this.state;
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
@@ -197,16 +205,12 @@ class HealthFacilitiesPage extends Component {
         action: this.deleteSelected,
       });
     }
-    if (!!userRoles && userRoles.length > 0) {
-      for (let i = 0; i < userRoles.length; i++) {
-        if (userRoles[i].name == ROLE_REJECT) {
-          actions.push({
-            label: "claimSummaries.rejectSelected",
-            enabled: this.canRejectSelected,
-            action: this.rejectSelected,
-          });
-        }
-      }
+    if(this.isDistrictManager()) {
+      actions.push({
+        label: "claimSummaries.rejectSelected",
+        enabled: this.canRejectSelected,
+        action: this.rejectSelected,
+      });
     }
     return (
       <div className={classes.page}>

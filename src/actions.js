@@ -522,7 +522,7 @@ export function del(claims, clientMutationLabel, clientMutationDetails = null) {
 }
 
 export function reject(claims, rejectReason, clientMutationLabel, clientMutationDetails = null) {
-  let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${rejectReason}"`;
+  let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${formatGQLString(rejectReason)}"`;
   let mutation = formatMutation("rejectClaims", variables, clientMutationLabel, clientMutationDetails);
   var requestedDateTime = new Date();
   claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
