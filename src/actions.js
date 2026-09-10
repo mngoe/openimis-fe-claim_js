@@ -750,7 +750,6 @@ export function generate(uuid) {
 }
 
 export function reject(claims, rejectReason, clientMutationLabel, clientMutationDetails = null) {
-  console.log(claims);
   let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${formatGQLString(rejectReason)}"`;
   let mutation = formatMutation("rejectClaims", variables, clientMutationLabel, clientMutationDetails);
   var requestedDateTime = new Date();
