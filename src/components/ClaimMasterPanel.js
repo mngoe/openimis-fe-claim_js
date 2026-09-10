@@ -14,6 +14,7 @@ import {
   TextInput,
   decodeId,
   ValidatedTextInput,
+  SelectInput,
 } from "@openimis/fe-core";
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
@@ -36,7 +37,8 @@ import {
   DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, 
   IN_PATIENT_STRING, 
   AUDIT_REJECTION_MOTIF, 
-  AUDIT_STATUS_REJECTED 
+  AUDIT_STATUS_REJECTED,
+  CLAIM_MISSION_STATUS_CLOSED
 } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
@@ -252,7 +254,8 @@ class ClaimMasterPanel extends FormPanel {
       isRestored,
       isDuplicate,
       resetServicesItems,
-      pregnancyAge
+      pregnancyAge,
+      mission_status,
     } = this.props;
     const { policyNumber, claimSuffix, claimCode, claimPrefix, claimCodeError } = this.state;
     if (!edited) return null;
@@ -275,7 +278,7 @@ class ClaimMasterPanel extends FormPanel {
     edited.amountAudited = _.round(totalAudited, 2);
 
     let ro = readOnly || !!forReview || !!forFeedback || !!forAudit;
-    let roAudit = !!edited.audited;
+    let roAudit = !!edited.audited || mission_status === CLAIM_MISSION_STATUS_CLOSED;
 
     var chequeNumber = policyNumber;
     var prefix = !!claimPrefix ? claimPrefix : "";
@@ -795,7 +798,7 @@ class ClaimMasterPanel extends FormPanel {
                   module="claim"
                   id="Claim.auditStatus"
                   field={
-                    <Grid item xs={2} className={classes.item}>
+                    <Grid item xs={3} className={classes.item}>
                       <PublishedComponent
                         pubRef="claim.AuditStatusPicker"
                         withLabel
