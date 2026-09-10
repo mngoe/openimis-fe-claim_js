@@ -58,7 +58,6 @@ class HealthFacilitiesPage extends Component {
 
   isDistrictManager = () => {
     const { user } = this.props;
-    console.log("roles", user?.i_user?.roles);
     return Boolean(user?.i_user?.roles?.find(
       r => r.name === ROLE_REJECT
     ));
