@@ -246,6 +246,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
+          min={0}
           readOnly={!!forReview || readOnly || true}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
