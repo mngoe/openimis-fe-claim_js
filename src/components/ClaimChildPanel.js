@@ -397,10 +397,11 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
+          min={0}
           readOnly={!!forReview || readOnly || true}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
-          error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
+          error={i.qtyProvided < 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
           max={parseInt(i?.item?.maximumAmount) || this.quantityMaxValue}
         />
       ),
@@ -450,6 +451,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
+              min={0}
               readOnly={!!forReview || readOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
@@ -478,6 +480,7 @@ class ClaimChildPanel extends Component {
           {(!!forReview || edited.status !== 2) && (
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={readOnly}
                 value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
@@ -515,6 +518,7 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={!!forReview || readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
@@ -543,6 +547,7 @@ class ClaimChildPanel extends Component {
             {(!!forReview || edited.status !== 2) && (
               <TableCell>
                 <NumberInput
+                  min={0}
                   readOnly={readOnly}
                   value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed? u.qtyDisplayed : "0"}
                   onChange={(v) => {
@@ -583,6 +588,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
+              min={0}
               readOnly={readOnly}
               value={!!u.qtyAdjusted ? u.qtyDisplayed : "0" }
               onChange={(v) => {
@@ -635,6 +641,7 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
@@ -686,6 +693,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
+          min={0}
           readOnly={!forReview && readOnly}
           value={i.qtyApproved}
           max={parseInt(i.qtyProvided)}
