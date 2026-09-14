@@ -6,7 +6,6 @@ import { Fab, Tooltip } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 import AddIcon from "@material-ui/icons/Add";
-import * as Sentry from "@sentry/react";
 import {
   withHistory,
   historyPush,
@@ -58,26 +57,13 @@ class HealthFacilitiesPage extends Component {
   }
 
   componentDidMount = () => {
-    const { module, user, claimAdmin, claimHealthFacility } = this.props;
+    const { module, user } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
     
     if(this.iUIsClaimAdmin()) {
       this.props.selectClaimAdmin(user?.claim_admin);
       this.props.selectHealthFacility(user?.claim_admin?.healthFacility);
     }
-
-    Sentry.captureMessage("Claim admin check", {
-      level: "info",
-      extra: {
-        iUIsClaimAdmin: this.iUIsClaimAdmin(),
-        user_admin_uuid: user?.claim_admin?.uuid,
-        user_admin_code: user?.claim_admin?.code,
-        user_admin: user?.claim_admin,
-        user_roles: user?.i_user?.roles,
-        claimAdmin: claimAdmin,
-        claimHealthFacility: claimHealthFacility,
-      },
-    });
   };
 
   componentWillUnmount = () => {
