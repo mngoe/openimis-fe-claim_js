@@ -263,14 +263,14 @@ class ClaimChildPanel extends Component {
         {totalClaimed > 0 && (
           <Typography>
             {formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
-              totalClaimed: formatAmount(intl, totalClaimed),
+              totalClaimed: formatAmount(this.props.modulesManager, intl, totalClaimed),
             })}
           </Typography>
         )}
         {totalClaimed > 0 && (
           <Typography>
             {formatMessageWithValues(intl, "claim", `edit.${type}s.totalApproved`, {
-              totalApproved: formatAmount(intl, totalApproved),
+              totalApproved: formatAmount(this.props.modulesManager, intl, totalApproved),
             })}
           </Typography>
         )}
@@ -319,7 +319,7 @@ class ClaimChildPanel extends Component {
     let preHeaders = [
       totalClaimed > 0
         ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
-          totalClaimed: formatAmount(intl, totalClaimed),
+          totalClaimed: formatAmount(this.props.modulesManager, intl, totalClaimed),
         })
         : "",
     ];

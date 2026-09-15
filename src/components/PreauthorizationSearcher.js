@@ -133,7 +133,7 @@ class PreauthorizationSearcher extends Component {
                 claimed: (
                   <b>
                     {formatAmount(
-                      this.props.intl,
+                      this.props.modulesManager, this.props.intl,
                       selection.reduce((acc, v) => {
                         if (v.claimed) {
                           return acc + parseFloat(v.claimed);
@@ -155,7 +155,7 @@ class PreauthorizationSearcher extends Component {
                 approved: (
                   <b>
                     {formatAmount(
-                      this.props.intl,
+                      this.props.modulesManager, this.props.intl,
                       selection.reduce((acc, v) => {
                         if (v.approved) {
                           return acc + parseFloat(v.approved);
@@ -264,8 +264,8 @@ class PreauthorizationSearcher extends Component {
       // (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
       // (c) => this.feedbackColFormatter(c),
       // (c) => this.reviewColFormatter(c),
-      (c) => formatAmount(this.props.intl, c.claimed),
-      // (c) => formatAmount(this.props.intl, c.approved),
+      (c) => formatAmount(this.props.modulesManager, this.props.intl, c.claimed),
+      // (c) => formatAmount(this.props.modulesManager, this.props.intl, c.approved),
       // (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
     if (this.showPreAuthorization) {
