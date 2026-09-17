@@ -402,7 +402,6 @@ class ClaimForm extends Component {
         let hasNegativeQtyAsked = false;
 
         services.forEach((item) => {
-          console.log("item", item);
           if (parseFloat(item.qtyProvided) > parseFloat(item?.service?.maximumAmount ?? this.quantityMaxValue)) {
             isUnderMaximumAmount = false;
           }
