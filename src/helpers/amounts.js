@@ -32,8 +32,8 @@ export function claimedAmount(r) {
                 }
               });
             }
-            if (r.service.serviceLinked) {
-              r.service.serviceLinked.forEach(subItem => {
+            if (r.service?.servicesLinked) {
+              r.service.servicesLinked.forEach(subItem => {
                 let qtyAsked = 0;
                 if (currentPackageType == SERVICE_TYPE_PP_P) {
                   if (subItem.qtyAsked) {
