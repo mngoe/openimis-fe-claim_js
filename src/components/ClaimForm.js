@@ -43,6 +43,7 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   STATUS_RESET,
+  SERVICE_TYPE_PP_S,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -348,13 +349,35 @@ class ClaimForm extends Component {
 
         let isUnderMaximumAmount = true;
 
+        let hasNegativeQtyAsked = false;
+
         services.forEach((item) => {
           if (parseFloat(item.qtyProvided) > parseFloat(item?.service?.maximumAmount ?? this.quantityMaxValue)) {
             isUnderMaximumAmount = false;
           }
+
+          // If service exists and is not of package type 'S', check its sub-items qtyAsked
+          if (item?.service && item.service.packagetype !== SERVICE_TYPE_PP_S) {
+            const svcSet = item.subServices || [];
+            svcSet.forEach((sub) => {
+              if (sub?.qtyDisplayed != null && parseFloat(sub.qtyDisplayed) < 0) {
+                hasNegativeQtyAsked = true;
+              }
+            });
+            const svcLinked = item.subItems || [];
+            svcLinked.forEach((sub) => {
+              if (sub?.qtyDisplayed != null && parseFloat(sub.qtyDisplayed) < 0) {
+                hasNegativeQtyAsked = true;
+              }
+            });
+          }
         });
 
         if (!isUnderMaximumAmount) {
+          return false;
+        }
+
+        if (hasNegativeQtyAsked) {
           return false;
         }
 

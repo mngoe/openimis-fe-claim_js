@@ -411,6 +411,11 @@ class ClaimChildPanel extends Component {
           value={this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
+          error={(() => {
+            const val = !!forReview ? i.priceAsked : this.state.data[idx].priceAsked;
+            const num = val === null || val === undefined || val === "" ? null : Number(String(val).replace(',', '.'));
+            return num !== null && !isNaN(num) && num < 0 ? formatMessage(this.props.intl, "claim", "ClaimChildPanel.negativeAmount") : null;
+          })()}
         />
       ),
       (i, idx) => (
