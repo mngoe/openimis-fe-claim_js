@@ -406,6 +406,10 @@ class ClaimForm extends Component {
             isUnderMaximumAmount = false;
           }
 
+          if (item?.service && item.service.packagetype === SERVICE_TYPE_PP_S && parseFloat(item.priceAsked) < 0){
+            hasNegativeQtyAsked = true;
+          }
+
           // If service exists and is not of package type 'S', check its sub-items qtyAsked
           if (item?.service && item.service.packagetype !== SERVICE_TYPE_PP_S) {
             const svcSet = item.subServices || [];
