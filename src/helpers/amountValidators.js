@@ -5,7 +5,6 @@ export const monetaryError = (intl, amount) => {
     amount === null || amount === undefined || amount === ""
       ? null
       : Number(String(amount).replace(",", "."));
-      console.log(num)
   return num !== null && !isNaN(num) && num < 0
     ? formatMessageWithValues(intl, null, "validation.minValue", { min: 0 })
     : null;
