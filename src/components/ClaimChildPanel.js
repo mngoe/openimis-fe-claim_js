@@ -24,6 +24,7 @@ import {
 } from "@openimis/fe-core";
 import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import { monetaryError } from "../helpers/amountValidators";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -411,11 +412,7 @@ class ClaimChildPanel extends Component {
           value={this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
-          error={(() => {
-            const val = !!forReview ? i.priceAsked : this.state.data[idx].priceAsked;
-            const num = val === null || val === undefined || val === "" ? null : Number(String(val).replace(',', '.'));
-            return num !== null && !isNaN(num) && num < 0 ? formatMessage(this.props.intl, "claim", "ClaimChildPanel.negativeAmount") : null;
-          })()}
+          error={monetaryError(this.props.intl, !!forReview ? i.priceAsked : this.state.data[idx].priceAsked)}
         />
       ),
       (i, idx) => (
