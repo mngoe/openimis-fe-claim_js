@@ -45,7 +45,9 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   STATUS_RESET,
+  STATUS_VALUATED,
   AUDIT_STATUS_REJECTED,
+  AUDIT_STATUS_ADOPTED,
   CLAIM_MISSION_STATUS_CLOSED,
   SERVICE_TYPE_PP_S
 } from "../constants";
@@ -309,10 +311,13 @@ class ClaimForm extends Component {
       // Tant que la liste des prix (soins/items) n'a pas fini de charger, on ne peut pas valider l'audit
       if (this.props.fetchingPricelist) return false;
       if (!claim.auditStatus) return false;
+      const requiresAuditExplanation =
+        (claim.status === STATUS_VALUATED && claim.auditStatus === AUDIT_STATUS_REJECTED) ||
+        (claim.status === STATUS_REJECTED && claim.auditStatus === AUDIT_STATUS_ADOPTED);
       if (claim.auditStatus === AUDIT_STATUS_REJECTED) {
         if (!claim.rejectionMotive) return false;
-        if (!claim.rejectionReasonAfterAudit) return false;
       }
+      if (requiresAuditExplanation && !claim.auditExplanation) return false;
       return true;
     }
 

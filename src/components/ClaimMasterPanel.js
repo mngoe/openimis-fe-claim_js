@@ -37,7 +37,10 @@ import {
   DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
   IN_PATIENT_STRING,
   AUDIT_REJECTION_MOTIF,
+  AUDIT_STATUS_ADOPTED,
   AUDIT_STATUS_REJECTED,
+  STATUS_REJECTED,
+  STATUS_VALUATED,
   CLAIM_MISSION_STATUS_CLOSED
 } from "../constants";
 import * as Sentry from "@sentry/react";
@@ -323,6 +326,10 @@ class ClaimMasterPanel extends FormPanel {
     } else if (edited.tdr === false) {
       tdr = "F";
     }
+
+    const showAuditExplanationField =
+      (edited.status === STATUS_VALUATED && edited.auditStatus === AUDIT_STATUS_REJECTED) ||
+      (edited.status === STATUS_REJECTED && edited.auditStatus === AUDIT_STATUS_ADOPTED);
 
     return (
       <Grid container>
@@ -829,46 +836,52 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
+            <Fragment>
             {edited.auditStatus === AUDIT_STATUS_REJECTED && (
-              <Fragment>
-                <ControlledField
-                  module="claim"
-                  id="Claim.rejectionMotive"
-                  field={
-                    <Grid item xs={4} className={classes.item}>
-                      <SelectInput
-                        module="claim"
-                        label="auditRejectionMotif"
-                        value={edited.rejectionMotive}
-                        options={AUDIT_REJECTION_MOTIF.map((v) => ({
-                          value: v,
-                          label: formatMessage(intl, "claim", `auditRejectionMotif.${v}`),
-                        }))}
-                        onChange={(v) => this.updateAttribute("rejectionMotive", v)}
-                        readOnly={roAudit || !forAudit}
-                        required={true}
-                      />
-                    </Grid>
-                  }
-                />
-                <ControlledField
-                  module="claim"
-                  id="Claim.auditRejectionReason"
-                  field={
-                    <Grid item xs={4} className={classes.item}>
-                      <TextInput
-                        module="claim"
-                        label="auditRejectionReason"
-                        value={edited.rejectionReasonAfterAudit}
-                        onChange={(v) => this.updateAttribute("rejectionReasonAfterAudit", v)}
-                        readOnly={roAudit || !forAudit}
-                        required={true}
-                      />
-                    </Grid>
-                  }
-                />
-              </Fragment>
+              <ControlledField
+                module="claim"
+                id="Claim.rejectionMotive"
+                field={
+                  <Grid item xs={4} className={classes.item}>
+                    <SelectInput
+                      module="claim"
+                      label="auditRejectionMotif"
+                      value={edited.rejectionMotive}
+                      options={AUDIT_REJECTION_MOTIF.map((v) => ({
+                        value: v,
+                        label: formatMessage(intl, "claim", `auditRejectionMotif.${v}`),
+                      }))}
+                      onChange={(v) => this.updateAttribute("rejectionMotive", v)}
+                      readOnly={roAudit || !forAudit}
+                      required={true}
+                    />
+                  </Grid>
+                }
+              />
             )}
+            {showAuditExplanationField && (
+              <ControlledField
+                module="claim"
+                id="Claim.auditExplanation"
+                field={
+                  <Grid item xs={4} className={classes.item}>
+                    <TextInput
+                      module="claim"
+                      label={formatMessage(intl, "claim", "explanation")}
+                      value={edited.auditExplanation}
+                      onChange={(v) => {
+                        this.updateAttributes({
+                          auditExplanation: v,
+                        });
+                      }}
+                      readOnly={roAudit || !forAudit}
+                      required={true}
+                    />
+                  </Grid>
+                }
+              />
+            )}
+            </Fragment>
           </Fragment>
         )}
       </Grid>

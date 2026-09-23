@@ -388,6 +388,7 @@
   "claim.rejectionCode.19": "19",
   "claim.rejectionCode.null": "",
   "claim.rejectReason": "Reject reason",
+  "claim.auditReason": "Audit reason",
   "claim.validate": "Validate",
   "claim.cancel": "Cancel",
   "claim.RejectClaim.mutationLabel": "Reject claims"
