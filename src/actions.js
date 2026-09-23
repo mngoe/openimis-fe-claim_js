@@ -298,7 +298,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     source: "WEB"
     ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `auditStatus: "${claim.auditStatus}"` : ""}
     ${claim.rejectionMotive !== null && claim.rejectionMotive !== undefined ? `rejectionMotive: ${claim.rejectionMotive}` : ""}
-    ${claim.rejectionReasonAfterAudit !== null && claim.rejectionReasonAfterAudit !== undefined ? `rejectionReasonAfterAudit: "${formatGQLString(claim.rejectionReasonAfterAudit)}"` : ""}
+    ${claim.auditExplanation !== null && claim.auditExplanation !== undefined ? `auditExplanation: "${formatGQLString(claim.auditExplanation)}"`: ""}
     ${claim.amountAudited !== null && claim.amountAudited !== undefined ? `amountAudited: "${claim.amountAudited}"`: ""}
     ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `audited: true` : ""}
   `;
@@ -368,7 +368,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "source",
     "auditStatus",
     "rejectionMotive",
-    "rejectionReasonAfterAudit",
+    "auditExplanation",
     "amountAudited",
     "claimCategory",
     "audited"
