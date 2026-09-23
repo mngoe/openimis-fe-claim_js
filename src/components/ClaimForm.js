@@ -351,9 +351,15 @@ class ClaimForm extends Component {
 
         let hasNegativeQtyAsked = false;
 
+        let hasNegativePriceAsked = false;
+
         services.forEach((item) => {
           if (parseFloat(item.qtyProvided) > parseFloat(item?.service?.maximumAmount ?? this.quantityMaxValue)) {
             isUnderMaximumAmount = false;
+          }
+
+          if (item?.service && item.service.packagetype === SERVICE_TYPE_PP_S && parseFloat(item.priceAsked) < 0){
+            hasNegativePriceAsked = true;
           }
 
           // If service exists and is not of package type 'S', check its sub-items qtyAsked
@@ -378,6 +384,10 @@ class ClaimForm extends Component {
         }
 
         if (hasNegativeQtyAsked) {
+          return false;
+        }
+
+        if(hasNegativePriceAsked) {
           return false;
         }
 
