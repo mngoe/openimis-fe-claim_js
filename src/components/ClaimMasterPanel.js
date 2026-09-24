@@ -128,21 +128,14 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
-    // if (this.claimPrefix == 1) {
-    //   if (this.state.data?.insuree?.chfId != undefined) {
-    //     v = this.state.data?.insuree?.chfId + v
-    //   }
-    // }
-    //this.updateAttribute("code", v)
-    let insureePolicies = this.state.data?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
+    const { edited, isRestored } = this.props;
+    let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     var prefix;
     var suffix = v;
     var code;
     var chequeNumber;
-    var programName = this.props.edited?.program ? this.props.edited?.program?.nameProgram : "";
-    const { edited } = this.props;
-
-    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
+    var programName = edited?.program ? edited?.program?.nameProgram : "";
+    if (programName == "Chèque Santé" || programName == "Cheque Santé" || programName == "Ch\u00e8que Sant\u00e9") {
       let activeOrInactivePolicies = [];
       var productId = "";
       var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo : "";
@@ -168,8 +161,8 @@ class ClaimMasterPanel extends FormPanel {
         prefix = chequeNumber;
         code = chequeNumber + suffix
       }
-      edited[`prefix`] = policyNumber
-      if (dateTo != "" && familyId != "" && productId != "") {
+      edited[`prefix`] = chequeNumber
+      if(dateTo != "" && familyId != "" && productId != ""){
         this.props.fetchPregnancyAge(dateTo, familyId, productId);
       }
     } else {
@@ -559,7 +552,7 @@ class ClaimMasterPanel extends FormPanel {
                 label="code"
                 required
                 value={!edited.uuid ? claimSuffix : suffix}
-                error={this.state.claimCodeError}
+                error={claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
                 readOnly={!!edited && edited[`uuid`] ? true : false}

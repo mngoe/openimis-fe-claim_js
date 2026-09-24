@@ -24,6 +24,7 @@ import {
 } from "@openimis/fe-core";
 import { CLAIM_MISSION_STATUS_CLOSED, DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import { monetaryError } from "../helpers/amountValidators";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -398,10 +399,11 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
+          min={0}
           readOnly={!!forReview || readOnly || true}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
-          error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
+          error={i.qtyProvided < 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
           max={parseInt(i?.item?.maximumAmount) || this.quantityMaxValue}
         />
       ),
@@ -411,6 +413,7 @@ class ClaimChildPanel extends Component {
           value={this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
+          error={monetaryError(this.props.intl, !!forReview ? i.priceAsked : this.state.data[idx].priceAsked)}
         />
       ),
       (i, idx) => (
@@ -451,7 +454,8 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={!!forReview || isReadOnly}
+              min={0}
+              readOnly={!!forReview || readOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -479,7 +483,8 @@ class ClaimChildPanel extends Component {
           {(!!forReview || forAudit || edited.status !== 2) && (
             <TableCell>
               <NumberInput
-                readOnly={isReadOnly}
+                min={0}
+                readOnly={readOnly}
                 value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   u.qtyAdjusted = v;
@@ -526,7 +531,8 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
-                readOnly={!!forReview || isReadOnly}
+                min={0}
+                readOnly={!!forReview || readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -554,7 +560,8 @@ class ClaimChildPanel extends Component {
             {(!!forReview || forAudit || edited.status !== 2) && (
               <TableCell>
                 <NumberInput
-                  readOnly={isReadOnly}
+                  min={0}
+                  readOnly={readOnly}
                   value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed? u.qtyDisplayed : "0"}
                   onChange={(v) => {
                     u.qtyAdjusted = v;
@@ -604,7 +611,8 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={isReadOnly}
+              min={0}
+              readOnly={readOnly}
               value={!!u.qtyAdjusted ? u.qtyDisplayed : "0" }
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -666,6 +674,7 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
@@ -717,7 +726,8 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
-          readOnly={!forReview && isReadOnly}
+          min={0}
+          readOnly={!forReview && readOnly}
           value={i.qtyApproved}
           max={parseInt(i.qtyProvided)}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}

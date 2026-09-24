@@ -47,7 +47,8 @@ import {
   STATUS_VALUATED,
   AUDIT_STATUS_REJECTED,
   AUDIT_STATUS_ADOPTED,
-  CLAIM_MISSION_STATUS_CLOSED
+  CLAIM_MISSION_STATUS_CLOSED,
+  SERVICE_TYPE_PP_S,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -271,6 +272,10 @@ class ClaimForm extends Component {
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
+    // Bloquer les quantités et montants négatifs (saisie et revue) — ticket 37922
+    if (Number(d.qtyProvided) < 0 || Number(d.priceAsked) < 0) return false;
+    if (Number(d.qtyApproved) < 0 || Number(d.priceApproved) < 0) return false;
+    if (Number(d.qtyValuated) < 0 || Number(d.priceValuated) < 0) return false;
     return true;
   };
 
@@ -373,13 +378,45 @@ class ClaimForm extends Component {
 
         let isUnderMaximumAmount = true;
 
+        let hasNegativeQtyAsked = false;
+
+        let hasNegativePriceAsked = false;
+
         services.forEach((item) => {
           if (parseFloat(item.qtyProvided) > parseFloat(item?.service?.maximumAmount ?? this.quantityMaxValue)) {
             isUnderMaximumAmount = false;
           }
+
+          if (item?.service && item.service.packagetype === SERVICE_TYPE_PP_S && parseFloat(item.priceAsked) < 0){
+            hasNegativePriceAsked = true;
+          }
+
+          // If service exists and is not of package type 'S', check its sub-items qtyAsked
+          if (item?.service && item.service.packagetype !== SERVICE_TYPE_PP_S) {
+            const svcSet = item.subServices || [];
+            svcSet.forEach((sub) => {
+              if (sub?.qtyDisplayed != null && parseFloat(sub.qtyDisplayed) < 0) {
+                hasNegativeQtyAsked = true;
+              }
+            });
+            const svcLinked = item.subItems || [];
+            svcLinked.forEach((sub) => {
+              if (sub?.qtyDisplayed != null && parseFloat(sub.qtyDisplayed) < 0) {
+                hasNegativeQtyAsked = true;
+              }
+            });
+          }
         });
 
         if (!isUnderMaximumAmount) {
+          return false;
+        }
+
+        if (hasNegativeQtyAsked) {
+          return false;
+        }
+
+        if(hasNegativePriceAsked) {
           return false;
         }
 
