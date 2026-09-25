@@ -653,6 +653,7 @@ class ClaimForm extends Component {
       },
       {
         condition:
+          forAudit &&
           !isMissionClosed &&
           claim_uuid &&
           !isSaving &&
