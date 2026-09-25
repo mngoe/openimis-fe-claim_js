@@ -61,11 +61,13 @@ class EditPage extends Component {
       return path.split("/").includes("healthFacilities");
     };
 
+    const handleBack = () => historyPush(modulesManager, history, "claim.route.healthFacilities");
+
     return (
       <div className={classes.page}>
         <ClaimForm
           claim_uuid={claim_uuid}
-          back={(e) => historyPush(modulesManager, history, "claim.route.healthFacilities")}
+          back={handleBack}
           add={rights.includes(RIGHT_ADD) ? this.add : null}
           save={rights.includes(RIGHT_LOAD) ? this.save : null}
           isHealthFacilityPage={isHealthFacilityPage()}
