@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -27,6 +27,7 @@ const ClaimAdminPicker = (props) => {
     hfFilter,
     region,
     district,
+    autoSelectSingle = false,
   } = props;
   const userHealthFacilityId = useSelector((state) =>
     state?.loc?.userHealthFacilityFullPath?.uuid
@@ -79,6 +80,20 @@ const ClaimAdminPicker = (props) => {
       district_uuid: district?.uuid
     },
   );
+
+  // with `autoSelectSingle`, the only claim admin of the scope is picked on its own -
+  // once per scope, so that clearing the field is not undone
+  const autoSelectedScope = useRef(null);
+  useEffect(() => {
+    if (!autoSelectSingle || !!value || !!searchString || isLoading) return;
+    const scope = [userHealthFacilityId || hfFilter?.uuid, region?.uuid, district?.uuid].join("|");
+    const claimAdmins = data?.claimAdmins?.edges ?? [];
+    if (claimAdmins.length === 1 && autoSelectedScope.current !== scope) {
+      autoSelectedScope.current = scope;
+      const claimAdmin = claimAdmins[0].node;
+      onChange(claimAdmin, `${claimAdmin.code} ${claimAdmin.lastName} ${claimAdmin.otherNames}`);
+    }
+  }, [data, isLoading]);
 
   const formatClaimAdmin = (claimAdmin) => {
     return renderLastNameFirst

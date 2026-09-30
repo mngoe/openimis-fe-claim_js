@@ -41,6 +41,7 @@ import {
   updateAttachment,
 } from "../actions";
 import { DEFAULT, RIGHT_ADD, URL_TYPE_STRING } from "../constants";
+import { selectClaimRights } from "../helpers/rights";
 import AttachmentGeneralTypePicker from "../pickers/AttachmentGeneralTypePicker";
 
 const styles = (theme) => ({
@@ -466,7 +467,9 @@ class AttachmentsDialog extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
+  // same rights as the claim form it opens from: global bag + UBA one on the claim's
+  // health facility, see `helpers/rights.js`
+  rights: selectClaimRights(state),
   confirmed: state.core.confirmed,
   submittingMutation: state.claim.submittingMutation,
   mutation: state.claim.mutation,

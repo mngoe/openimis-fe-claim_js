@@ -6,6 +6,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { formatMessageWithValues, withModulesManager, withHistory, historyPush } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { createClaim, updateClaim } from "../actions";
+import { selectClaimRights } from "../helpers/rights";
 import { DEFAULT, RIGHT_ADD, RIGHT_LOAD } from "../constants";
 
 const styles = (theme) => ({
@@ -76,7 +77,9 @@ class EditPage extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-  rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
+  // the global bag alone would lock out a claim administrator: their rights are granted
+  // by the CLAIM_ADMIN link they hold on the health facility being worked under
+  rights: selectClaimRights(state),
   claim_uuid: props.match.params.claim_uuid,
   path: props.match.path,
 });

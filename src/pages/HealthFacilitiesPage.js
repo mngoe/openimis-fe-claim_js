@@ -18,7 +18,6 @@ import {
   Helmet,
   clearCurrentPaginationPage,
   PublishedComponent,
-  getUserBusinessAccessReferences,
   hasAnyPermsInRange,
   hasPerms,
   hasPermsAnywhere,
@@ -35,6 +34,7 @@ import {
   ROLE_REJECT,
   UBA_LINK_TYPE_CLAIM_ADMIN,
 } from "../constants";
+import { claimAdminAccessRequirements } from "../helpers/rights";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
@@ -74,33 +74,16 @@ class HealthFacilitiesPage extends Component {
   isClaimAdmin = () => hasUserLinkType(this.props.user, UBA_LINK_TYPE_CLAIM_ADMIN);
 
   /**
-   * The business map of the health facilities a right may be granted on here: the one
-   * being looked at when a facility is selected, the ones the user is claim admin of
-   * otherwise. Passed to `hasPerms`, it opens the UBA path - the right sitting in the
-   * user's UBA bag and a CLAIM_ADMIN link existing on that facility - without ever
-   * granting anything the rights do not.
-   *
-   * The credential is the whole demand: which business object types it may be used on is
-   * the backend registry's to say, so no model is named here. A map without one accepts a
-   * link on the object whatever its type, and only a CLAIM_ADMIN link can match - the
-   * registry declares that credential on health facilities and validates it on write.
+   * Does the user hold `perms` globally, or on the health facility being looked at - the
+   * ones they are claim admin of when none is selected ? The business map opens the UBA
+   * path (`helpers/rights.js`): the right sitting in the user's UBA bag and a CLAIM_ADMIN
+   * link existing on that facility, without ever granting anything the rights do not.
    */
-  claimAdminAccessRequirements = () => {
-    const { user, claimHealthFacility } = this.props;
-    if (claimHealthFacility?.uuid) {
-      return [{ objectId: claimHealthFacility.uuid, linkTypes: UBA_LINK_TYPE_CLAIM_ADMIN }];
-    }
-    // a stored link carries the type of the object it points at: nothing to look up
-    return getUserBusinessAccessReferences(user, UBA_LINK_TYPE_CLAIM_ADMIN).map(({ model, objectId }) => [
-      model,
-      objectId,
-      UBA_LINK_TYPE_CLAIM_ADMIN,
-    ]);
-  };
-
-  /** Does the user hold `perms` globally, or on one of those health facilities ? */
   canOnHealthFacility = (perms) =>
-    hasPerms(perms, { rights: this.props.rights, accessRequirements: this.claimAdminAccessRequirements() });
+    hasPerms(perms, {
+      rights: this.props.rights,
+      accessRequirements: claimAdminAccessRequirements(this.props.user, this.props.claimHealthFacility),
+    });
 
   componentDidMount = () => {
     const { module, user, claimAdmin, claimHealthFacility } = this.props;
@@ -228,15 +211,15 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
-    this.props.selectClaimAdmin(this.props.user.claim_admin);
-    this.props.selectHealthFacility(this.props.user.claim_admin?.healthFacility);
+    // the claim is created under the claim admin picked in the filter
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
-  // the right to create a claim, globally or on the health facility at hand: a claim
-  // admin without RIGHT_ADD in either bag may not create one, and a user holding it
-  // globally no longer has to be a claim admin
-  canAdd = () => this.canOnHealthFacility(RIGHT_ADD);
+  // a claim is created under a claim admin, hence on their health facility: both must be
+  // picked, and the user must hold RIGHT_ADD there - globally, or in the UBA bag through
+  // a CLAIM_ADMIN link on that facility
+  canAdd = () =>
+    !!this.props.claimAdmin && !!this.props.claimHealthFacility && this.canOnHealthFacility(RIGHT_ADD);
 
   render() {
     const { intl, classes, rights, generatingPrint, userRoles } = this.props;

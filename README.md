@@ -13,6 +13,34 @@ It is dedicated to be deployed as a module of [openimis-fe_js](https://github.co
 
   **Reviews** (claim.menu.reviews translation key), displayed if user has at least one of the rights [111008, 111009, 111010; 111011]
 
+  Note: a menu entry is a navigation level gate, so those rights count whether the user
+  holds them globally or only on the health facilities they are linked to (`RoleRight.uba`,
+  cfr. *Access control* below).
+
+## Access control
+
+Claims belong to a health facility, so what a user may do with one is asked of the right
+**and** of the facility:
+
+- `HealthFacilitiesPage.canOnHealthFacility(right)` answers "globally, or on the facility
+  at hand": `hasPerms(right, { rights, accessRequirements })`, the business map naming the
+  selected facility or the ones the user holds a `CLAIM_ADMIN` link on. Every action of the
+  page - add, submit, delete, open - goes through it;
+- `isClaimAdmin()` answers *who* the user is (do they hold the `CLAIM_ADMIN` credential,
+  the one code this module keeps in its `constants.js` - the registry owns the rest),
+  and is only used to preselect their claim administrator record and facility. Holding the
+  credential grants nothing by itself;
+- the page level gate and the visibility of the "new claim" button use the `anywhere` form,
+  so a user whose claim rights are UBA-only still reaches the page and can select their
+  facility.
+
+There is no role test left: a role named "Claim Administrator", or the standard claim
+admin role being attached, no longer means anything here. See `docs/rights.md` in the core
+module for the model and the helpers.
+
+Still on plain right checks, i.e. not yet scoped to the claim's facility: `ClaimForm`,
+`ClaimFormReview`, `EditPage`, `ReviewsPage` and `AttachmentsDialog`.
+
 ## Other Contributions
 
 - `core.Router`: registering the `claim/healthFacilities`, `claim/claim/:claim_uuid`, `claim/reviews`, `claim/review/:claim_uuid` and `claim/feedback/:claim_uuid` routes in openIMIS client-side router

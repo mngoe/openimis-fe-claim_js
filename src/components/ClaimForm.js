@@ -30,6 +30,7 @@ import {
   parseData,
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
+import { selectClaimRights } from "../helpers/rights";
 import {
   RIGHT_ADD,
   RIGHT_PRINT,
@@ -42,6 +43,7 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   RIGHT_CLAIMREVIEW,
+  RIGHT_UPDATE,
   STATUS_RESET,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
@@ -483,13 +485,20 @@ class ClaimForm extends Component {
     const { claim, claim_uuid, lockNew, isSaved } = this.state;
     const nameProgram = claim?.program?.nameProgram
 
+    // RIGHT_CLAIMREVIEW kept for the roles relying on it; outside review / feedback the
+    // right the backend checks also opens the form (create: RIGHT_ADD, update:
+    // RIGHT_UPDATE), which is what a claim administrator holds in their UBA bag
+    const canEdit =
+      rights.includes(RIGHT_CLAIMREVIEW) ||
+      (!forReview && !forFeedback && rights.includes(claim_uuid ? RIGHT_UPDATE : RIGHT_ADD));
+
     let readOnly =
       lockNew ||
       isSaved ||
       (!forReview && !forFeedback && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
-      !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
+      !canEdit;
 
     var actions = [];
     if (!!claim_uuid) {
@@ -617,7 +626,9 @@ class ClaimForm extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-  rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
+  // global bag + the UBA one where a CLAIM_ADMIN link covers the health facility of the
+  // claim: a claim administrator holds their rights there, see `helpers/rights.js`
+  rights: selectClaimRights(state),
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   claim: state.claim.claim,
   fetchingClaim: state.claim.fetchingClaim,

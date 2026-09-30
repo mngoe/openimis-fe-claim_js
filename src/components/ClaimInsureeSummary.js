@@ -14,10 +14,9 @@ import {
   historyPush,
   formatAmount,
   hasPerms,
-  UBA_MODEL_HEALTH_FACILITY,
 } from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
-import { MODULE_NAME, RIGHT_LOAD } from "../constants";
+import { MODULE_NAME, RIGHT_LOAD, UBA_LINK_TYPE_CLAIM_ADMIN } from "../constants";
 
 const useStyles = makeStyles((theme) => ({
   page: theme.page,
@@ -55,7 +54,7 @@ const ClaimInsureeSummary = ({ insuree }) => {
   // facility field of the interactive user, which is a location scope, not an access
   const canOpen = (claim) =>
     hasPerms(RIGHT_LOAD, {
-      accessRequirements: [UBA_MODEL_HEALTH_FACILITY, claim?.healthFacility?.uuid],
+      accessRequirements: [{ objectId: claim?.healthFacility?.uuid, linkTypes: UBA_LINK_TYPE_CLAIM_ADMIN }],
     });
 
   const goToClaim = (claim) => historyPush(modulesManager, history, "claim.route.claimEdit", [claim.uuid]);

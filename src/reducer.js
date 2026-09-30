@@ -97,6 +97,9 @@ function reducer(
       if (claimHealthFacility) {
         s.claimDistrict = s.claimHealthFacility.location;
         s.claimRegion = s.claimDistrict.parent;
+        if (s.claimAdmin && s.claimAdmin.healthFacility?.uuid !== claimHealthFacility.uuid) {
+          delete s.claimAdmin;
+        }
       } else {
         delete s.claimAdmin;
       }

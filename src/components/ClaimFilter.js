@@ -230,6 +230,7 @@ class Head extends Component {
                 hfFilter={this._filterValue("healthFacility")}
                 reset={this.state.reset}
                 onChange={this._onChangeClaimAdmin}
+                autoSelectSingle={true}
                 region={this._filterValue("region")}
                 district={this._filterValue("district")}
                 required={true}
