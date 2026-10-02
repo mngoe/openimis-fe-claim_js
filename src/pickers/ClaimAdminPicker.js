@@ -43,8 +43,8 @@ const ClaimAdminPicker = (props) => {
 
   const { isLoading, data, error } = useGraphqlQuery(
     `
-      query ClaimAdminPicker ($search: String, $hf: String) {
-          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf) {
+      query ClaimAdminPicker ($search: String, $hf: String, $region_uuid: String, $district_uuid: String) {
+          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, regionUuid: $region_uuid, districtUuid: $district_uuid) {
               edges {
                   node {
                       id

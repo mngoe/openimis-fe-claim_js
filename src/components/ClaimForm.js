@@ -279,10 +279,6 @@ class ClaimForm extends Component {
     return true;
   };
 
-  checkQtySubService = () => {
-
-  }
-
   canSave = (forFeedback, forReview) => {
     const {claim} = this.state;
 
@@ -302,6 +298,12 @@ class ClaimForm extends Component {
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
+    if (
+      !!this.isReferHFMandatory &&
+      this.state.claim.visitType === this.claimTypeReferSymbol &&
+      !this.state.claim.referHF
+    )
+      return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -361,28 +363,15 @@ class ClaimForm extends Component {
           }
         });
 
-    if (!!this.state.claim.services) {
-      if (this.props.forReview || this.state.isRestored) {
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+        if (!isUnderMaximumAmount) {
           return false;
         }
-      } else {
-        if (this.state.claim.services.length <= 1) return false;
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
+
+        if (!this.props.forReview) items.pop();
+        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview)).length) {
           return false;
         }
       }
-
-    } else {
-      return false;
-    }
-
-    if (!forFeedback) {
-      //this.checkQtySubService();
-      if (!this.state.claim.items && !this.state.claim.services) {
-        return !!this.canSaveClaimWithoutServiceNorItem;
-      }
-      //if there are items or services, they have to be complete
       let services = [];
       if (!!this.state.claim.services) {
         services = [...this.state.claim.services];
@@ -440,6 +429,7 @@ class ClaimForm extends Component {
     }
     return true;
   };
+
   NAME_PROGRAM = {
     Chèque_Sante: "Chèque Santé",
     Cheque_Sante: "Cheque Santé",
@@ -548,6 +538,7 @@ class ClaimForm extends Component {
       isRestored: false,
       isSaved: false,
     }));
+
   render() {
     const {
       rights,
@@ -578,7 +569,6 @@ class ClaimForm extends Component {
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
 
     var actions = [];
-
     if (!!claim_uuid) {
       actions.push({
         doIt: (e) => this.reload(),
@@ -614,12 +604,7 @@ class ClaimForm extends Component {
           !forAudit,
         content: (
           <span>
-            <Fab
-              color="primary"
-              onClick={(e) => {
-                this.restore();
-              }}
-            >
+            <Fab color="primary" onClick={(e) => this.restore()}>
               <RestorePageIcon />
             </Fab>
           </span>
@@ -641,13 +626,7 @@ class ClaimForm extends Component {
         condition: !forAudit && claim_uuid && isHealthFacilityPage && this.state.claim?.status !== STATUS_RESET,
         content: (
           <span>
-            <Fab
-              color="primary"
-              disabled={!this.canSave(forFeedback, forReview)}
-              onClick={(e) => {
-                this.duplicate();
-              }}
-            >
+            <Fab color="primary" disabled={!this.canSave(forFeedback, forReview)} onClick={(e) => this.duplicate()}>
               <FileCopyIcon />
             </Fab>
           </span>
@@ -717,19 +696,6 @@ class ClaimForm extends Component {
               module="claim"
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
-              back={back}
-              forcedDirty={this.state.forcedDirty}
-              add={!!add && !this.state.newClaim ? this._add : null}
-              save={!!save ? this._save : null}
-              fab={forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />}
-              fabAction={this._deliverReview}
-              fabTooltip={formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip")}
-              canSave={(e) => this.canSave(forFeedback, forReview)}
-              reload={(claim_uuid || readOnly) && this.reload}
-              actions={actions}
-              readOnly={readOnly}
-              forReview={forReview}
-              forFeedback={forFeedback}
               HeadPanel={ClaimMasterPanel}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram == this.NAME_PROGRAM.Chèque_Sante) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}

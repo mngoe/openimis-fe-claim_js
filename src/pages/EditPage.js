@@ -58,8 +58,8 @@ class EditPage extends Component {
     if (!rights.includes(RIGHT_LOAD)) return null;
 
     const isHealthFacilityPage = () => {
-      return path.split("/").includes('healthFacilities');
-    }
+      return path.split("/").includes("healthFacilities");
+    };
 
     const handleBack = () => historyPush(modulesManager, history, "claim.route.healthFacilities");
 

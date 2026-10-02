@@ -42,9 +42,6 @@ class ClaimFeedbackPanel extends Component {
         label: formatMessage(props.intl, "claim", `Feedback.OverallAssesment.${value}`),
       };
     });
-    this.state = {
-      age : ""
-    }
   }
 
   _onChange = (attr, v) => {
@@ -67,15 +64,6 @@ class ClaimFeedbackPanel extends Component {
     }
   };
 
-  _onTextInputsChange = (e) =>{
- 
-    let age = (e.target.validity.valid) ? e.target.value : this.state[e.target.name]
-   
-    this.setState({[e.target.name] : age })
-    let agefinal = this.state.age
-    this.props.edited.feedback[e.target.name] = age;
-  }
-
   _mapTristateValue = (v) => {
     switch (v) {
       case null:
@@ -88,7 +76,7 @@ class ClaimFeedbackPanel extends Component {
         return 1;
     }
   };
-  
+
   _mapAssessmentValue = (v) => {
     switch (v) {
       case null:

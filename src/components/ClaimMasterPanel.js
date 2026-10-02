@@ -91,14 +91,17 @@ class ClaimMasterPanel extends FormPanel {
     this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "claimForm.claimTypeReferSymbol", "R");
     this.numberOfAdditionalDiagnosis = props.modulesManager.getConf(
       "fe-claim",
-      "claimPrex",
-      1,
+      "claimForm.numberOfAdditionalDiagnosis",
+      DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
     );
-    this.hideSecDiagnos = props.modulesManager.getConf(
+    this.isExplanationMandatoryForIPD = props.modulesManager.getConf(
       "fe-claim",
-      "hideSecDiagnos",
-      1,
+      "claimForm.isExplanationMandatoryForIPD",
+      false,
     );
+    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
+    this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
+    this.EMPTY_STRING = "";
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -188,33 +191,9 @@ class ClaimMasterPanel extends FormPanel {
   shouldValidate = (inputValue) => {
     if (this.autoGenerateClaimCode) return false;
 
-    if (programName == "Chèque Santé" || programName == "Cheque Santé") {
-      insureePolicies.forEach(function (policy) {
-        if (policy.policy.status == 2 && policy.policy.policyNumber != null) {
-          policyNumber = policy.policy.policyNumber;
-        }
-      })
-      if (policyNumber != undefined) {
-        v = policyNumber + v
-      }
-    } else {
-      var programCode = this.props.edited.program ? this.props.edited.program.code.substring(0, 3) : "";
-      var dateTo = this.props.edited.dateTo ? this.props.edited.dateTo.substring(0, 4) : "";
-      var codeFosa = this.props.edited.healthFacility ? this.props.edited.healthFacility.code : "";
-      csuNumber = `${codeFosa}.${dateTo}.${programCode}.`;
-      if (csuNumber != undefined) {
-        v = csuNumber + v
-      }
-    }
-
-    this.setState(
-      {
-        claimCodeError: null,
-        claimCode: v,
-        codeClaim: c,
-      },
-      (e) => this.props.validateClaimCode(v),
-    );
+    const { savedClaimCode } = this.props;
+    const shouldValidate = inputValue !== savedClaimCode;
+    return shouldValidate;
   };
 
 
@@ -252,11 +231,6 @@ class ClaimMasterPanel extends FormPanel {
 
     return totalServices + totalItems;
   }
-
-  debounceUpdateCode = _debounce(
-    this.validateClaimCode,
-    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
-  );
 
   render() {
     const {
@@ -631,7 +605,6 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -681,7 +654,7 @@ class ClaimMasterPanel extends FormPanel {
               id="Claim.approved"
               field={
                 <Grid item xs={1} className={classes.item}>
-                  <AmountInput value={edited.approved} module="claim" label="approved" readOnly={true} />
+                  <AmountInput value={edited.approved || null} module="claim" label="approved" readOnly={true} />
                 </Grid>
               }
             />
@@ -921,7 +894,6 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       claimHealthFacilitySet,
-      validateClaimCode,
       clearClaim,
       validateClaimCode,
       fetchPregnancyAge,

@@ -51,11 +51,6 @@ export function claimCodeValidationCheck(mm, variables) {
   );
 }
 
-export function validateClaimCode(code) {
-  const payload = formatQuery("claims", [`code: "${code}"`], ["totalCount"]);
-  return graphql(payload, "CLAIM_CLAIM_CODE_COUNT");
-}
-
 export function claimCodeValidationClear() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_CLEAR` });
@@ -171,7 +166,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "claimed",
     "approved",
     "status",
-    "restore {id}",
+    "restoreId",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
   ];
@@ -262,7 +257,10 @@ export function formatAttachments(mm, attachments) {
   ]`;
 }
 
-export function formatClaimGQL(modulesManager, claim) {
+export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
+  // to simplify GQL and avoid additional coding, claim code is sent, even if shouldAutogenerate is set to true
+  const claimCodePlaceholder="auto"
+  const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -280,6 +278,7 @@ export function formatClaimGQL(modulesManager, claim) {
     ${!!claim.careType ? `careType: "${claim.careType}"` : ""}
     reviewStatus: ${modulesManager.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
+    ${claim.referHF ? `${handleReferHFType(modulesManager, claim)}${decodeId(claim.referHF.id)}` : ""}
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     program: ${decodeId(claim.program.id)}
     visitType: "${claim.visitType}"
@@ -289,12 +288,10 @@ export function formatClaimGQL(modulesManager, claim) {
     ${!!claim.testNumber ? `testNumber: "${formatGQLString(claim.testNumber)}"` : ""}
     ${!!claim.tdr ? `tdr: ${claim.tdr == "T" ? true : false}` : ""}
     ${!!claim?.restore?.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
-    ${!!claim.testNumber ? `testNumber: "${formatGQLString(claim.testNumber)}"` : ""}
-    ${!!claim.tdr ? `tdr: ${claim.tdr == "T" ? true : false}` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
     ${!!claim.attachments && !!claim.attachments.length
-      ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
+      ? `attachments: ${formatAttachments(mm, claim.attachments)}`
       : ""
     }
     ${!!claim.pregnancyAge ? `pregnancyAge: ${claim.pregnancyAge}` : ""}
@@ -350,8 +347,11 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "explanation",
     "adjustment",
     "attachmentsCount",
+    "careType",
     "restore {uuid, code}",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
+    "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
+    "referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "visitType" + mm.getProjection("medical.VisitTypePicker.projection"),
     "admin" + mm.getProjection("claim.ClaimAdminPicker.projection"),
