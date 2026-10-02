@@ -3,17 +3,18 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
+import * as Sentry from "@sentry/react";
 
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
+import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import ReplayIcon from "@material-ui/icons/Replay";
 import PrintIcon from "@material-ui/icons/ListAlt";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import RestorePageIcon from "@material-ui/icons/RestorePage";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import CachedIcon from "@material-ui/icons/Cached";
-import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 
 import {
   Contributions,
@@ -141,13 +142,36 @@ class ClaimForm extends Component {
   }
 
   _newClaim() {
+    const storedHealthFacility = JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+    const storedAdmin = JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
     let claim = {};
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+      storedHealthFacility;
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
+      this?.state?.claim?.admin ?? this.props.claimAdmin ?? storedAdmin;
+    const healthFacilitySource = this?.state?.claim?.healthFacility
+      ? "state"
+      : this.props.claimHealthFacility
+      ? "props"
+      : storedHealthFacility
+      ? "localStorage"
+      : "none";
+    const adminSource = this?.state?.claim?.admin ? "state" : this.props.claimAdmin ? "props" : storedAdmin ? "localStorage" : "none";
+    Sentry.captureMessage("claim._newClaim source", {
+      level: "info",
+      tags: {
+        module: "claim",
+        feature: "claim_create_prefill",
+      },
+      extra: {
+        adminSource,
+        healthFacilitySource,
+        adminUuid: claim.admin?.uuid,
+        healthFacilityUuid: claim.healthFacility?.uuid,
+      },
+    });
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -284,6 +308,7 @@ class ClaimForm extends Component {
 
     // En mode audit, on ne vérifie que les champs d'audit
     if (this.props.forAudit) {
+      // Tant que la liste des prix (soins/items) n'a pas fini de charger, on ne peut pas valider l'audit
       if (this.props.fetchingPricelist) return false;
       if (!claim.auditStatus) return false;
       const requiresAuditExplanation =
@@ -377,9 +402,7 @@ class ClaimForm extends Component {
         services = [...this.state.claim.services];
 
         let isUnderMaximumAmount = true;
-
         let hasNegativeQtyAsked = false;
-
         let hasNegativePriceAsked = false;
 
         services.forEach((item) => {
@@ -500,11 +523,12 @@ class ClaimForm extends Component {
   _deliverReview = (claim) => {
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
-  duplicate = () => {
-    const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
-    this.props.history.replace(`/${routeRef}`);
-    this.setState({ isDuplicate: true });
-  };
+
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
 
   deliverAudit = () => {
     this.setState({ isSaving: true }, () => {
@@ -559,7 +583,7 @@ class ClaimForm extends Component {
     const nameProgram = claim?.program?.nameProgram
     const isMissionClosed = forAudit && mission?.status === CLAIM_MISSION_STATUS_CLOSED;
 
-    let readOnly =
+    let readOnly = 
       lockNew ||
       isSaved ||
       (!forReview && !forFeedback && !forAudit && claim.status !== 2) ||
@@ -701,7 +725,7 @@ class ClaimForm extends Component {
               openDirty={save || forReview}
               additionalTooltips={tooltips}
               resetServices={this.state.resetServices}
-              resetServicesItems={this.resetServicesItems}
+              resetServicesItems= {this.resetServicesItems}
               {...editingProps}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />

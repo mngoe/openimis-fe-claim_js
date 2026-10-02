@@ -213,7 +213,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.feedbackStatus",
       "claimSummaries.reviewStatus",
       "claimSummaries.claimed",
-      "claimSummaries.approved"
+      "claimSummaries.approved",
     ];
     if (this.props.forAudit) {
       result.push("claimSummaries.amountAudited");

@@ -259,7 +259,7 @@ export function formatAttachments(mm, attachments) {
 
 export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
   // to simplify GQL and avoid additional coding, claim code is sent, even if shouldAutogenerate is set to true
-  const claimCodePlaceholder="auto"
+  const claimCodePlaceholder = "auto"
   const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
@@ -304,7 +304,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
   `;
 }
 
-function handleReferHFType(modulesManager, claim){
+function handleReferHFType(modulesManager, claim) {
   return (claim.visitType === modulesManager.getRef("claim.CreateClaim.claimTypeReferSymbol") ? 'referFromId: ' : 'referToId: ')
 }
 
@@ -521,6 +521,19 @@ export function del(claims, clientMutationLabel, clientMutationDetails = null) {
   });
 }
 
+export function reject(claims, rejectReason, clientMutationLabel, clientMutationDetails = null) {
+  let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${formatGQLString(rejectReason)}"`;
+  let mutation = formatMutation("rejectClaims", variables, clientMutationLabel, clientMutationDetails);
+  var requestedDateTime = new Date();
+  claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_REJECT_CLAIMS_RESP", "CLAIM_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
+    requestedDateTime,
+  });
+}
+
 export function selectForFeedback(claims, clientMutationLabel, clientMutationDetails = null) {
   let claimUuids = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]`;
   let mutation = formatMutation("selectClaimsForFeedback", claimUuids, clientMutationLabel, clientMutationDetails);
@@ -575,16 +588,16 @@ export function deliverFeedback(claim, clientMutationLabel) {
       : ""
     }
       ${feedback.asessment !== undefined && feedback.asessment !== null ? `asessment: ${feedback.asessment}` : ""}
-      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : "" }
+      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : ""}
       ${!!feedback.age ? `age: ${feedback.age}` : ""}
       ${feedback.policyNational !== undefined && feedback.policyNational !== null
-        ? `policyNational: ${feedback.policyNational}`
-        : ""
-      }
+      ? `policyNational: ${feedback.policyNational}`
+      : ""
+    }
       ${feedback.pregnant !== undefined && feedback.pregnant !== null
-        ? `pregnant: ${feedback.pregnant}`
-        : ""
-      }
+      ? `pregnant: ${feedback.pregnant}`
+      : ""
+    }
       ${!!feedback.meansInformation ? `meansInformation: "${feedback.meansInformation}"` : ""}
     }
   `;
@@ -702,6 +715,7 @@ export function saveReview(claim, clientMutationLabel) {
 export function deliverReview(claims, clientMutationLabel, clientMutationDetails = null) {
   let claimUuids = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]`;
   let mutation = formatMutation("deliverClaimsReview", claimUuids, clientMutationLabel, clientMutationDetails);
+  console.log(mutation);
   var requestedDateTime = new Date();
   claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_DELIVER_CLAIMS_REVIEW_RESP", "CLAIM_MUTATION_ERR"], {
@@ -761,17 +775,20 @@ export function generate(uuid) {
   };
 }
 
-export function reject(claims, rejectReason, clientMutationLabel, clientMutationDetails = null) {
-  let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${formatGQLString(rejectReason)}"`;
-  let mutation = formatMutation("rejectClaims", variables, clientMutationLabel, clientMutationDetails);
-  var requestedDateTime = new Date();
-  claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
-  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_REJECT_CLAIMS_RESP", "CLAIM_MUTATION_ERR"], {
-    clientMutationId: mutation.clientMutationId,
-    clientMutationLabel,
-    clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
-    requestedDateTime,
-  });
+export function getUserClaimAdmin(lastName, otherNames) {
+  const payload = formatPageQuery(
+    "claimAdmins",
+    [`lastName: "${lastName}"`, `otherNames: "${otherNames}"`],
+    [
+      "id",
+      "uuid",
+      "code",
+      "lastName",
+      "otherNames",
+      "healthFacility{id, uuid, code, name, level, servicesPricelist{id, uuid}, itemsPricelist{id, uuid}, location{id, uuid, code, name, parent{id, uuid, code, name}}}"
+    ],
+  );
+  return graphql(payload, "CLAIM_USER_ADMIN");
 }
 
 export function fetchPregnancyAge(claimDateTo, familyId, product){

@@ -249,6 +249,7 @@ class HealthFacilitiesPage extends Component {
 const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   claimAdmin: state.claim.claimAdmin,
+  userClaimAdminInfos: state.claim.userClaimAdminInfos,
   claimHealthFacility: state.claim.claimHealthFacility,
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   submittingMutation: state.claim.submittingMutation,

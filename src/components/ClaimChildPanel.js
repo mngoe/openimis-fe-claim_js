@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import _ from "lodash";
 
-import { Paper, Box, IconButton, Typography, Grid, TableCell} from "@material-ui/core";
+import { Paper, Box, IconButton, Typography, Grid, TableCell } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { ThumbUp, ThumbDown } from "@material-ui/icons";
 
@@ -69,7 +69,7 @@ class ClaimChildPanel extends Component {
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
     }
-    if(!!this.props.edited[`services`]){
+    if (!!this.props.edited[`services`]) {
       data.forEach((d) => !!d.services && (d.subServices = d.services));
       data.forEach((d) => !!d.items && (d.subItems = d.items));
     }
@@ -87,7 +87,7 @@ class ClaimChildPanel extends Component {
       edited[`${this.props.type}s`] = data;
 
       this.props.onEditedChanged(edited);
-    }else{
+    } else {
       data.push({});
     }
     return data;
@@ -124,12 +124,12 @@ class ClaimChildPanel extends Component {
   }
 
   _updateData = (idx, updates) => {
-      const data = [...this.state.data];
-      updates.forEach((update) => (data[idx][update.attr] = update.v));
-      if (!this.props.forReview && data.length === idx + 1) {
-          data.push({});
-      }
-      return data;
+    const data = [...this.state.data];
+    updates.forEach((update) => (data[idx][update.attr] = update.v));
+    if (!this.props.forReview && data.length === idx + 1) {
+      data.push({});
+    }
+    return data;
   }
 
   _onEditedChanged = (data) => {
@@ -172,7 +172,7 @@ class ClaimChildPanel extends Component {
   };
 
   _onChangeItem = (idx, attr, v) => {
-    let data = this._updateData(idx, [{attr, v}]);
+    let data = this._updateData(idx, [{ attr, v }]);
     if (!v) {
       data[idx].priceAsked = null;
       data[idx].qtyProvided = null;
@@ -210,11 +210,11 @@ class ClaimChildPanel extends Component {
   };
 
   _checkIfItemsServicesExist = (type, edited) => {
-    if (type==="item"){
-      return Array.isArray(edited.items) ? !edited.items.length==0 : false;
+    if (type === "item") {
+      return Array.isArray(edited.items) ? !edited.items.length == 0 : false;
     }
-    else{
-      return Array.isArray(edited.services) ? !edited.services.length==0 : false;
+    else {
+      return Array.isArray(edited.services) ? !edited.services.length == 0 : false;
     }
   };
 
@@ -385,7 +385,7 @@ class ClaimChildPanel extends Component {
           <PublishedComponent
             readOnly={!!forReview || isReadOnly}
             pubRef={picker}
-            filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
+            filterOptions={this.props.type === 'item' ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
             value={i[type]}
             healthFacility={edited?.healthFacility}
@@ -410,7 +410,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || isReadOnly || this.fixedPricesAtEnter}
-          value={this.state.data[idx].service?.priceAsked}
+          value={!!forReview ? i.priceAsked : this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
           error={monetaryError(this.props.intl, !!forReview ? i.priceAsked : this.state.data[idx].priceAsked)}
@@ -422,12 +422,12 @@ class ClaimChildPanel extends Component {
           value={i.explanation}
           error={
             this.explanationRequiredIfQuantityAboveThreshold &&
-            type === "service" &&
-            !i.explanation &&
-            i.qtyProvided > this.quantityExplanationThreshold
+              type === "service" &&
+              !i.explanation &&
+              i.qtyProvided > this.quantityExplanationThreshold
               ? formatMessageWithValues(this.props.intl, "claim", "ClaimChildPanel.review.explanationRequired", {
-                  threshold: this.quantityExplanationThreshold,
-                })
+                threshold: this.quantityExplanationThreshold,
+              })
               : null
           }
           onChange={(v) => this._onChange(idx, "explanation", v)}
@@ -455,7 +455,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               min={0}
-              readOnly={!!forReview || readOnly}
+              readOnly={!!forReview || isReadOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -484,7 +484,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 min={0}
-                readOnly={readOnly}
+                readOnly={isReadOnly}
                 value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   u.qtyAdjusted = v;
@@ -497,6 +497,7 @@ class ClaimChildPanel extends Component {
           {forAudit && (
             <TableCell>
               <NumberInput
+                min={0}
                 readOnly={isAudited || !forAudit}
                 value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                 displayZero
@@ -532,7 +533,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 min={0}
-                readOnly={!!forReview || readOnly}
+                readOnly={!!forReview || isReadOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -561,8 +562,8 @@ class ClaimChildPanel extends Component {
               <TableCell>
                 <NumberInput
                   min={0}
-                  readOnly={readOnly}
-                  value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed? u.qtyDisplayed : "0"}
+                  readOnly={isReadOnly}
+                  value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                   onChange={(v) => {
                     u.qtyAdjusted = v;
                     this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
@@ -573,6 +574,7 @@ class ClaimChildPanel extends Component {
             {forAudit && (
               <TableCell>
                 <NumberInput
+                  min={0}
                   readOnly={isAudited || !forAudit}
                   value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                   displayZero
@@ -612,8 +614,8 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               min={0}
-              readOnly={readOnly}
-              value={!!u.qtyAdjusted ? u.qtyDisplayed : "0" }
+              readOnly={isReadOnly}
+              value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                   if (u.qtyProvided < v) {
@@ -653,62 +655,82 @@ class ClaimChildPanel extends Component {
               value={u.priceAsked}
             />
           </TableCell>
-        </tr>
-      ))),
-      (i, idx) => (i.items.map((u, udx) => {
-        return (
-          <tr>
-            <TableCell>
-              <TextInput
-                readOnly={true}
-                value={u.item.code}
-              />
-            </TableCell>
-            <TableCell>
-              <Box minWidth={400}>
-                <TextInput
-                  readOnly={!!forReview || readOnly || true}
-                  value={u.item.name}
-                />
-              </Box>
-            </TableCell>
+          {forAudit && (
             <TableCell>
               <NumberInput
                 min={0}
-                readOnly={readOnly}
-                value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
-                onChange={(v) => {
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
-                    if (u.qtyProvided < v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                    u.qtyDisplayed = v;
-                    u.qtyApproved = v;
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                    if (v == u.qtyProvided) {
-                      u.qtyApproved = u.qtyProvided;
-                      u.qtyDisplayed = u.qtyProvided;
-                    } else {
-                      u.qtyDisplayed = v;
-                      u.qtyApproved = 0;
-                    }
+                readOnly={isAudited || !forAudit}
+                value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                displayZero
+                onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
+              />
+            </TableCell>
+          )}
+        </tr>
+      ))),
+      (i, idx) => (i.items.map((u, udx) => (
+        <tr>
+          <TableCell>
+            <TextInput
+              readOnly={true}
+              value={u.item.code}
+            />
+          </TableCell>
+          <TableCell>
+            <Box minWidth={400}>
+              <TextInput
+                readOnly={!!forReview || readOnly || true}
+                value={u.item.name}
+              />
+            </Box>
+          </TableCell>
+          <TableCell>
+            <NumberInput
+              min={0}
+              readOnly={isReadOnly}
+              value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+              onChange={(v) => {
+                if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                  if (u.qtyProvided < v) {
+                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                      totalApproved: u.qtyProvided,
+                    }));
                   }
-                  this._onChangeSubItem(idx, udx, "servicesQty", v);
+                  u.qtyDisplayed = v;
+                  u.qtyApproved = v;
+                } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                  if (v == u.qtyProvided) {
+                    u.qtyApproved = u.qtyProvided;
+                    u.qtyDisplayed = u.qtyProvided;
+                  } else {
+                    u.qtyDisplayed = v;
+                    u.qtyApproved = 0;
+                  }
                 }
-                }
-              />
-            </TableCell>
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+              }
+              }
+            />
+          </TableCell>
+          {forAudit && (
             <TableCell>
-              <AmountInput
-                readOnly={true}
-                value={u.priceAsked}
+              <NumberInput
+                min={0}
+                readOnly={isAudited || !forAudit}
+                value={u.qtyAudited ?? u.qtyAdjusted ?? "0"}
+                displayZero
+                onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
               />
             </TableCell>
-          </tr>
-        )
-      }
+          )}
+          <TableCell>
+            <AmountInput
+              readOnly={true}
+              value={u.priceAsked}
+            />
+          </TableCell>
+        </tr>
+      )
       ))
     ]
 
@@ -727,7 +749,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push((i, idx) => (
         <NumberInput
           min={0}
-          readOnly={!forReview && readOnly}
+          readOnly={!forReview && isReadOnly}
           value={i.qtyApproved}
           max={parseInt(i.qtyProvided)}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}

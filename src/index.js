@@ -22,7 +22,6 @@ import FeedbackSexPicker from "./pickers/FeedbackSexPicker"
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
-import messages_fr from "./translations/fr.json";
 import reducer from "./reducer";
 import { decodeId } from "@openimis/fe-core";
 import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
@@ -41,7 +40,7 @@ const ROUTE_CLAIM_REVIEW = "claim/reviews/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
 
 const DEFAULT_CONFIG = {
-  "translations": [{ key: "en", messages: messages_en }, { key: "fr", messages: messages_fr }],
+  "translations": [{ key: "en", messages: messages_en }],
   "reducers": [{ key: "claim", reducer }],
   "reports": [
     {
@@ -146,6 +145,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.route.feedback", ref: ROUTE_CLAIM_FEEDBACK },
     { key: "claim.route.review", ref: ROUTE_CLAIM_REVIEW },
     { key: "claim.ClaimAdminPicker", ref: ClaimAdminPicker },
+    { key: "claim.ClaimSearcher", ref: ClaimSearcher },
     { key: "claim.ClaimProgramPicker", ref: ClaimProgramPicker},
     {
       key: "claim.ClaimAdminPicker.projection",
