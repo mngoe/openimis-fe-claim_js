@@ -183,7 +183,8 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimMasterPanelExt", ref: ClaimMasterPanelExt },
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
     { key: "claim.RejectionCodePicker", ref: RejectionCodePicker },
-    { key: "claim.RejectionReasonDialog", ref: RejectionReasonDialog}
+    { key: "claim.RejectionReasonDialog", ref: RejectionReasonDialog},
+    { key: "claim.ClaimSearcher", ref: ClaimSearcher },
   ],
   "core.Router": [
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },

@@ -107,7 +107,16 @@ class ClaimForm extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.fetchedClaim !== this.props.fetchedClaim && !!this.props.fetchedClaim) {
       var claim = this.props.claim;
-      claim.jsonExt = !!claim.jsonExt && typeof claim.jsonExt === 'string' ? JSON.parse(claim.jsonExt) : (claim.jsonExt || {});
+      if (!!claim.jsonExt && typeof claim.jsonExt === 'string') {
+        try {
+          claim.jsonExt = JSON.parse(claim.jsonExt);
+        } catch (e) {
+          console.error("[ERROR]: Invalid jsonExt received for claim", claim.uuid, e);
+          claim.jsonExt = {};
+        }
+      } else {
+        claim.jsonExt = claim.jsonExt || {};
+      }
       this.setState(
         { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
         this.props.claimHealthFacilitySet(this.props.claim.healthFacility),

@@ -317,22 +317,22 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const {
-      intl,
-      classes,
-      edited,
-      type,
-      picker,
+    const { 
+      intl, 
+      classes, 
+      edited, 
+      type, 
+      picker, 
       forReview,
-      fetchingPricelist,
-      readOnly = false,
+      fetchingPricelist, 
+      readOnly = false, 
       resetServices,
       isRestored,
       isDuplicate,
       forAudit = false,
       mission_status,
-    } = this.props; if (!edited) return null;
-    // En mode audit, tous les champs sauf qtyAudited sont en lecture seule
+    } = this.props;
+    if (!edited) return null;
     const isReadOnly = readOnly || forAudit;
     const isAudited = !!edited.audited || mission_status === CLAIM_MISSION_STATUS_CLOSED;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
@@ -639,6 +639,16 @@ class ClaimChildPanel extends Component {
               }
             />
           </TableCell>
+          {forAudit && (
+            <TableCell>
+              <NumberInput
+                readOnly={isAudited || !forAudit}
+                value={u.qtyAudited ?? u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                displayZero
+                onChange={(v) => { u.qtyAudited = v; this._onChangeSubItem(idx, udx, "qtyAudited", v); }}
+              />
+            </TableCell>
+          )}
           <TableCell>
             <AmountInput
               readOnly={true}

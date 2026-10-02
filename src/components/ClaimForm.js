@@ -49,7 +49,7 @@ import {
   AUDIT_STATUS_REJECTED,
   AUDIT_STATUS_ADOPTED,
   CLAIM_MISSION_STATUS_CLOSED,
-  SERVICE_TYPE_PP_S
+  SERVICE_TYPE_PP_S,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -303,7 +303,7 @@ class ClaimForm extends Component {
     return true;
   };
 
-  canSave = (forFeedback,forReview) => {
+  canSave = (forFeedback, forReview) => {
     const {claim} = this.state;
 
     // En mode audit, on ne vérifie que les champs d'audit
@@ -320,7 +320,6 @@ class ClaimForm extends Component {
       if (requiresAuditExplanation && !claim.auditExplanation) return false;
       return true;
     }
-
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -336,18 +335,18 @@ class ClaimForm extends Component {
     if (!this.state.claim.dateFrom) return false;
     if (!this.state.claim.dateTo) return false;
     if (!this.state.claim.program) return false;
-    if(this.state.claim.program?.code == "PAL"){
+    if (this.state.claim.program?.code == "PAL") {
       if (!this.state.claim.testNumber) return false;
       if (!this.state.claim.tdr) return false;
     }
-    if(!this.state.claim.uuid){
-      if(!this.state.claim.prefix) return false;
+    if (!this.state.claim.uuid) {
+      if (!this.state.claim.prefix) return false;
     }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if(!this.state.claim_uuid){
-      if (!this.state.claim.code ) return false;
+    if (!this.state.claim_uuid) {
+      if (!this.state.claim.code) return false;
     }
 
     if (this.state.claim.services !== undefined) {
@@ -455,9 +454,9 @@ class ClaimForm extends Component {
   };
 
   NAME_PROGRAM = {
-    Chèque_Sante : "Chèque Santé",
-    Cheque_Sante : "Cheque Santé",
-    Vih : "VIH",
+    Chèque_Sante: "Chèque Santé",
+    Cheque_Sante: "Cheque Santé",
+    Vih: "VIH",
   }
 
   reload = () => {
@@ -531,6 +530,12 @@ class ClaimForm extends Component {
     });
   }
 
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
+
   restore = () => {
     const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
     this.props.history.replace(`/${routeRef}`);
@@ -581,7 +586,8 @@ class ClaimForm extends Component {
     let readOnly = 
       lockNew ||
       isSaved ||
-      (!forReview && !forFeedback && isMissionClosed && claim.status !== 2) ||
+      (!forReview && !forFeedback && !forAudit && claim.status !== 2) ||
+      isMissionClosed ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
@@ -679,7 +685,7 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !forAudit && !!add && !this.state.newClaim ? this._add : null,
-      save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly && !forAudit ? forReview ? this._saveReview : this._save : null,
+      save: !forAudit && !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
       fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
@@ -715,7 +721,7 @@ class ClaimForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram ==  this.NAME_PROGRAM.Chèque_Sante ) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram == this.NAME_PROGRAM.Chèque_Sante) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}
               resetServices={this.state.resetServices}

@@ -17,6 +17,7 @@ import {
   TextInput,
   AmountInput,
   Contributions,
+  ProgressOrError,
 } from "@openimis/fe-core";
 import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
@@ -178,10 +179,10 @@ class Head extends Component {
           field={
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
-              pubRef="location.RegionPicker"
-              value={!!this._filterValue("region") ? this._filterValue("region") : claimRegion}
-              withNull={true}
-              onChange={this._onChangeRegion}
+                pubRef="location.RegionPicker"
+                value={!!this._filterValue("region") ? this._filterValue("region") : claimRegion}
+                withNull={true}
+                onChange={this._onChangeRegion}
               />
             </Grid>
           }
@@ -192,12 +193,12 @@ class Head extends Component {
           field={
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
-              pubRef="location.DistrictPicker"
-              value={!!this._filterValue("district") ? this._filterValue("district") : claimDistrict}
-              region={this._filterValue("region")}
-              withNull={true}
-              reset={this.state.reset}
-              onChange={this._onChangeDistrict}
+                pubRef="location.DistrictPicker"
+                value={!!this._filterValue("district") ? this._filterValue("district") : claimDistrict}
+                region={this._filterValue("region")}
+                withNull={true}
+                reset={this.state.reset}
+                onChange={this._onChangeDistrict}
               />
             </Grid>
           }
@@ -208,12 +209,12 @@ class Head extends Component {
           field={
             <Grid item xs={3} className={classes.item}>
               <PublishedComponent
-              pubRef="location.HealthFacilityPicker"
-              value={ !!this._filterValue("healthFacility") ? this._filterValue("healthFacility") : claimHealthFacility}
-              region={this._filterValue("region")}
-              district={this._filterValue("district")}
-              reset={this.state.reset}
-              onChange={this._onChangeHealthFacility}
+                pubRef="location.HealthFacilityPicker"
+                value={!!this._filterValue("healthFacility") ? this._filterValue("healthFacility") : claimHealthFacility}
+                region={this._filterValue("region")}
+                district={this._filterValue("district")}
+                reset={this.state.reset}
+                onChange={this._onChangeHealthFacility}
               />
             </Grid>
           }
@@ -225,7 +226,7 @@ class Head extends Component {
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
                 pubRef="claim.ClaimAdminPicker"
-                value={ !!this._filterValue("admin") ? this._filterValue("admin") : claimAdmin }
+                value={!!this._filterValue("admin") ? this._filterValue("admin") : claimAdmin}
                 withNull={true}
                 hfFilter={this._filterValue("healthFacility")}
                 reset={this.state.reset}
