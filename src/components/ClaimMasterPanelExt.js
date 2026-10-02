@@ -137,11 +137,7 @@ class ClaimMasterPanelExt extends Component {
           <Divider />
         </Grid>
         <Grid item xs={6} className={classes.item}>
-          <PublishedComponent
-            pubRef="policy.InsureePolicyEligibilitySummary"
-            insuree={!!claim ? claim.insuree : null}
-            targetDate={!!claim ? claim.dateFrom ?? claim.dateTo : null}
-          />
+          
         </Grid>
         <Grid item xs={6} className={classes.item}>
           <ProgressOrError progress={fetchingLastClaimAt} error={errorLastClaimAt} />

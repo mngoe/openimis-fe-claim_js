@@ -37,6 +37,8 @@ class ClaimChildPanel extends Component {
 
   constructor(props) {
     super(props);
+    this.fixedPricesAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtEnter", true);
+    this.fixedPricesAtReview = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtReview", true);
     this.explanationRequiredIfQuantityAboveThreshold = props.modulesManager.getConf(
       "fe-claim",
       "explanationRequiredIfQuantityAboveThreshold",
@@ -47,8 +49,6 @@ class ClaimChildPanel extends Component {
       "quantityExplanationThreshold",
       DEFAULT.QUANTITY_EXPLANATION_THRESHOLD,
     );
-    this.fixedPricesAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtEnter", false);
-    this.fixedPricesAtReview = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtReview", false);
     this.showJustificationAtEnter = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.showJustificationAtEnter",
@@ -64,7 +64,9 @@ class ClaimChildPanel extends Component {
 
   initData = () => {
     let data = [];
+    console.log(this.props.edited);
     if (!!this.props.edited[`${this.props.type}s`]) {
+
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
@@ -88,6 +90,20 @@ class ClaimChildPanel extends Component {
 
       this.props.onEditedChanged(edited);
     }else{
+      data.push({});
+    }
+    return data;
+  };
+
+  removeData = () => {
+    let data = [];
+    if (!!this.props.edited[`${this.props.type}s`]) {
+      data.push({});
+      let edited = { ...this.props.edited };
+      edited[`${this.props.type}s`] = data;
+
+      this.props.onEditedChanged(edited);
+    } else {
       data.push({});
     }
     return data;
