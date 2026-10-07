@@ -275,9 +275,13 @@ class ClaimMasterPanel extends FormPanel {
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
       totalAudited += edited.services.reduce((sum, r) => sum + auditedAmount(r), 0);
     }
-    edited.claimed = _.round(totalClaimed, 2);
-    edited.approved = _.round(totalApproved, 2);
-    edited.amountAudited = _.round(totalAudited, 2);
+    const hasClaimedAmount = edited.claimed !== null && edited.claimed !== undefined;
+    const hasApprovedAmount = edited.approved !== null && edited.approved !== undefined;
+    const hasAuditedAmount = edited.amountAudited !== null && edited.amountAudited !== undefined;
+
+    edited.claimed = hasClaimedAmount ? edited.claimed : _.round(totalClaimed, 2);
+    edited.approved = hasApprovedAmount ? edited.approved : _.round(totalApproved, 2);
+    edited.amountAudited = hasAuditedAmount ? edited.amountAudited : _.round(totalAudited, 2);
     // if (edited.code && this.claimPrefix) {
     //   edited.code = edited.code.replace(edited.insuree?.chfId, '');
     // }
