@@ -108,7 +108,9 @@ class ClaimSearcher extends Component {
       prms.push(`orderBy: ["dateClaimed", "?"]`);
       this.setState({ random });
     } else {
-      //prms.push(`orderBy: ["${state.orderBy}"]`);
+      if (!!state.orderBy) {
+        prms.push(`orderBy: ["${state.orderBy}"]`);
+      }
       this.setState({ random: null });
     }
     if (!forced.length && !random) {
@@ -281,7 +283,7 @@ class ClaimSearcher extends Component {
         />
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
-      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateTo),
+      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
       (c) => this.feedbackColFormatter(c),
       (c) => this.reviewColFormatter(c),
