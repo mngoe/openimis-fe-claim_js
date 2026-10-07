@@ -65,6 +65,7 @@ class ClaimMasterPanel extends FormPanel {
 
   constructor(props) {
     super(props);
+    this.claimDetailsBaselineByUuid = {};
     this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 6);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
@@ -104,6 +105,41 @@ class ClaimMasterPanel extends FormPanel {
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
   }
+
+  buildClaimDetailsFingerprint = (details = []) =>
+    details
+      .map((detail) =>
+        [
+          detail?.id,
+          detail?.status,
+          detail?.qtyProvided,
+          detail?.qtyDisplayed,
+          detail?.qtyApproved,
+          detail?.qtyAdjusted,
+          detail?.qtyAudited,
+          detail?.priceAsked,
+          detail?.priceApproved,
+          detail?.priceAdjusted,
+          detail?.priceAudited,
+        ].join("|"),
+      )
+      .join(";");
+
+  hasClaimDetailsChanged = (edited) => {
+    if (!edited?.uuid) return true;
+
+    const currentFingerprint = [
+      this.buildClaimDetailsFingerprint(edited?.items ?? []),
+      this.buildClaimDetailsFingerprint(edited?.services ?? []),
+    ].join("#");
+
+    if (!this.claimDetailsBaselineByUuid[edited.uuid]) {
+      this.claimDetailsBaselineByUuid[edited.uuid] = currentFingerprint;
+      return false;
+    }
+
+    return this.claimDetailsBaselineByUuid[edited.uuid] !== currentFingerprint;
+  };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this._componentDidUpdate(prevProps, prevState, snapshot)) return;
@@ -275,9 +311,14 @@ class ClaimMasterPanel extends FormPanel {
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
       totalAudited += edited.services.reduce((sum, r) => sum + auditedAmount(r), 0);
     }
-    edited.claimed = _.round(totalClaimed, 2);
-    edited.approved = _.round(totalApproved, 2);
-    edited.amountAudited = _.round(totalAudited, 2);
+    const hasClaimDetailsChanged = this.hasClaimDetailsChanged(edited);
+    const hasClaimedAmount = edited.claimed !== null && edited.claimed !== undefined;
+    const hasApprovedAmount = edited.approved !== null && edited.approved !== undefined;
+    const hasAuditedAmount = edited.amountAudited !== null && edited.amountAudited !== undefined;
+
+    edited.claimed = hasClaimedAmount && !hasClaimDetailsChanged ? edited.claimed : _.round(totalClaimed, 2);
+    edited.approved = hasApprovedAmount && !hasClaimDetailsChanged ? edited.approved : _.round(totalApproved, 2);
+    edited.amountAudited = hasAuditedAmount && !hasClaimDetailsChanged ? edited.amountAudited : _.round(totalAudited, 2);
     // if (edited.code && this.claimPrefix) {
     //   edited.code = edited.code.replace(edited.insuree?.chfId, '');
     // }
