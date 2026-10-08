@@ -26,7 +26,7 @@ class EditPage extends Component {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
-  save = (claim) => {
+  save = async (claim) => {
 
     this.claimPrefix = this.props.modulesManager.getConf(
       "fe-claim",
@@ -58,14 +58,16 @@ class EditPage extends Component {
     if (!rights.includes(RIGHT_LOAD)) return null;
 
     const isHealthFacilityPage = () => {
-      return path.split("/").includes('healthFacilities');
-    }
+      return path.split("/").includes("healthFacilities");
+    };
+
+    const handleBack = () => historyPush(modulesManager, history, "claim.route.healthFacilities");
 
     return (
       <div className={classes.page}>
         <ClaimForm
           claim_uuid={claim_uuid}
-          back={(e) => historyPush(modulesManager, history, "claim.route.healthFacilities")}
+          back={handleBack}
           add={rights.includes(RIGHT_ADD) ? this.add : null}
           save={rights.includes(RIGHT_LOAD) ? this.save : null}
           isHealthFacilityPage={isHealthFacilityPage()}

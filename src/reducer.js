@@ -52,6 +52,10 @@ function reducer(
       },
       error: null,
     },
+    pregnancyAge: null,
+    fetchingPregnancyAge: false,
+    fetchedPregnancyAge: false,
+    errorPregnancyAge: null,
   },
   action,
 ) {
@@ -301,7 +305,7 @@ function reducer(
           ...state.validationFields,
           claimCode: {
             isValidating: false,
-            isValid: action.payload?.data.isValid,
+            isValid: action.payload?.data.validateClaimCode,
             validationError: formatGraphQLError(action.payload),
           },
         },
@@ -342,6 +346,29 @@ function reducer(
           },
         },
       };
+    case "CLAIM_POLICY_PREGNANCY_AGE_REQ":
+      return {
+        ...state,
+        fetchingPregnancyAge: true,
+        fetchedPregnancyAge: false,
+        pregnancyAge: null,
+        errorPregnancyAge: null
+      }
+    case "CLAIM_POLICY_PREGNANCY_AGE_RESP":
+      return {
+        ...state,
+        fetchingPregnancyAge: false,
+        fetchedPregnancyAge: true,
+        pregnancyAge: action.payload.data.pregnancyAge.pregnancyAge,
+        errorPregnancyAge: formatGraphQLError(action.payload)
+      }
+    case "CLAIM_POLICY_PREGNANCY_AGE_ERR":
+      return {
+        ...state,
+        fetchingPregnancyAge: false,
+        fetchedPregnancyAge: false,
+        errorPregnancyAge: formatGraphQLError(action.payload)
+      }
     case "CLAIM_MUTATION_REQ":
       return dispatchMutationReq(state, action);
     case "CLAIM_MUTATION_ERR":
@@ -394,6 +421,8 @@ function reducer(
         ...state,
         generating: false,
       };
+    case "CLAIM_REJECT_CLAIMS_RESP":
+      return dispatchMutationResp(state, "rejectClaims", action);
     default:
       return state;
   }

@@ -51,11 +51,6 @@ export function claimCodeValidationCheck(mm, variables) {
   );
 }
 
-export function validateClaimCode(code) {
-  const payload = formatQuery("claims", [`code: "${code}"`], ["totalCount"]);
-  return graphql(payload, "CLAIM_CLAIM_CODE_COUNT");
-}
-
 export function claimCodeValidationClear() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_CLEAR` });
@@ -66,6 +61,11 @@ export function claimCodeSetValid() {
   return (dispatch) => {
     dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_SET_VALID` });
   };
+}
+
+export function validateClaimCode(code) {
+  const payload = formatQuery("validateClaimCode", [`claimCode: "${code}"`], null);
+  return graphql(payload, "CLAIM_CODE_FIELDS_VALIDATION");
 }
 
 export function clearClaim() {
@@ -151,11 +151,14 @@ export function downloadAttachment(attach) {
   };
 }
 
+
+
 export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
   var projections = [
     "uuid",
     "code",
     "jsonExt",
+    "dateTo",
     "dateClaimed",
     "dateProcessed",
     "feedbackStatus",
@@ -163,7 +166,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "claimed",
     "approved",
     "status",
-    "restore {id}",
+    "restoreId",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
   ];
@@ -183,8 +186,8 @@ export function formatDetail(type, detail) {
         subItems.push(d);
       })
     };
-    if (detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined) {
-      detail.claimlinkedItem.forEach(d => {
+    if (detail.items !== null && detail.items != undefined) {
+      detail.items.forEach(d => {
         subItems.push(d);
       })
     };
@@ -193,8 +196,8 @@ export function formatDetail(type, detail) {
         subServices.push(d);
       })
     };
-    if (detail.claimlinkedService !== null && detail.claimlinkedService != undefined) {
-      detail.claimlinkedService.forEach(d => {
+    if (detail.services !== null && detail.services != undefined) {
+      detail.services.forEach(d => {
         subServices.push(d);
       })
     }
@@ -224,9 +227,10 @@ export function formatDetailSubService(type, detail) {
     ${detail?.item?.code !== undefined && detail?.item?.code !== null ? `subItemCode: "${detail?.item?.code}"` : ""}
     ${detail?.service?.code !== undefined && detail?.service?.code !== null ? `subServiceCode: "${detail?.service?.code}"` : ""}
     ${detail.qtyAsked !== null ? `qtyAsked: "${_.round(detail.qtyAsked, 2).toFixed(2) && _.round(detail.qtyDisplayed, 2).toFixed(2)}"` : ""}
-    ${detail.qtyAdjusted !== null || detail.qtyAdjusted !== NaN ? `qtyAdjusted: "${_.round(detail.qtyAdjusted, 2).toFixed(2)}"` : ""}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
+    ${detail.qtyAdjusted !== null ? `qtyAdjusted: "${_.round(detail.qtyAdjusted, 2).toFixed(2)}"` : ""}
+    ${detail.qtyAudited !== null && detail.qtyAudited !== undefined ? `qtyAudited: "${_.round(detail.qtyAudited, 2).toFixed(2)}"` : ""}
   },`;
 }
 
@@ -253,7 +257,10 @@ export function formatAttachments(mm, attachments) {
   ]`;
 }
 
-export function formatClaimGQL(modulesManager, claim) {
+export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
+  // to simplify GQL and avoid additional coding, claim code is sent, even if shouldAutogenerate is set to true
+  const claimCodePlaceholder="auto"
+  const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -271,21 +278,29 @@ export function formatClaimGQL(modulesManager, claim) {
     ${!!claim.careType ? `careType: "${claim.careType}"` : ""}
     reviewStatus: ${modulesManager.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
+    ${claim.referHF ? `${handleReferHFType(modulesManager, claim)}${decodeId(claim.referHF.id)}` : ""}
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     program: ${decodeId(claim.program.id)}
     visitType: "${claim.visitType}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
     ${!!claim.explanation ? `explanation: "${formatGQLString(claim.explanation)}"` : ""}
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
-    ${!!claim?.restore?.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
     ${!!claim.testNumber ? `testNumber: "${formatGQLString(claim.testNumber)}"` : ""}
     ${!!claim.tdr ? `tdr: ${claim.tdr == "T" ? true : false}` : ""}
+    ${!!claim?.restore?.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
     ${!!claim.attachments && !!claim.attachments.length
-      ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
+      ? `attachments: ${formatAttachments(mm, claim.attachments)}`
       : ""
     }
+    ${!!claim.pregnancyAge ? `pregnancyAge: ${claim.pregnancyAge}` : ""}
+    source: "WEB"
+    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `auditStatus: "${claim.auditStatus}"` : ""}
+    ${claim.rejectionMotive !== null && claim.rejectionMotive !== undefined ? `rejectionMotive: ${claim.rejectionMotive}` : ""}
+    ${claim.auditExplanation !== null && claim.auditExplanation !== undefined ? `auditExplanation: "${formatGQLString(claim.auditExplanation)}"`: ""}
+    ${claim.amountAudited !== null && claim.amountAudited !== undefined ? `amountAudited: "${claim.amountAudited}"`: ""}
+    ${claim.auditStatus !== null && claim.auditStatus !== undefined ? `audited: true` : ""}
   `;
 }
 
@@ -332,8 +347,11 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "explanation",
     "adjustment",
     "attachmentsCount",
+    "careType",
     "restore {uuid, code}",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
+    "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
+    "referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "visitType" + mm.getProjection("medical.VisitTypePicker.projection"),
     "admin" + mm.getProjection("claim.ClaimAdminPicker.projection"),
@@ -345,7 +363,15 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "program {id code idProgram nameProgram validityDateFrom}",
     "testNumber",
     "tdr",
+    "pregnancyAge",
     "jsonExt",
+    "source",
+    "auditStatus",
+    "rejectionMotive",
+    "auditExplanation",
+    "amountAudited",
+    "claimCategory",
+    "audited"
   ];
   if (!!forFeedback) {
     projections.push(
@@ -356,8 +382,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
       "services{" +
 
       "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
-      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided  qtyAdjusted }" +
-      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted }" +
+      " items{ item { id code name } qtyDisplayed priceAsked qtyProvided qtyAdjusted qtyAudited }" +
+      " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted qtyAudited }" +
       "}",
       "items{" +
       "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
@@ -549,16 +575,16 @@ export function deliverFeedback(claim, clientMutationLabel) {
       : ""
     }
       ${feedback.asessment !== undefined && feedback.asessment !== null ? `asessment: ${feedback.asessment}` : ""}
-      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : ""}
+      ${!!feedback.sexe ? `sexe: "${feedback.sexe}"` : "" }
       ${!!feedback.age ? `age: ${feedback.age}` : ""}
       ${feedback.policyNational !== undefined && feedback.policyNational !== null
-      ? `policyNational: ${feedback.policyNational}`
-      : ""
-    }
+        ? `policyNational: ${feedback.policyNational}`
+        : ""
+      }
       ${feedback.pregnant !== undefined && feedback.pregnant !== null
-      ? `pregnant: ${feedback.pregnant}`
-      : ""
-    }
+        ? `pregnant: ${feedback.pregnant}`
+        : ""
+      }
       ${!!feedback.meansInformation ? `meansInformation: "${feedback.meansInformation}"` : ""}
     }
   `;
@@ -624,14 +650,14 @@ export function formatReviewDetail(type, detail) {
   let subServices = [];
   let subItems = [];
 
-  if (detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined) {
-    detail.claimlinkedItem.forEach(d => {
+  if (detail.items !== null && detail.items != undefined) {
+    detail.items.forEach(d => {
       subItems.push(d);
     })
   }
 
-  if (detail.claimlinkedService !== null && detail.claimlinkedService != undefined) {
-    detail.claimlinkedService.forEach(d => {
+  if (detail.services !== null && detail.services != undefined) {
+    detail.services.forEach(d => {
       subServices.push(d);
     })
   }
@@ -642,7 +668,7 @@ export function formatReviewDetail(type, detail) {
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
-    ${subServices !== null ? `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${subServices !== null ? `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
     ${subItems !== null ? `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
@@ -733,4 +759,30 @@ export function generate(uuid) {
       .then((blob) => openBlob(blob, `${_uuid.uuid()}.pdf`, "pdf"))
       .then((e) => dispatch({ type: "CLAIM_PRINT_DONE" }));
   };
+}
+
+export function reject(claims, rejectReason, clientMutationLabel, clientMutationDetails = null) {
+  let variables = `uuids: ["${claims.map((c) => c.uuid).join('","')}"]  explanation: "${formatGQLString(rejectReason)}"`;
+  let mutation = formatMutation("rejectClaims", variables, clientMutationLabel, clientMutationDetails);
+  var requestedDateTime = new Date();
+  claims.forEach((c) => (c.clientMutationId = mutation.clientMutationId));
+  return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_REJECT_CLAIMS_RESP", "CLAIM_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
+    requestedDateTime,
+  });
+}
+
+export function fetchPregnancyAge(claimDateTo, familyId, product){
+  var dateTo = new Date(claimDateTo);
+  var formattedDate = dateTo.toISOString();
+  const payload = formatQuery(
+    "pregnancyAge",
+    [`claimDateTo: "${formattedDate}"`, `familyId: ${decodeId(familyId)}`, `product: ${decodeId(product)}`],
+    [
+      "pregnancyAge"
+    ]
+  );
+  return graphql(payload, "CLAIM_POLICY_PREGNANCY_AGE");
 }

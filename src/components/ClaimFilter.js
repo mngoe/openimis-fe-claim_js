@@ -16,6 +16,7 @@ import {
   TextInput,
   AmountInput,
   Contributions,
+  ProgressOrError,
 } from "@openimis/fe-core";
 import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
@@ -37,17 +38,6 @@ class Head extends Component {
   state = {
     reset: 0,
   };
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    document.addEventListener('keydown', this.props.handleEnter)
-    if (
-      prevProps.filters["showHistory"] !== this.props.filters["showHistory"] &&
-      !!this.props.filters["showHistory"] &&
-      this.state.showHistory !== this.props.filters["showHistory"]["value"]
-    ) {
-      this.setState((sate, props) => ({ showHistory: props.filters["showHistory"]["value"] }));
-    }
-  }
 
   _filterValue = (k) => {
     const { filters } = this.props;
@@ -170,7 +160,16 @@ class Head extends Component {
   };
 
   render() {
-    const { classes, filters, onChangeFilters, userHealthFacilityId } = this.props;
+    const { 
+      classes, 
+      filters, 
+      onChangeFilters, 
+      userHealthFacilityId,
+      claimAdmin,
+      claimHealthFacility,
+      claimDistrict,
+      claimRegion
+    } = this.props;
     return (
       <Grid container className={classes.form}>
         <ControlledField
@@ -180,7 +179,7 @@ class Head extends Component {
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
                 pubRef="location.RegionPicker"
-                value={this._filterValue("region")}
+                value={!!this._filterValue("region") ? this._filterValue("region") : claimRegion}
                 withNull={true}
                 onChange={this._onChangeRegion}
               />
@@ -194,7 +193,7 @@ class Head extends Component {
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
                 pubRef="location.DistrictPicker"
-                value={this._filterValue("district")}
+                value={!!this._filterValue("district") ? this._filterValue("district") : claimDistrict}
                 region={this._filterValue("region")}
                 withNull={true}
                 reset={this.state.reset}
@@ -210,7 +209,7 @@ class Head extends Component {
             <Grid item xs={3} className={classes.item}>
               <PublishedComponent
                 pubRef="location.HealthFacilityPicker"
-                value={this._filterValue("healthFacility")}
+                value={!!this._filterValue("healthFacility") ? this._filterValue("healthFacility") : claimHealthFacility}
                 region={this._filterValue("region")}
                 district={this._filterValue("district")}
                 reset={this.state.reset}
@@ -226,7 +225,7 @@ class Head extends Component {
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
                 pubRef="claim.ClaimAdminPicker"
-                value={this._filterValue("admin")}
+                value={!!this._filterValue("admin") ? this._filterValue("admin") : claimAdmin}
                 withNull={true}
                 hfFilter={this._filterValue("healthFacility")}
                 reset={this.state.reset}
@@ -267,6 +266,11 @@ const mapStateToProps = (state) => ({
   claimFilter: state.claim.claimFilter,
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
   itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
+  user: state.core.user ? state.core.user.i_user : null,
+  claimAdmin: state.claim.claimAdmin,
+  claimHealthFacility: state.claim.claimHealthFacility,
+  claimDistrict: state.claim.claimDistrict,
+  claimRegion: state.claim.claimRegion
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -293,9 +297,11 @@ class Details extends Component {
     const { filters } = this.props;
     return !!filters && !!filters[k] ? filters[k].value : "";
   };
+ 
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, } = this.props;
+    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
+
     return (
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
@@ -314,6 +320,25 @@ class Details extends Component {
             }
           />
         </Grid>
+        { !!filters["claimStatus"] && filters["claimStatus"]["value"] == 1 && (
+          <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.RejectionCodePicker"
+            name="rejectionCode"
+            value={(filters["rejectionCode"] && filters["rejectionCode"]["value"]) || null}
+            onChange={(value) =>
+              onChangeFilters([
+                {
+                  id: "rejectionCode",
+                  value: value,
+                  filter: !!value ? `rejectionCode: ${value}` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
+        )
+        }
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.FeedbackStatusPicker"
@@ -595,28 +620,45 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={3} className={classes.item}>
+          <PublishedComponent
+            pubRef="program.ProgramPicker"
+            name="program"
+            label={formatMessage(intl, "claim", "programPicker.label")}
+            placeholder={formatMessage(intl, "claim", "programPicker.placeholder")}
+            value={(filters["program_Code"] && filters["program_Code"]["value"]) || null}
+            onChange={(value) =>
+              onChangeFilters([
+                {
+                  id: "program_Code",
+                  value: value,
+                  filter: !!value ? `program_Code: "${value.code}"` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.CareTypePicker"
             name="careType"
-            value={filters["careType"] && filters["careType"]["value"] || null}
-            onChange={(value) =>{
+            value={(filters["careType"] && filters["careType"]["value"]) || null}
+            onChange={(value) => {
               onChangeFilters([
                 {
                   id: "careType",
                   value: value,
                   filter: !!value ? `careType: "${value}"` : null,
                 },
-              ])
-            }
-            }
+              ]);
+            }}
           />
         </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
-            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"] || null}
+            value={(filters["attachmentStatus"] && filters["attachmentStatus"]["value"]) || null}
             onChange={(value) =>
               onChangeFilters([
                 {
@@ -637,7 +679,7 @@ class Details extends Component {
                   control={
                     <Checkbox
                       color="primary"
-                      checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
+                      checked={(filters["showRestored"] && filters["showRestored"]["value"]) || false}
                       onChange={(event) =>
                         onChangeFilters([
                           {
@@ -655,8 +697,6 @@ class Details extends Component {
             }
           />
         </Grid>
-
-
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}

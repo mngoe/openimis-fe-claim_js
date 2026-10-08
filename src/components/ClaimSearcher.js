@@ -2,9 +2,9 @@ import React, { Component, Fragment } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
-import _ from "lodash";
+import _, { filter, initial } from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
+import { IconButton, Typography, Tooltip, Badge, Checkbox } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
 import { Searcher } from "@openimis/fe-core";
@@ -26,8 +26,10 @@ const styles = (theme) => ({});
 
 class ClaimSearcher extends Component {
   state = {
+    searchInitiated: false,
     random: null,
     attachmentsClaim: null,
+    initialFitlers: this.props.defaultFilters,
   };
 
   constructor(props) {
@@ -43,13 +45,47 @@ class ClaimSearcher extends Component {
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
+    this.isDefaultFetchClaimActivated = this.props.modulesManager.getConf(
+      "fe-claim",
+      "isDefaultFetchClaimActivated",
+      true
+    );
   }
+
+  canFetchClaimDetails = () => {
+    if (this.state.searchInitiated === false && !!this.state.initialFitlers) {
+      this.onFiltersApplied(this.state.initialFitlers);
+    }
+  };
+
+  componentDidMount() {
+    this.scheduleCanFetchClaimDetails();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.searchInitiated !== this.state.searchInitiated ||
+      prevState.initialFitlers !== this.state.initialFitlers
+    ) {
+      this.scheduleCanFetchClaimDetails();
+    }
+  }
+
+  scheduleCanFetchClaimDetails = () => {
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+    }
+
+    this.debounceTimeout = setTimeout(() => {
+      this.canFetchClaimDetails();
+    }, 100);
+  };
 
   canSelectAll = (selection) =>
     this.props.claims.map((s) => s.id).filter((s) => !selection.map((s) => s.id).includes(s)).length;
 
   fetch = (prms) => {
-    this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
+    this.props.forAudit && !!this.props.fetchClaimsSample ? this.props.fetchClaimsSample(prms) : this.props.fetchClaimSummaries(this.props.modulesManager, prms, !!this.claimAttachments);
   };
 
   rowIdentifier = (r) => r.uuid;
@@ -103,60 +139,60 @@ class ClaimSearcher extends Component {
   preHeaders = (selection) => {
     var result = selection.length
       ? [
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          <Typography noWrap={true}>
-            <FormattedMessage
-              module="claim"
-              id="claimSummaries.selection.claimed"
-              values={{
-                claimed: (
-                  <b>
-                    {formatAmount(
-                      this.props.intl,
-                      selection.reduce((acc, v) => {
-                        if (v.claimed) {
-                          return acc + parseFloat(v.claimed);
-                        } else {
-                          return acc;
-                        }
-                      }, 0),
-                    )}
-                  </b>
-                ),
-              }}
-            />
-          </Typography>,
-          <Typography noWrap={true}>
-            <FormattedMessage
-              module="claim"
-              id="claimSummaries.selection.approved"
-              values={{
-                approved: (
-                  <b>
-                    {formatAmount(
-                      this.props.intl,
-                      selection.reduce((acc, v) => {
-                        if (v.approved) {
-                          return acc + parseFloat(v.approved);
-                        } else {
-                          return acc;
-                        }
-                      }, 0),
-                    )}
-                  </b>
-                ),
-              }}
-            />
-          </Typography>,
-          "",
-          "",
-        ]
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        <Typography noWrap={true}>
+          <FormattedMessage
+            module="claim"
+            id="claimSummaries.selection.claimed"
+            values={{
+              claimed: (
+                <b>
+                  {formatAmount(
+                    this.props.intl,
+                    selection.reduce((acc, v) => {
+                      if (v.claimed) {
+                        return acc + parseFloat(v.claimed);
+                      } else {
+                        return acc;
+                      }
+                    }, 0),
+                  )}
+                </b>
+              ),
+            }}
+          />
+        </Typography>,
+        <Typography noWrap={true}>
+          <FormattedMessage
+            module="claim"
+            id="claimSummaries.selection.approved"
+            values={{
+              approved: (
+                <b>
+                  {formatAmount(
+                    this.props.intl,
+                    selection.reduce((acc, v) => {
+                      if (v.approved) {
+                        return acc + parseFloat(v.approved);
+                      } else {
+                        return acc;
+                      }
+                    }, 0),
+                  )}
+                </b>
+              ),
+            }}
+          />
+        </Typography>,
+        "",
+        "",
+      ]
       : ["\u200b", "", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
     if (this.claimAttachments) {
       result.push("");
@@ -168,7 +204,7 @@ class ClaimSearcher extends Component {
   };
 
   headers = () => {
-    var result = [
+    const result = [
       "claimSummaries.code",
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
@@ -177,9 +213,16 @@ class ClaimSearcher extends Component {
       "claimSummaries.feedbackStatus",
       "claimSummaries.reviewStatus",
       "claimSummaries.claimed",
-      "claimSummaries.approved",
-      "claimSummaries.claimStatus",
+      "claimSummaries.approved"
     ];
+    if (this.props.forAudit) {
+      result.push("claimSummaries.amountAudited");
+    }
+    result.push("claimSummaries.claimStatus");
+    if (this.props.forAudit) {
+      result.push("claimSummaries.category");
+      result.push("claimSummaries.audited");
+    }
     if (this.claimAttachments) {
       result.push("claimSummaries.claimAttachments");
     }
@@ -238,14 +281,21 @@ class ClaimSearcher extends Component {
         />
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
-      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
+      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateTo),
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
       (c) => this.feedbackColFormatter(c),
       (c) => this.reviewColFormatter(c),
       (c) => formatAmount(this.props.intl, c.claimed),
-      (c) => formatAmount(this.props.intl, c.approved),
-      (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
+      (c) => formatAmount(this.props.intl, c.approved)
     ];
+    if (this.props.forAudit) {
+      result.push((c) => formatAmount(this.props.intl, c.amountAudited));
+    }
+    result.push((c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`));
+    if (this.props.forAudit) {
+      result.push((c) => c.claimCategory);
+      result.push((c) => <Checkbox color="primary" checked={c.audited} readOnly />);
+    }
     if (this.claimAttachments) {
       result.push(
         (c) =>
@@ -283,14 +333,20 @@ class ClaimSearcher extends Component {
     selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
     !selection.includes(claim);
 
-  isRestoredClaim = (claim) => claim?.restore;
+  isRestoredClaim = (claim) => claim?.restoreId;
 
   showRestored = (showRestored) => {
     this.setState({ showRestored });
   };
 
-  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
+  onFiltersApplied = (filters) => {
+    this.setState({
+      searchInitiated: true,
+      filters,
+    });
+  };
 
+  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
   render() {
     const {
       intl,
@@ -306,9 +362,15 @@ class ClaimSearcher extends Component {
       cacheFiltersKey,
       onDoubleClick,
       actionsContributionKey,
+      filterPane,
+      canFetch = false,
+      onChangeFilters,
+      forAudit = false,
+      fetchClaimsSample,
     } = this.props;
 
     let count = !!this.state.random && this.state.random.value;
+    const { searchInitiated } = this.state;
     if (!count) {
       count = (claimsPageInfo?.totalCount || 0).toLocaleString();
     }
@@ -326,7 +388,7 @@ class ClaimSearcher extends Component {
           canSelectAll={this.canSelectAll}
           defaultFilters={defaultFilters}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={ClaimFilter}
+          FilterPane={filterPane || ClaimFilter}
           FilterExt={FilterExt}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={claims}
@@ -338,7 +400,11 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={this.fetch}
+          fetch={
+            this.isDefaultFetchClaimActivated == false && searchInitiated ? this.fetch :
+              this.isDefaultFetchClaimActivated == true ? this.fetch :
+                canFetch ? this.fetch : () => { }
+          }
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
@@ -356,23 +422,37 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
-          canFetch = {false}
+          canFetch={false}
           showOrdinalNumber={this.showOrdinalNumber}
+          onChangeFilters={onChangeFilters || this.onFiltersApplied}
         />
       </Fragment>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  claims: state.claim.claims,
-  claimsPageInfo: state.claim.claimsPageInfo,
-  fetchingClaims: state.claim.fetchingClaims,
-  fetchedClaims: state.claim.fetchedClaims,
-  errorClaims: state.claim.errorClaims,
-  servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
-  itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
-});
+const mapStateToProps = (state, ownProps) => {
+  if (ownProps.forAudit) {
+    return {
+      claims: ownProps.claims || [],
+      claimsPageInfo: ownProps.claimsPageInfo || { totalCount: 0 },
+      fetchingClaims: ownProps.fetchingClaims || false,
+      fetchedClaims: ownProps.fetchedClaims || false,
+      errorClaims: ownProps.errorClaims || null,
+      servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
+      itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
+    };
+  }
+  return {
+    claims: state.claim.claims,
+    claimsPageInfo: state.claim.claimsPageInfo,
+    fetchingClaims: state.claim.fetchingClaims,
+    fetchedClaims: state.claim.fetchedClaims,
+    errorClaims: state.claim.errorClaims,
+    servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
+    itemsPricelists: !!state.medical_pricelist ? state.medical_pricelist.itemsPricelists : {},
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ fetchClaimSummaries }, dispatch);

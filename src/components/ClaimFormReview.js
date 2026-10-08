@@ -107,7 +107,16 @@ class ClaimForm extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.fetchedClaim !== this.props.fetchedClaim && !!this.props.fetchedClaim) {
       var claim = this.props.claim;
-      claim.jsonExt = !!claim.jsonExt ? JSON.parse(claim.jsonExt) : {};
+      if (!!claim.jsonExt && typeof claim.jsonExt === 'string') {
+        try {
+          claim.jsonExt = JSON.parse(claim.jsonExt);
+        } catch (e) {
+          console.error("[ERROR]: Invalid jsonExt received for claim", claim.uuid, e);
+          claim.jsonExt = {};
+        }
+      } else {
+        claim.jsonExt = claim.jsonExt || {};
+      }
       this.setState(
         { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
         this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
@@ -141,6 +150,10 @@ class ClaimForm extends Component {
     if (!d[type]) return false;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
+    // Bloquer les quantités et montants négatifs (revue) — ticket 37922
+    if (Number(d.qtyProvided) < 0 || Number(d.priceAsked) < 0) return false;
+    if (Number(d.qtyApproved) < 0 || Number(d.priceApproved) < 0) return false;
+    if (Number(d.qtyValuated) < 0 || Number(d.priceValuated) < 0) return false;
     return true;
   };
 
@@ -149,7 +162,6 @@ class ClaimForm extends Component {
   }
 
   canSave = (forFeedback) => {
-    console.log(this.state);
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;

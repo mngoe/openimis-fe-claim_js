@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-export const CLAIM_STATUS = [1, 2, 4, 8, 16];
+export const CLAIM_STATUS = [1, 2, 4, 8, 16, 32];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_SEX = ["Masculin", "Feminin"];
@@ -10,12 +10,17 @@ export const CLAIM_TDR = ["T","F"];
 export const CLAIM_DETAIL_REJECTED_STATUS = 2;
 export const STATUS_REJECTED = 1;
 export const STATUS_ENTERED = 2;
+export const STATUS_RESET = 32;
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 // NULL - all claims, 1 - with attachments, 2 - without attachments
 export const ATTACHMENT_STATUS_WITH = 1;
 export const ATTACHMENT_STATUS_WITHOUT = 2;
 export const ATTACHMENT_STATUS = [ATTACHMENT_STATUS_WITH, ATTACHMENT_STATUS_WITHOUT];
+
+export const SERVICE_TYPE_PP_S = "S";
+export const SERVICE_TYPE_PP_P = "P";
+export const SERVICE_TYPE_PP_F = "F";
 
 export const IN_PATIENT_STRING = "IPD";
 export const OUT_PATIENT_STRING = "OPD";
@@ -40,8 +45,9 @@ export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
+export const ROLE_REJECT = "District Manager";
 
-export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = 'status: 2';
+export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = 'status_Gt: 2';
 
 export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4;
 export const POLICY_ACTIVE_STATUS = 2;
@@ -74,3 +80,15 @@ export const PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTERS = [
 ];
 export const STORAGE_KEY_CLAIM_HEALTH_FACILITY = 'claimHealthFacility';
 export const STORAGE_KEY_ADMIN = 'admin';
+
+export const REJECTION_CODE = _.range(-2, 19);
+export const STATUS_CHECKED = 4;
+export const STATUS_PROCESSED = 8;
+export const STATUS_VALUATED = 16;
+export const REVIEW_STATUS_DONE = 8;
+export const REVIEW_STATUS_BYPASS = 16;
+export const AUDIT_STATUS = ["A","R"];
+export const AUDIT_REJECTION_MOTIF = [1,2,3,4,5,6,7,8,9,10];
+export const AUDIT_STATUS_ADOPTED = "A";
+export const AUDIT_STATUS_REJECTED = "R";
+export const CLAIM_MISSION_STATUS_CLOSED = "C";

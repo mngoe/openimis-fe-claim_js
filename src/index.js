@@ -8,6 +8,7 @@ import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimProgramPicker from "./pickers/ClaimProgramPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
+import AuditStatusPicker from "./pickers/AuditStatusPicker";
 import CareTypePicker from "./pickers/CareTypePicker"
 import AttachmentGeneralTypePicker from "./pickers/AttachmentGeneralTypePicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
@@ -29,6 +30,9 @@ import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
+import RejectionCodePicker from "./pickers/RejectionCodePicker";
+import RejectionReasonDialog from "./components/RejectionReasonDialog";
+import ClaimSearcher from "./components/ClaimSearcher";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -158,6 +162,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },
+    { key: "claim.AuditStatusPicker", ref: AuditStatusPicker },
     { key: "claim.CareTypePicker", ref: CareTypePicker},
     { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
@@ -177,6 +182,9 @@ const DEFAULT_CONFIG = {
     { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },
     { key: "claim.ClaimMasterPanelExt", ref: ClaimMasterPanelExt },
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
+    { key: "claim.RejectionCodePicker", ref: RejectionCodePicker },
+    { key: "claim.RejectionReasonDialog", ref: RejectionReasonDialog},
+    { key: "claim.ClaimSearcher", ref: ClaimSearcher },
   ],
   "core.Router": [
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
@@ -193,3 +201,7 @@ const DEFAULT_CONFIG = {
 export const ClaimModule = (cfg) => {
   return { ...DEFAULT_CONFIG, ...cfg };
 };
+
+export { default as ClaimForm } from "./components/ClaimForm";
+export { updateClaim } from "./actions";
+export { RIGHT_LOAD } from "./constants";

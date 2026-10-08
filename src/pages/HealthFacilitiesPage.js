@@ -16,13 +16,15 @@ import {
   coreConfirm,
   Helmet,
   clearCurrentPaginationPage,
+  PublishedComponent
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
+import { submit, del, selectHealthFacility, submitAll, selectClaimAdmin } from "../actions";
+import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME, ROLE_REJECT } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
+const CLAIM_ADMIN_ROLE = "Claim Administrator";
 
 const styles = (theme) => ({
   page: theme.page,
@@ -42,8 +44,36 @@ class HealthFacilitiesPage extends Component {
     this.state = {
       defaultFilters,
       confirmedAction: null,
+      showRejectReasonDialog: false,
+      rejectedClaimsSelected: []
     };
   }
+
+  iUIsClaimAdmin = () => {
+    const { user } = this.props;
+    return Boolean(user?.i_user?.roles?.find(
+      r => r.name === CLAIM_ADMIN_ROLE
+    ) && !!user?.claim_admin);
+  }
+
+  componentDidMount = () => {
+    const { module, user } = this.props;
+    if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+    
+    if(this.iUIsClaimAdmin()) {
+      this.props.selectClaimAdmin(user?.claim_admin);
+      this.props.selectHealthFacility(user?.claim_admin?.healthFacility);
+    }
+  };
+
+  componentWillUnmount = () => {
+    const { location, history } = this.props;
+    const {
+      location: { pathname },
+    } = history;
+    const urlPath = location.pathname;
+    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
+  };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.submittingMutation && !this.props.submittingMutation) {
@@ -125,36 +155,31 @@ class HealthFacilitiesPage extends Component {
     this.setState({ confirmedAction }, confirm);
   };
 
+  canRejectSelected = (selection) =>
+    !!selection && selection.length && selection.filter((s) => s.status === 2).length === selection.length;
+
+  rejectSelected = (selection) => {
+    this.setState({ showRejectReasonDialog: true, rejectedClaimsSelected: selection });
+  }
+
   onDoubleClick = (c, newTab = false) => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [c.uuid], newTab);
   };
 
   onAdd = () => {
+    this.props.selectClaimAdmin(this.props.user.claim_admin);
+    this.props.selectHealthFacility(this.props.user.claim_admin?.healthFacility);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
   canAdd = () => {
-    if (!this.props.claimAdmin) return false;
-    if (!this.props.claimHealthFacility) return false;
+    if (!this.iUIsClaimAdmin()) return false;
     return true;
   };
 
-  componentDidMount = () => {
-    const { module } = this.props;
-    if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
-  };
-
-  componentWillUnmount = () => {
-    const { location, history } = this.props;
-    const {
-      location: { pathname },
-    } = history;
-    const urlPath = location.pathname;
-    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
-  };
-
   render() {
-    const { intl, classes, rights, generatingPrint } = this.props;
+    const { intl, classes, rights, generatingPrint, userRoles } = this.props;
+    const { showRejectReasonDialog, rejectedClaimsSelected } = this.state;
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
@@ -172,9 +197,26 @@ class HealthFacilitiesPage extends Component {
         action: this.deleteSelected,
       });
     }
+    if(!!userRoles && userRoles.length > 0){
+      for (let i = 0; i < userRoles.length; i++) {
+        if (userRoles[i].name == ROLE_REJECT) {
+          actions.push({
+            label: "claimSummaries.rejectSelected",
+            enabled: this.canRejectSelected,
+            action: this.rejectSelected,
+          });
+        }
+      }
+    }
     return (
       <div className={classes.page}>
         <Helmet title={formatMessage(this.props.intl, "location", "location.healthFacilities.page.title")} />
+        <PublishedComponent
+          pubRef="claim.RejectionReasonDialog"
+          close={(e) => this.setState({ rejectedClaimsSelected: null, showRejectReasonDialog: false })}
+          open={showRejectReasonDialog}
+          rejectedClaims={rejectedClaimsSelected}
+        />
         <ClaimSearcher
           defaultFilters={this.state.defaultFilters}
           cacheFiltersKey="claimHealthFacilitiesPageFiltersCache"
@@ -215,12 +257,15 @@ const mapStateToProps = (state) => ({
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
+  user: state.core.user,
+  userRoles: state.core.user?.i_user?.roles,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       selectHealthFacility,
+      selectClaimAdmin,
       journalize,
       coreConfirm,
       submit,
