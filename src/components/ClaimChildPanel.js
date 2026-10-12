@@ -485,7 +485,7 @@ class ClaimChildPanel extends Component {
               <NumberInput
                 min={0}
                 readOnly={isReadOnly}
-                value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                value={u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                 onChange={(v) => {
                   u.qtyAdjusted = v;
                   this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
@@ -563,7 +563,7 @@ class ClaimChildPanel extends Component {
                 <NumberInput
                   min={0}
                   readOnly={isReadOnly}
-                  value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                  value={u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                   onChange={(v) => {
                     u.qtyAdjusted = v;
                     this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
