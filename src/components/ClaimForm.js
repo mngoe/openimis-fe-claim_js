@@ -159,19 +159,6 @@ class ClaimForm extends Component {
       ? "localStorage"
       : "none";
     const adminSource = this?.state?.claim?.admin ? "state" : this.props.claimAdmin ? "props" : storedAdmin ? "localStorage" : "none";
-    Sentry.captureMessage("claim._newClaim source", {
-      level: "info",
-      tags: {
-        module: "claim",
-        feature: "claim_create_prefill",
-      },
-      extra: {
-        adminSource,
-        healthFacilitySource,
-        adminUuid: claim.admin?.uuid,
-        healthFacilityUuid: claim.healthFacility?.uuid,
-      },
-    });
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
