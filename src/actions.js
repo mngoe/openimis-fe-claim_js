@@ -237,9 +237,6 @@ export function formatDetailSubService(type, detail) {
 export function formatDetails(type, details) {
   if (!details) return "";
   let dets = details.filter((d) => !!d[type]);
-  console.log(`${type}s: [
-    ${dets.map((d) => formatDetail(type, d)).join("\n")}
-  ]`);
   return `${type}s: [
       ${dets.map((d) => formatDetail(type, d)).join("\n")}
     ]`;

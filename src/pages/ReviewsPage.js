@@ -471,7 +471,7 @@ class ReviewsPage extends Component {
         );
         break;
       default:
-        console.log("Illegal new Feedback Status " + v);
+        break;
     }
   };
   provideFeedback = (c) => historyPush(this.props.modulesManager, this.props.history, "claim.route.feedback", [c.uuid]);
@@ -530,7 +530,7 @@ class ReviewsPage extends Component {
         );
         break;
       default:
-        console.log("Illegal new Review Status " + v);
+        break;
     }
   };
   review = (c, newTab = false) =>
@@ -548,7 +548,7 @@ class ReviewsPage extends Component {
       case 16:
         return [1, 2, 4, 8, 16];
       default:
-        console.log("Illegal Review Status " + claim.reviewStatus);
+        return [];
     }
   };
   reviewColFormatter = (c) => (
