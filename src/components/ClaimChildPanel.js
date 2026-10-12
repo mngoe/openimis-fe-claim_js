@@ -485,7 +485,7 @@ class ClaimChildPanel extends Component {
               <NumberInput
                 min={0}
                 readOnly={readOnly}
-                value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                value={u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
                 onChange={(v) => {
                   u.qtyAdjusted = v;
                   this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
@@ -562,7 +562,8 @@ class ClaimChildPanel extends Component {
                 <NumberInput
                   min={0}
                   readOnly={readOnly}
-                  value={!!u.qtyAdjusted ? u.qtyAdjusted : !!u.qtyDisplayed? u.qtyDisplayed : "0"}
+                  value={u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                  displayZero
                   onChange={(v) => {
                     u.qtyAdjusted = v;
                     this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
@@ -613,7 +614,7 @@ class ClaimChildPanel extends Component {
             <NumberInput
               min={0}
               readOnly={readOnly}
-              value={!!u.qtyAdjusted ? u.qtyDisplayed : "0" }
+              value={u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
               onChange={(v) => {
                 if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                   if (u.qtyProvided < v) {
