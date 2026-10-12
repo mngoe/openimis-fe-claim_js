@@ -564,6 +564,7 @@ class ClaimChildPanel extends Component {
                   min={0}
                   readOnly={isReadOnly}
                   value={u.qtyAdjusted ?? u.qtyDisplayed ?? "0"}
+                  displayZero
                   onChange={(v) => {
                     u.qtyAdjusted = v;
                     this._onChangeSubItem(idx, udx, "qtyAdjusted", v);
