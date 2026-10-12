@@ -194,10 +194,6 @@ class ClaimChildPanel extends Component {
   };
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    /*console.log("PriceAsked ");
-    console.log(this.state.data[idx]);
-    console.log(claimedAmount(this.state.data[idx]));
-    */
     this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     let data = [...this.state.data];
     this._onEditedChanged(data);
