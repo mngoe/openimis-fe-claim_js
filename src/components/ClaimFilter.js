@@ -301,7 +301,6 @@ class Details extends Component {
 
   render() {
     const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
-    console.log("props ", this.props )
 
     return (
       <Grid container className={classes.form}>
