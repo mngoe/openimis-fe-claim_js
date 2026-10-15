@@ -112,7 +112,6 @@ class ClaimSearcher extends Component {
           "",
           "",
           "",
-          "",
           <Typography noWrap={true}>
             <FormattedMessage
               module="claim"
@@ -121,7 +120,7 @@ class ClaimSearcher extends Component {
                 claimed: (
                   <b>
                     {formatAmount(
-                      this.props.intl,
+                      this.props.modulesManager, this.props.intl,
                       selection.reduce((acc, v) => {
                         if (v.claimed) {
                           return acc + parseFloat(v.claimed);
@@ -143,7 +142,7 @@ class ClaimSearcher extends Component {
                 approved: (
                   <b>
                     {formatAmount(
-                      this.props.intl,
+                      this.props.modulesManager, this.props.intl,
                       selection.reduce((acc, v) => {
                         if (v.approved) {
                           return acc + parseFloat(v.approved);
@@ -174,6 +173,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.code",
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
+      "claimSummaries.prescriber",
       "claimSummaries.claimedDate",
       "claimSummaries.processedDate",
       "claimSummaries.feedbackStatus",
@@ -243,12 +243,13 @@ class ClaimSearcher extends Component {
         />
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
+      (c) => `${c.prescriber?.code || ""} ${c.prescriber?.lastName || ""} ${c.prescriber?.otherNames || ""}`,
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
       (c) => this.feedbackColFormatter(c),
       (c) => this.reviewColFormatter(c),
-      (c) => formatAmount(this.props.intl, c.claimed),
-      (c) => formatAmount(this.props.intl, c.approved),
+      (c) => formatAmount(this.props.modulesManager, this.props.intl, c.claimed),
+      (c) => formatAmount(this.props.modulesManager, this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
     if (this.showPreAuthorization) {

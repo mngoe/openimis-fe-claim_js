@@ -263,6 +263,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     autogenerate: ${!!isAutogenerateEnabled}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
+    prescriberUuid: "${claim.prescriber.uuid}"
     dateFrom: "${claim.dateFrom}"
     ${claim.dateTo ? `dateTo: "${claim.dateTo}"` : ""}
     ${!!claim.icd ? `icdId: ${decodeId(claim.icd.id)}` : ""}
@@ -325,6 +326,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   let projections = [
     "uuid",
     "code",
+    "prescriber { code uuid lastName otherNames }",
     "dateFrom",
     "dateTo",
     "dateClaimed",
