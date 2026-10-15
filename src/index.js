@@ -28,6 +28,7 @@ import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import YesNoPicker from "./pickers/YesNoPicker";
+import PrescriberPicker from "./pickers/PrescriberPicker";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -160,6 +161,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
+    { key: "claim.PrescriberPicker", ref: PrescriberPicker },
     { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
     { key: "claim.ClaimAttachmentPredefinedTypePicker", ref: ClaimAttachmentPredefinedTypePicker },
     { key: "claim.ApprovalStatusPicker", ref: ApprovalStatusPicker },

@@ -353,5 +353,8 @@
   "claim.preAuthorization.null" : "Any",
   "claim.preAuthorization.true" : "Yes",
   "claim.preAuthorization.false" : "No",
-  "claim.claimSummaries.pre-authorization" : "Pre-auth."
+  "claim.claimSummaries.pre-authorization" : "Pre-auth.",
+  "claim.PrescriberPicker.placeholder": "Search a Prescriber",
+  "claim.PrescriberPicker.label": "Prescriber",
+  "claim.claimSummaries.prescriber": "Prescriber"
 }
