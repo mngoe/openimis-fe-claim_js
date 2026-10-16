@@ -168,6 +168,9 @@ class ClaimForm extends Component {
       ...claim,
       uuid: null,
       status: status,
+      // A restored claim is a brand new claim: it must not keep the number (code) of the
+      // rejected claim it is restored from. The original number stays available in `restore`.
+      code: "",
       restore: { uuid: claim.uuid, code: claim.code },
       items: items,
       services: services,
