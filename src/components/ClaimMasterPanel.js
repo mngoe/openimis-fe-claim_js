@@ -89,9 +89,14 @@ class ClaimMasterPanel extends FormPanel {
   shouldValidate = (inputValue) => {
     if (this.autoGenerateClaimCode) return false;
 
-    const { savedClaimCode } = this.props;
-    const shouldValidate = inputValue !== savedClaimCode;
-    return shouldValidate;
+    const { savedClaimCode, edited } = this.props;
+    // A new, restored or duplicated claim has no uuid yet: there is no saved number to
+    // compare with, so the typed number must always be checked against the server.
+    // Only the untouched number of the claim being edited may skip the check, since that
+    // claim's own code is obviously already stored server-side.
+    if (!edited?.uuid) return true;
+
+    return inputValue !== savedClaimCode;
   };
 
   componentWillUnmount = () => {
