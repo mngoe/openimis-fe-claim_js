@@ -56,7 +56,7 @@ function reducer(
     pregnancyAge: null,
     fetchingPregnancyAge: false,
     fetchedPregnancyAge: false,
-    errorPregnancyAge: null
+    errorPregnancyAge: null,
   },
   action,
 ) {
