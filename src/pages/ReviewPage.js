@@ -26,24 +26,35 @@ class ReviewPage extends Component {
   }
 
   save = (claim) => {
-    if (!!claim && (!!claim.items || !!claim.services)) {
-      this.setState({ close: false }, (e) =>
-        this.props.saveReview(
-          claim,
-          formatMessageWithValues(this.props.intl, "claim", "SaveClaimReview.mutationLabel", { code: claim.code }),
-        ),
-      );
-    }
+    if (!claim || (!claim.items && !claim.services)) return Promise.resolve();
+    // ClaimForm._save enchaîne sur la promesse retournée par save()
+    this.setState({ close: false });
+    return this.props.saveReview(
+      claim,
+      formatMessageWithValues(this.props.intl, "claim", "SaveClaimReview.mutationLabel", { code: claim.code }),
+    );
   };
 
   deliverReview = (claim) => {
     if (!!claim && (!!claim.items || !!claim.services)) {
-      this.setState({ close: true }, (e) =>
-        this.props.deliverReview(
-          [claim],
-          formatMessageWithValues(this.props.intl, "claim", "DeliverClaimReview.mutationLabel", { code: claim.code }),
-        ),
-      );
+      // ticket #38283 : la livraison doit d'abord enregistrer les ajustements du médecin-conseil,
+      // sinon les quantités/prix approuvés restent côté navigateur et ne sont jamais valorisés.
+      const saveLabel = formatMessageWithValues(this.props.intl, "claim", "SaveClaimReview.mutationLabel", {
+        code: claim.code,
+      });
+      const deliverLabel = formatMessageWithValues(this.props.intl, "claim", "DeliverClaimReview.mutationLabel", {
+        code: claim.code,
+      });
+      this.setState({ close: false }, () => {
+        const saved = this.props.saveReview(claim, saveLabel);
+        const deliver = () =>
+          this.setState({ close: true }, () => this.props.deliverReview([claim], deliverLabel));
+        if (saved && typeof saved.then === "function") {
+          saved.then(deliver);
+        } else {
+          deliver();
+        }
+      });
     }
   };
 
