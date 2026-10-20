@@ -152,12 +152,15 @@ class ClaimForm extends Component {
   removeItemOrServiceFields(itemsOrServices) {
     if (!itemsOrServices) return null;
     return itemsOrServices.map((itemOrService) => {
-      Object.keys(itemOrService).forEach((key) => {
+      // copies : les panneaux de lignes doivent détecter un changement pour se réinitialiser
+      // (sinon la ligne vide de saisie n'est pas rajoutée, cf. ticket #38284)
+      const cleaned = { ...itemOrService };
+      Object.keys(cleaned).forEach((key) => {
         if (!["item", "service", "priceAsked", "qtyProvided"].includes(key)) {
-          delete itemOrService[key];
+          delete cleaned[key];
         }
       });
-      return itemOrService;
+      return cleaned;
     });
   }
 
@@ -307,17 +310,11 @@ class ClaimForm extends Component {
     ){
       return false
     } 
-    if (this.state.claim.services !== undefined) {
-      if (this.props.forReview) {
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
-          return false;
-        }
-      } else {
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
-          return false;
-        }
-      }
-
+    // Seules les lignes réellement saisies sont validées : la ligne vide de saisie de la
+    // grille (absente d'une prestation rétablie ou dupliquée) ne doit pas être comptée.
+    const filledServices = (this.state.claim.services ?? []).filter((s) => !!s?.service);
+    if (filledServices.length && filledServices.filter((s) => !this.canSaveDetail(s, "service")).length) {
+      return false;
     }
 
 
@@ -346,7 +343,7 @@ class ClaimForm extends Component {
         if (!isUnderMaximumAmount) {
           return false;
         }
-        if (!this.props.forReview) items.pop();
+        if (!this.props.forReview) items = items.filter((i) => !!i?.item);
         
         if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview)).length) {
           return false;
@@ -366,7 +363,7 @@ class ClaimForm extends Component {
         if (!isUnderMaximumAmount) {
           return false;
         }
-        if (!this.props.forReview) services.pop();
+        if (!this.props.forReview) services = services.filter((s) => !!s?.service);
         if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length) {
           return false;
         }
