@@ -33,7 +33,7 @@ import {
   skipReview,
   process,
 } from "../actions";
-import { RIGHT_UPDATE, RIGHT_FEEDBACK, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, MODULE_NAME, STATUS_CHECKED, REVIEW_STATUS_DONE, REVIEW_STATUS_BYPASS, STATUS_PROCESSED } from "../constants";
+import { RIGHT_UPDATE, RIGHT_FEEDBACK, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, MODULE_NAME, REVIEW_STATUS_DONE, REVIEW_STATUS_BYPASS, STATUS_PROCESSED, STATUS_CHECKED } from "../constants";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 
 const CLAIM_REVIEWS_FILTER_CONTRIBUTION_KEY = "claim.ReviewsFilter";
@@ -471,7 +471,7 @@ class ReviewsPage extends Component {
         );
         break;
       default:
-        console.log("Illegal new Feedback Status " + v);
+        break;
     }
   };
   provideFeedback = (c) => historyPush(this.props.modulesManager, this.props.history, "claim.route.feedback", [c.uuid]);
@@ -530,7 +530,7 @@ class ReviewsPage extends Component {
         );
         break;
       default:
-        console.log("Illegal new Review Status " + v);
+        break;
     }
   };
   review = (c, newTab = false) =>
@@ -548,7 +548,7 @@ class ReviewsPage extends Component {
       case 16:
         return [1, 2, 4, 8, 16];
       default:
-        console.log("Illegal Review Status " + claim.reviewStatus);
+        return [];
     }
   };
   reviewColFormatter = (c) => (
