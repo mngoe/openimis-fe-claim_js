@@ -522,6 +522,12 @@ class ClaimForm extends Component {
     });
   }
 
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
+
   restore = () => {
     const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
     this.props.history.replace(`/${routeRef}`);
