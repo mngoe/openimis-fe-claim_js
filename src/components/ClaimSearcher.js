@@ -108,7 +108,9 @@ class ClaimSearcher extends Component {
       prms.push(`orderBy: ["dateClaimed", "?"]`);
       this.setState({ random });
     } else {
-      //prms.push(`orderBy: ["${state.orderBy}"]`);
+      if (!!state.orderBy) {
+        prms.push(`orderBy: ["${state.orderBy}"]`);
+      }
       this.setState({ random: null });
     }
     if (!forced.length && !random) {
@@ -213,7 +215,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.feedbackStatus",
       "claimSummaries.reviewStatus",
       "claimSummaries.claimed",
-      "claimSummaries.approved"
+      "claimSummaries.approved",
     ];
     if (this.props.forAudit) {
       result.push("claimSummaries.amountAudited");
@@ -400,11 +402,7 @@ class ClaimSearcher extends Component {
           tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
-          fetch={
-            this.isDefaultFetchClaimActivated == false && searchInitiated ? this.fetch :
-              this.isDefaultFetchClaimActivated == true ? this.fetch :
-                canFetch ? this.fetch : () => { }
-          }
+          fetch={this.isDefaultFetchClaimActivated == false && searchInitiated ? this.fetch : this.isDefaultFetchClaimActivated == true ? this.fetch : canFetch ? this.fetch : () => { }}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"

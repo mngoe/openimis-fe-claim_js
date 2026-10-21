@@ -3,17 +3,18 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
+import * as Sentry from "@sentry/react";
 
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
+import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import ReplayIcon from "@material-ui/icons/Replay";
 import PrintIcon from "@material-ui/icons/ListAlt";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import RestorePageIcon from "@material-ui/icons/RestorePage";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import CachedIcon from "@material-ui/icons/Cached";
-import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 
 import {
   Contributions,
@@ -141,13 +142,23 @@ class ClaimForm extends Component {
   }
 
   _newClaim() {
+    const storedHealthFacility = JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+    const storedAdmin = JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
     let claim = {};
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+      storedHealthFacility;
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
+      this?.state?.claim?.admin ?? this.props.claimAdmin ?? storedAdmin;
+    const healthFacilitySource = this?.state?.claim?.healthFacility
+      ? "state"
+      : this.props.claimHealthFacility
+      ? "props"
+      : storedHealthFacility
+      ? "localStorage"
+      : "none";
+    const adminSource = this?.state?.claim?.admin ? "state" : this.props.claimAdmin ? "props" : storedAdmin ? "localStorage" : "none";
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -279,7 +290,7 @@ class ClaimForm extends Component {
     return true;
   };
 
-  canSave = (forFeedback, forReview) => {
+  canSave = (forFeedback,forReview) => {
     const {claim} = this.state;
 
     // En mode audit, on ne vérifie que les champs d'audit
@@ -314,8 +325,8 @@ class ClaimForm extends Component {
       if (!this.state.claim.testNumber) return false;
       if (!this.state.claim.tdr) return false;
     }
-    if (!this.state.claim.uuid) {
-      if (!this.state.claim.prefix) return false;
+    if(!this.state.claim.uuid){
+      if(!this.state.claim.prefix) return false;
     }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
@@ -377,9 +388,7 @@ class ClaimForm extends Component {
         services = [...this.state.claim.services];
 
         let isUnderMaximumAmount = true;
-
         let hasNegativeQtyAsked = false;
-
         let hasNegativePriceAsked = false;
 
         services.forEach((item) => {
@@ -500,11 +509,18 @@ class ClaimForm extends Component {
   _deliverReview = (claim) => {
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
-  duplicate = () => {
-    const routeRef = this.props.modulesManager.getRef("claim.route.claimEdit");
-    this.props.history.replace(`/${routeRef}`);
-    this.setState({ isDuplicate: true });
-  };
+
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
+
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
 
   deliverAudit = () => {
     this.setState({ isSaving: true }, () => {
@@ -559,11 +575,10 @@ class ClaimForm extends Component {
     const nameProgram = claim?.program?.nameProgram
     const isMissionClosed = forAudit && mission?.status === CLAIM_MISSION_STATUS_CLOSED;
 
-    let readOnly =
+    let readOnly = 
       lockNew ||
       isSaved ||
-      (!forReview && !forFeedback && !forAudit && claim.status !== 2) ||
-      isMissionClosed ||
+      (!forReview && !forFeedback && isMissionClosed && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
       !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
@@ -661,7 +676,7 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !forAudit && !!add && !this.state.newClaim ? this._add : null,
-      save: !forAudit && !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
+      save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly && !forAudit ? forReview ? this._saveReview : this._save : null,
       fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),

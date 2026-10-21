@@ -57,12 +57,12 @@ class HealthFacilitiesPage extends Component {
   }
 
   componentDidMount = () => {
-    const { module, user } = this.props;
+    const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
     
     if(this.iUIsClaimAdmin()) {
-      this.props.selectClaimAdmin(user?.claim_admin);
-      this.props.selectHealthFacility(user?.claim_admin?.healthFacility);
+      this.props.selectClaimAdmin(this.props.user?.claim_admin);
+      this.props.selectHealthFacility(this.props.user?.claim_admin?.healthFacility);
     }
   };
 
@@ -199,7 +199,7 @@ class HealthFacilitiesPage extends Component {
     }
     if(!!userRoles && userRoles.length > 0){
       for (let i = 0; i < userRoles.length; i++) {
-        if (userRoles[i].name == ROLE_REJECT) {
+        if (userRoles[i].name === ROLE_REJECT) {
           actions.push({
             label: "claimSummaries.rejectSelected",
             enabled: this.canRejectSelected,
@@ -249,6 +249,7 @@ class HealthFacilitiesPage extends Component {
 const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   claimAdmin: state.claim.claimAdmin,
+  userClaimAdminInfos: state.claim.userClaimAdminInfos,
   claimHealthFacility: state.claim.claimHealthFacility,
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   submittingMutation: state.claim.submittingMutation,
