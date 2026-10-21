@@ -258,7 +258,6 @@ class ClaimMasterPanel extends FormPanel {
     let totalApproved = 0;
     let totalAudited = 0;
     let tdr;
-    //var claimCode = this.state.claimCode != null ? this.state.claimCode : isRestored ? edited.code : "";
     if (edited.items) {
       totalClaimed += edited.items.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
@@ -272,9 +271,6 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     edited.amountAudited = _.round(totalAudited, 2);
-    // if (edited.code && this.claimPrefix) {
-    //   edited.code = edited.code.replace(edited.insuree?.chfId, '');
-    // }
 
     let ro = readOnly || !!forReview || !!forFeedback || !!forAudit;
     let roAudit = !!edited.audited || mission_status === CLAIM_MISSION_STATUS_CLOSED;
@@ -312,7 +308,7 @@ class ClaimMasterPanel extends FormPanel {
       var codeFosa = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.code : "";
       prefix = `${codeFosa}.${dateTo}.${programCode}.`;
       if (edited.code && prefix != undefined && prefix != "") {
-        suffix = edited.code.replace(prefix, '')
+        suffix = edited.code.replace(prefix, '');
       }
     }
     if (edited.tdr === true) {
@@ -527,7 +523,6 @@ class ClaimMasterPanel extends FormPanel {
               }
             />
           </>
-
         )}
         {!!prefix && (<ControlledField
           module="claim"
@@ -777,7 +772,7 @@ class ClaimMasterPanel extends FormPanel {
                 </Grid>
               }
             />
-            {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
+            {(!!forReview || forAudit || this.showAdjustmentAtEnter || edited.status >= 4) && (
               <ControlledField
                 module="claim"
                 id="Claim.adjustment"
@@ -794,6 +789,73 @@ class ClaimMasterPanel extends FormPanel {
                   </Grid>
                 }
               />
+            )}
+            {forAudit && (
+              <Fragment>
+                <ControlledField
+                  module="claim"
+                  id="Claim.auditStatus"
+                  field={
+                    <Grid item xs={3} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="claim.AuditStatusPicker"
+                        withLabel
+                        label="auditStatus"
+                        value={edited.auditStatus}
+                        onChange={(v) => this.updateAttribute("auditStatus", v)}
+                        readOnly={roAudit || !forAudit}
+                        required={true}
+                      />
+                    </Grid>
+                  }
+                />
+                <Fragment>
+                {edited.auditStatus === AUDIT_STATUS_REJECTED && (
+                  <ControlledField
+                    module="claim"
+                    id="Claim.rejectionMotive"
+                    field={
+                      <Grid item xs={4} className={classes.item}>
+                        <SelectInput
+                          module="claim"
+                          label="auditRejectionMotif"
+                          value={edited.rejectionMotive}
+                          options={AUDIT_REJECTION_MOTIF.map((v) => ({
+                            value: v,
+                            label: formatMessage(intl, "claim", `auditRejectionMotif.${v}`),
+                          }))}
+                          onChange={(v) => this.updateAttribute("rejectionMotive", v)}
+                          readOnly={roAudit || !forAudit}
+                          required={true}
+                        />
+                      </Grid>
+                    }
+                  />
+                )}
+                {showAuditExplanationField && (
+                  <ControlledField
+                    module="claim"
+                    id="Claim.auditExplanation"
+                    field={
+                      <Grid item xs={4} className={classes.item}>
+                        <TextInput
+                          module="claim"
+                          label={formatMessage(intl, "claim", "explanation")}
+                          value={edited.auditExplanation}
+                          onChange={(v) => {
+                            this.updateAttributes({
+                              auditExplanation: v,
+                            });
+                          }}
+                          readOnly={roAudit || !forAudit}
+                          required={true}
+                        />
+                      </Grid>
+                    }
+                  />
+                )}
+                </Fragment>
+              </Fragment>
             )}
           </Fragment>
         )}
@@ -899,7 +961,7 @@ const mapDispatchToProps = (dispatch) => {
       claimHealthFacilitySet,
       clearClaim,
       validateClaimCode,
-      fetchPregnancyAge
+      fetchPregnancyAge,
     },
     dispatch,
   );

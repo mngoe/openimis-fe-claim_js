@@ -49,7 +49,7 @@ import {
   AUDIT_STATUS_REJECTED,
   AUDIT_STATUS_ADOPTED,
   CLAIM_MISSION_STATUS_CLOSED,
-  SERVICE_TYPE_PP_S
+  SERVICE_TYPE_PP_S,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -295,7 +295,6 @@ class ClaimForm extends Component {
 
     // En mode audit, on ne vérifie que les champs d'audit
     if (this.props.forAudit) {
-      // Tant que la liste des prix (soins/items) n'a pas fini de charger, on ne peut pas valider l'audit
       if (this.props.fetchingPricelist) return false;
       if (!claim.auditStatus) return false;
       const requiresAuditExplanation =
@@ -307,7 +306,6 @@ class ClaimForm extends Component {
       if (requiresAuditExplanation && !claim.auditExplanation) return false;
       return true;
     }
-
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -323,7 +321,7 @@ class ClaimForm extends Component {
     if (!this.state.claim.dateFrom) return false;
     if (!this.state.claim.dateTo) return false;
     if (!this.state.claim.program) return false;
-    if(this.state.claim.program?.code == "PAL"){
+    if (this.state.claim.program?.code == "PAL") {
       if (!this.state.claim.testNumber) return false;
       if (!this.state.claim.tdr) return false;
     }
@@ -333,8 +331,8 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if(!this.state.claim_uuid){
-      if (!this.state.claim.code ) return false;
+    if (!this.state.claim_uuid) {
+      if (!this.state.claim.code) return false;
     }
 
     if (this.state.claim.services !== undefined) {
@@ -442,9 +440,9 @@ class ClaimForm extends Component {
   };
 
   NAME_PROGRAM = {
-    Chèque_Sante : "Chèque Santé",
-    Cheque_Sante : "Cheque Santé",
-    Vih : "VIH",
+    Chèque_Sante: "Chèque Santé",
+    Cheque_Sante: "Cheque Santé",
+    Vih: "VIH",
   }
 
   reload = () => {
@@ -511,6 +509,12 @@ class ClaimForm extends Component {
   _deliverReview = (claim) => {
     this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
+
+  deliverAudit = () => {
+    this.setState({ isSaving: true }, () => {
+      this._save(this.state.claim);
+    });
+  }
 
   deliverAudit = () => {
     this.setState({ isSaving: true }, () => {
@@ -702,11 +706,11 @@ class ClaimForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram ==  this.NAME_PROGRAM.Chèque_Sante ) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : (nameProgram == this.NAME_PROGRAM.Cheque_Sante || nameProgram == this.NAME_PROGRAM.Chèque_Sante) ? [ClaimServicesPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               openDirty={save || forReview}
               additionalTooltips={tooltips}
               resetServices={this.state.resetServices}
-              resetServicesItems= {this.resetServicesItems}
+              resetServicesItems={this.resetServicesItems}
               {...editingProps}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
