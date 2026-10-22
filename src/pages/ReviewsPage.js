@@ -655,8 +655,6 @@ class ReviewsPage extends Component {
           FilterExt={RandomAndValueFilters}
           actions={actions}
           onDoubleClick={rights.includes(RIGHT_UPDATE) ? this.onDoubleClick : null}
-          feedbackColFormatter={this.feedbackColFormatter}
-          reviewColFormatter={this.reviewColFormatter}
           filterPaneContributionsKey={CLAIM_REVIEWS_FILTER_CONTRIBUTION_KEY}
           actionsContributionKey={CLAIM_REVIEWS_ACTION_CONTRIBUTION_KEY}
         />
