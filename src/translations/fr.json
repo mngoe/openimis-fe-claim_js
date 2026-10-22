@@ -55,5 +55,17 @@
     "claim.ClaimFilter.attachmentStatus.2": "Sans attachement",
     "claim.ClaimFilter.preAuthorizationChip.null": "Tous",
     "claim.ClaimFilter.preAuthorizationChip.true": "Oui",
-    "claim.ClaimFilter.preAuthorizationChip.false": "Non"
+    "claim.ClaimFilter.preAuthorizationChip.false": "Non",
+    "claim.ClaimFilter.period": "Période de pré-autorisation",
+    "claim.ClaimFilter.amount": "Montant réclamé",
+    "claim.ClaimFilter.dateFromShort": "Du",
+    "claim.ClaimFilter.dateToShort": "Au",
+    "claim.ClaimFilter.amountMin": "Min",
+    "claim.ClaimFilter.amountMax": "Max",
+    "claim.ClaimFilter.preauthStatus": "Statut",
+    "claim.ClaimFilter.periodChip": "Période",
+    "claim.ClaimFilter.periodFrom": "Période (du)",
+    "claim.ClaimFilter.periodTo": "Période (au)",
+    "claim.ClaimFilter.amountMinLabel": "Montant min",
+    "claim.ClaimFilter.amountMaxLabel": "Montant max"
 }

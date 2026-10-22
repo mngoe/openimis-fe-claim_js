@@ -4,19 +4,17 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import _ from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
+import { IconButton, Typography, Tooltip, Badge, Chip } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
 import CheckIcon from "@material-ui/icons/Check";
 import { Searcher } from "@openimis/fe-core";
-import ClaimFilter from "./ClaimFilter";
 import {
   withModulesManager,
   formatMessageWithValues,
   formatMessage,
-  formatDateTimeFromISO,
+  formatDateFromISO,
   formatAmount,
-  FormattedMessage,
   PublishedComponent,
 } from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
@@ -24,7 +22,34 @@ import PreauthorizationFilter from "./PreauthorizationFilter";
 
 const PREAUTHORIZATION_SEARCHER_CONTRIBUTION_KEY = "preauthorization.Searcher";
 
-const styles = (theme) => ({});
+const styles = (theme) => ({
+  statusChip: {
+    height: 24,
+    fontSize: 11,
+    fontWeight: 600,
+    borderRadius: 12,
+  },
+  status1: {
+    backgroundColor: "#fde4e1",
+    color: "#801a00",
+  },
+  status2: {
+    backgroundColor: "#e3f2fd",
+    color: "#004A7C",
+  },
+  status4: {
+    backgroundColor: "#DEF1EE",
+    color: "#004A7C",
+  },
+  status8: {
+    backgroundColor: "#dff3e6",
+    color: "#1b5e20",
+  },
+  status16: {
+    backgroundColor: "#ede7f6",
+    color: "#4527a0",
+  },
+});
 
 class PreauthorizationSearcher extends Component {
   state = {
@@ -115,73 +140,6 @@ class PreauthorizationSearcher extends Component {
       ? this.props.reviewColFormatter(c)
       : formatMessage(this.props.intl, "claim", `reviewStatus.${c.reviewStatus}`);
 
-  preHeaders = (selection) => {
-    var result = selection.length
-      ? [
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          <Typography noWrap={true}>
-            <FormattedMessage
-              module="claim"
-              id="claimSummaries.selection.claimed"
-              values={{
-                claimed: (
-                  <b>
-                    {formatAmount(
-                      this.props.modulesManager, this.props.intl,
-                      selection.reduce((acc, v) => {
-                        if (v.claimed) {
-                          return acc + parseFloat(v.claimed);
-                        } else {
-                          return acc;
-                        }
-                      }, 0),
-                    )}
-                  </b>
-                ),
-              }}
-            />
-          </Typography>,
-          <Typography noWrap={true}>
-            <FormattedMessage
-              module="claim"
-              id="claimSummaries.selection.approved"
-              values={{
-                approved: (
-                  <b>
-                    {formatAmount(
-                      this.props.modulesManager, this.props.intl,
-                      selection.reduce((acc, v) => {
-                        if (v.approved) {
-                          return acc + parseFloat(v.approved);
-                        } else {
-                          return acc;
-                        }
-                      }, 0),
-                    )}
-                  </b>
-                ),
-              }}
-            />
-          </Typography>,
-          "",
-          "",
-        ]
-      : ["\u200b", "", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
-    if (this.claimAttachments) {
-      result.push("");
-    }
-    this.extFields.forEach((f) => {
-      result.push("");
-    });
-    return result;
-  };
-
   headers = () => {
     var result = [
       "claimSummaries.codePreAuthorization",
@@ -193,7 +151,7 @@ class PreauthorizationSearcher extends Component {
       "claimSummaries.statusPreAuthorization",
       // "claimSummaries.feedbackStatus",
       // "claimSummaries.reviewStatus",
-      "claimSummaries.claimed",
+      "claimSummaries.claimedAmount",
       // "claimSummaries.approved",
       // "claimSummaries.claimStatus",
     ];
@@ -208,7 +166,7 @@ class PreauthorizationSearcher extends Component {
         result.push(`claimSummaries.${f}`);
       });
     }
-    result.push("claimSummaries.openNewTab");
+    result.push("");
     return result;
   };
 
@@ -223,14 +181,15 @@ class PreauthorizationSearcher extends Component {
       ["code", true],
       [this.props.modulesManager.getRef("location.HealthFacilityPicker.sort"), true],
       [this.props.modulesManager.getRef("insuree.InsureePicker.sort"), true],
-      ["dateClaimed", true],
       null,
-      null,
+      ["datePreAuthorization", true],
       null,
       ["claimed", false],
-      ["approved", false],
     );
 
+    if (this.showPreAuthorization) {
+      result.push(null);
+    }
     if (this.claimAttachments) {
       result.push(null);
     }
@@ -239,34 +198,82 @@ class PreauthorizationSearcher extends Component {
         result.push(null);
       });
     }
+    result.push(null);
     return result;
   };
 
   aligns = () => {
-    return [, , , , , , , "right", "right", ,];
+    const result = [];
+    if (this.showOrdinalNumber) {
+      result.push(null);
+    }
+    result.push(null, null, null, null, null, null, "right");
+    if (this.showPreAuthorization) {
+      result.push(null);
+    }
+    if (this.claimAttachments) {
+      result.push(null);
+    }
+    if (!!this.extFields && !!this.extFields.length) {
+      this.extFields.forEach((f) => {
+        result.push(null);
+      });
+    }
+    result.push(null);
+    return result;
+  };
+
+  statusChip = (c) => {
+    const { classes, intl } = this.props;
+    const status = c.statusPreAuthorization;
+    const className = `${classes.statusChip} ${classes[`status${status}`] || ""}`;
+    return (
+      <Chip
+        size="small"
+        className={className}
+        label={formatMessage(intl, "claim", `preAuth.status.${status}`)}
+      />
+    );
   };
 
   itemFormatters = () => {
+    const { intl, modulesManager } = this.props;
     var result = [
-      (c) => c.codePreAuthorization,
       (c) => (
-        <PublishedComponent
-          readOnly={true}
-          pubRef="location.HealthFacilityPicker"
-          withLabel={false}
-          value={c.healthFacility}
-        />
+        <Typography noWrap title={c.codePreAuthorization}>
+          {c.codePreAuthorization}
+        </Typography>
       ),
-      (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
-      (c) => `${c.prescriber?.code || ""} ${c.prescriber?.lastName || ""} ${c.prescriber?.otherNames || ""}`,
-      (c) => formatDateTimeFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
-      (c) => formatMessage(this.props.intl, "claim", "preAuth.status."+c.statusPreAuthorization),
-      // (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.datePreAuthorization),
-      // (c) => this.feedbackColFormatter(c),
-      // (c) => this.reviewColFormatter(c),
-      (c) => formatAmount(this.props.modulesManager, this.props.intl, c.claimed),
-      // (c) => formatAmount(this.props.modulesManager, this.props.intl, c.approved),
-      // (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
+      (c) => {
+        const label = c.healthFacility?.name || c.healthFacility?.code || "";
+        return (
+          <Typography noWrap title={label}>
+            {label}
+          </Typography>
+        );
+      },
+      (c) => {
+        const label =
+          [c.insuree?.lastName, c.insuree?.otherNames].filter(Boolean).join(" ") || c.insuree?.chfId || "";
+        return (
+          <Typography noWrap title={label}>
+            {label}
+          </Typography>
+        );
+      },
+      (c) => {
+        const label = [c.prescriber?.code, c.prescriber?.lastName, c.prescriber?.otherNames]
+          .filter(Boolean)
+          .join(" ");
+        return (
+          <Typography noWrap title={label}>
+            {label}
+          </Typography>
+        );
+      },
+      (c) => formatDateFromISO(modulesManager, intl, c.datePreAuthorization),
+      (c) => this.statusChip(c),
+      (c) => formatAmount(modulesManager, intl, c.claimed),
     ];
     if (this.showPreAuthorization) {
       result.push((c) => (c.preAuthorization ? <CheckIcon /> : ""));
@@ -289,7 +296,7 @@ class PreauthorizationSearcher extends Component {
       });
     }
     result.push((c) => (
-      <Tooltip title={formatMessage(this.props.intl, "claim", "openNewTabButton.tooltip")}>
+      <Tooltip title={formatMessage(intl, "claim", "openNewTabButton.tooltip")}>
         <IconButton onClick={(e) => this.props.onDoubleClick(c, true)}>
           {" "}
           <TabIcon />
@@ -373,7 +380,6 @@ class PreauthorizationSearcher extends Component {
           rowSecondaryHighlighted={this.isRestoredClaim}
           withSelection="multiple"
           selectionMessage={"claimSummaries.selection.count"}
-          preHeaders={this.preHeaders}
           headers={this.headers}
           itemFormatters={this.itemFormatters}
           actions={actions}
