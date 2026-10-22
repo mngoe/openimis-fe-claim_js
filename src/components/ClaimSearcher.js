@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import _ from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { IconButton, Typography, Tooltip, Badge, Chip } from "@material-ui/core";
+import { IconButton, Typography, Tooltip, Badge, Chip, Checkbox, FormControlLabel } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
 import CheckIcon from "@material-ui/icons/Check";
@@ -36,12 +36,24 @@ const styles = (theme) => ({
   statusPurple: { backgroundColor: "#ede7f6", color: "#4527a0" },
   statusAmber: { backgroundColor: "#fff4d6", color: "#8a5a00" },
   statusGray: { backgroundColor: "#eceff1", color: "#455a64" },
+  titleWithToggle: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(2),
+    flexWrap: "wrap",
+  },
+  toggleLabel: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: theme.palette.primary.main,
+  },
 });
 
 class ClaimSearcher extends Component {
   state = {
     random: null,
     attachmentsClaim: null,
+    showOptionalColumns: false,
   };
 
   constructor(props) {
@@ -112,31 +124,51 @@ class ClaimSearcher extends Component {
     return prms;
   };
 
+  _toggleOptionalColumns = (event) => {
+    this.setState({ showOptionalColumns: event.target.checked });
+  };
+
+  _tableTitle = (count) => {
+    const { intl, classes } = this.props;
+    return (
+      <div className={classes.titleWithToggle}>
+        <span>{formatMessageWithValues(intl, "claim", "claimSummaries", { count })}</span>
+        <FormControlLabel
+          control={
+            <Checkbox
+              color="primary"
+              checked={this.state.showOptionalColumns}
+              onChange={this._toggleOptionalColumns}
+            />
+          }
+          label={formatMessage(intl, "claim", "claimSummaries.showAllColumns")}
+          classes={{ label: classes.toggleLabel }}
+        />
+      </div>
+    );
+  };
+
   headers = () => {
-    var result = [
-      "claimSummaries.code",
-      "claimSummaries.preAuthcode",
+    const result = ["claimSummaries.code"];
+    if (this.state.showOptionalColumns) result.push("claimSummaries.preAuthcode");
+    result.push(
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.prescriber",
       "claimSummaries.claimedDate",
-      "claimSummaries.processedDateShort",
+    );
+    if (this.state.showOptionalColumns) result.push("claimSummaries.processedDateShort");
+    result.push(
       "claimSummaries.feedbackStatusShort",
       "claimSummaries.reviewStatusShort",
       "claimSummaries.claimedAmount",
       "claimSummaries.approvedAmount",
       "claimSummaries.claimStatusShort",
-    ];
-    if (this.showPreAuthorization) {
-      result.push("claim.claimSummaries.pre-authorization");
-    }
-    if (this.claimAttachments) {
-      result.push("claimSummaries.claimAttachments");
-    }
+    );
+    if (this.state.showOptionalColumns) result.push("claim.claimSummaries.pre-authorization");
+    if (this.state.showOptionalColumns) result.push("claimSummaries.claimAttachments");
     if (!!this.extFields && !!this.extFields.length) {
-      this.extFields.forEach((f) => {
-        result.push(`claimSummaries.${f}`);
-      });
+      this.extFields.forEach((f) => result.push(`claimSummaries.${f}`));
     }
     result.push("");
     return result;
@@ -145,22 +177,18 @@ class ClaimSearcher extends Component {
   sorts = () => {
     const result = [];
     if (this.showOrdinalNumber) result.push(null);
+    result.push(["code", true]);
+    if (this.state.showOptionalColumns) result.push(null);
     result.push(
-      ["code", true],
-      null,
       [this.props.modulesManager.getRef("location.HealthFacilityPicker.sort"), true],
       [this.props.modulesManager.getRef("insuree.InsureePicker.sort"), true],
       null,
       ["dateClaimed", true],
-      ["dateProcessed", true],
-      null,
-      null,
-      ["claimed", false],
-      ["approved", false],
-      null,
     );
-    if (this.showPreAuthorization) result.push(null);
-    if (this.claimAttachments) result.push(null);
+    if (this.state.showOptionalColumns) result.push(["dateProcessed", true]);
+    result.push(null, null, ["claimed", false], ["approved", false], null);
+    if (this.state.showOptionalColumns) result.push(null);
+    if (this.state.showOptionalColumns) result.push(null);
     if (!!this.extFields && !!this.extFields.length) this.extFields.forEach(() => result.push(null));
     result.push(null);
     return result;
@@ -169,9 +197,13 @@ class ClaimSearcher extends Component {
   aligns = () => {
     const result = [];
     if (this.showOrdinalNumber) result.push(null);
-    result.push(null, null, null, null, null, null, null, null, null, "right", "right", null);
-    if (this.showPreAuthorization) result.push(null);
-    if (this.claimAttachments) result.push(null);
+    result.push(null);
+    if (this.state.showOptionalColumns) result.push(null);
+    result.push(null, null, null, null);
+    if (this.state.showOptionalColumns) result.push(null);
+    result.push(null, null, "right", "right", null);
+    if (this.state.showOptionalColumns) result.push(null);
+    if (this.state.showOptionalColumns) result.push(null);
     if (!!this.extFields && !!this.extFields.length) this.extFields.forEach(() => result.push(null));
     result.push(null);
     return result;
@@ -218,9 +250,11 @@ class ClaimSearcher extends Component {
 
   itemFormatters = () => {
     const { intl, modulesManager } = this.props;
-    var result = [
-      (c) => <Typography noWrap title={c.code}>{c.code}</Typography>,
-      (c) => <Typography noWrap title={c?.codePreAuthorization}>{c?.codePreAuthorization}</Typography>,
+    const result = [(c) => <Typography noWrap title={c.code}>{c.code}</Typography>];
+    if (this.state.showOptionalColumns) {
+      result.push((c) => <Typography noWrap title={c?.codePreAuthorization}>{c?.codePreAuthorization}</Typography>);
+    }
+    result.push(
       (c) => {
         const label = c.healthFacility?.name || c.healthFacility?.code || "";
         return <Typography noWrap title={label}>{label}</Typography>;
@@ -234,17 +268,21 @@ class ClaimSearcher extends Component {
         return <Typography noWrap title={label}>{label}</Typography>;
       },
       (c) => formatDateFromISO(modulesManager, intl, c.dateClaimed),
-      (c) => formatDateFromISO(modulesManager, intl, c.dateProcessed),
+    );
+    if (this.state.showOptionalColumns) {
+      result.push((c) => formatDateFromISO(modulesManager, intl, c.dateProcessed));
+    }
+    result.push(
       (c) => this.feedbackColFormatter(c),
       (c) => this.reviewColFormatter(c),
       (c) => formatAmount(modulesManager, intl, c.claimed),
       (c) => formatAmount(modulesManager, intl, c.approved),
       (c) => this.claimStatusColFormatter(c),
-    ];
-    if (this.showPreAuthorization) {
+    );
+    if (this.state.showOptionalColumns) {
       result.push((c) => (c.preAuthorization ? <CheckIcon /> : ""));
     }
-    if (this.claimAttachments) {
+    if (this.state.showOptionalColumns) {
       result.push(
         (c) =>
           !!c.attachmentsCount && (
@@ -333,7 +371,7 @@ class ClaimSearcher extends Component {
           fetchedItems={fetchedClaims}
           errorItems={errorClaims}
           contributionKey={CLAIM_SEARCHER_CONTRIBUTION_KEY}
-          tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
+          tableTitle={this._tableTitle(count)}
           rowsPerPageOptions={this.rowsPerPageOptions}
           defaultPageSize={this.defaultPageSize}
           fetch={this.fetch}

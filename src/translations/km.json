@@ -68,5 +68,6 @@
     "claim.ClaimFilter.periodFrom": "Période (du)",
     "claim.ClaimFilter.periodTo": "Période (au)",
     "claim.ClaimFilter.amountMinLabel": "Montant min",
-    "claim.ClaimFilter.amountMaxLabel": "Montant max"
+    "claim.ClaimFilter.amountMaxLabel": "Montant max",
+    "claim.claimSummaries.showAllColumns": "Colonnes détaillées"
 }

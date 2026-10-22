@@ -510,5 +510,6 @@
   "claim.ClaimFilter.periodFrom": "Period (from)",
   "claim.ClaimFilter.periodTo": "Period (to)",
   "claim.ClaimFilter.amountMinLabel": "Amount min",
-  "claim.ClaimFilter.amountMaxLabel": "Amount max"
+  "claim.ClaimFilter.amountMaxLabel": "Amount max",
+  "claim.claimSummaries.showAllColumns": "Detailed columns"
 }
