@@ -326,7 +326,7 @@ class ClaimChildPanel extends Component {
     let headers = [
       `edit.${type}s.${type}`,
       `edit.${type}s.quantity`,
-      `edit.${type}s.price`,
+      `edit.${type}s.priceKmf`,
       `edit.${type}s.explanation`,
     ];
 
@@ -378,6 +378,7 @@ class ClaimChildPanel extends Component {
           value={i[type] === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S ? this.state.data[idx].service?.priceAsked : i.priceAsked}
           decimal={true}
           allowDecimals= {this.isDecimalPrice}
+          showCurrency={false}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -647,23 +648,26 @@ class ClaimChildPanel extends Component {
         />
       ));
       if (!this.fixedPricesAtReview) {
-        headers.push(`edit.${type}s.appPrice`);
+        headers.push(`edit.${type}s.adjustedPriceKmf`);
         itemFormatters.push((i, idx) => (
           <AmountInput
             readOnly={!forReview && readOnly}
             value={i.priceApproved}
             decimal={true}
+            showCurrency={false}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
           />
         ));
       }
 
-      headers.push(`edit.${type}s.pricevaluated`);
+      headers.push(`edit.${type}s.priceValuatedKmf`);
       itemFormatters.push((i, idx) => (
         <AmountInput
           readOnly={true}
           decimal={true}
-          value={i.priceValuated}
+          displayZero={true}
+          showCurrency={false}
+          value={i.priceValuated ?? 0}
           onChange={(v) => this._onChange(idx, "priceValuated", v)}
         />
       ));
@@ -695,6 +699,19 @@ class ClaimChildPanel extends Component {
         (i, idx) => this.formatRejectedReason(i, idx),
       );
     }
+    const weights = !!forReview || edited.status !== 2 ? [22, 7, 10, 13] : [42, 10, 16, 32];
+    if (!!forReview || edited.status !== 2) {
+      weights.push(8);
+      if (!this.fixedPricesAtReview) weights.push(10);
+      weights.push(9);
+      if (this.showJustificationAtEnter || edited.status !== 2) weights.push(11);
+      weights.push(6, 4);
+    } else if (this.showJustificationAtEnter) {
+      weights.push(11);
+    }
+    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+    const columnWidths = weights.map((weight) => `${((weight / totalWeight) * 100).toFixed(2)}%`);
+
     let header = formatMessage(intl, "claim", `edit.${this.props.type}s.title`);
     if (fetchingPricelist) {
       header += formatMessage(intl, "claim", `edit.${this.props.type}s.fetchingPricelist`);
@@ -706,6 +723,7 @@ class ClaimChildPanel extends Component {
           header={header}
           extendHeader={this.extendHeader}
           headers={headers}
+          columnWidths={columnWidths}
           itemFormatters={itemFormatters}
           subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}

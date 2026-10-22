@@ -478,5 +478,11 @@
   "claim.ClaimFilter.periodFrom": "Period (from)",
   "claim.ClaimFilter.periodTo": "Period (to)",
   "claim.ClaimFilter.amountMinLabel": "Amount min",
-  "claim.ClaimFilter.amountMaxLabel": "Amount max"
+  "claim.ClaimFilter.amountMaxLabel": "Amount max",
+  "claim.edit.services.priceKmf": "Price (KMF)",
+  "claim.edit.items.priceKmf": "Price (KMF)",
+  "claim.edit.services.adjustedPriceKmf": "Adj. price (KMF)",
+  "claim.edit.items.adjustedPriceKmf": "Adj. price (KMF)",
+  "claim.edit.services.priceValuatedKmf": "Valued (KMF)",
+  "claim.edit.items.priceValuatedKmf": "Valued (KMF)"
 }
