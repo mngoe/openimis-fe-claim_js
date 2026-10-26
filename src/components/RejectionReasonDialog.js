@@ -5,6 +5,7 @@ import { injectIntl } from "react-intl";
 import {
   Dialog,
   DialogTitle,
+  Divider,
   Button,
   DialogActions,
   DialogContent,
