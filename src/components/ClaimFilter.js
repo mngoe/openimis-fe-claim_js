@@ -551,6 +551,16 @@ class ClaimFilter extends Component {
 
     return (
       <form className={classes.form} noValidate autoComplete="off">
+        {!advancedOpen && (
+          <div style={{ display: "none" }} aria-hidden="true">
+            <PublishedComponent
+              pubRef="claim.ClaimAdminPicker"
+              value={null}
+              withNull={true}
+              onChange={() => {}}
+            />
+          </div>
+        )}
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
             <PublishedComponent
