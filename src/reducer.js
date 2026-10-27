@@ -7,7 +7,6 @@ import {
   formatServerError,
   formatGraphQLError,
 } from "@openimis/fe-core";
-import * as Sentry from "@sentry/react";
 
 function reducer(
   state = {

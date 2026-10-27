@@ -29,7 +29,6 @@
   "claim.claimStatus.4": "Checked",
   "claim.claimStatus.8": "Processed",
   "claim.claimStatus.16": "Valuated",
-  "claim.claimStatus.32": "Reset",
   "claim.ClaimFilter.claimNo": "Claim No.",
   "claim.ClaimFilter.insureeCHFID": "Insuree No.",
   "claim.expiryDate": "Expiry Date",
@@ -119,7 +118,6 @@
   "claim.claimSummaries.markDeliveredReview": "Review Delivered",
   "claim.claimSummaries.markSkippedReview": "Skip Review",
   "claim.claimSummaries.processSelected": "Process Selected",
-  "claimSummaries.rejectSelected": "Reject Selected",
   "claim.attachments.title": "Attachments of claim {code}",
   "claim.edit.title": "Claim {code}",
   "claim.noservice": "No Service To Display",
@@ -147,7 +145,6 @@
   "claim.edit.items.totalApproved": "Total Approved: {totalApproved}",
   "claim.edit.items.item": "Item",
   "claim.edit.items.quantity": "Quantity",
-  "claim.edit.items.qtyAdjusted": "Qty Adjusted",
   "claim.edit.items.price": "Price",
   "claim.edit.items.explanation": "Explanation",
   "claim.edit.items.justification": "Justification",
@@ -387,8 +384,11 @@
   "claim.rejectionCode.18": "18",
   "claim.rejectionCode.19": "19",
   "claim.rejectionCode.null": " ",
+  "claimSummaries.rejectSelected": "Reject Selected",
   "claim.rejectReason": "Reject reason",
   "claim.validate": "Validate",
   "claim.cancel": "Cancel",
-  "claim.RejectClaim.mutationLabel": "Reject claims"
+  "claim.RejectClaim.mutationLabel": "Reject claims",
+  "claim.edit.items.qtyAdjusted": "Qty Adjusted",
+  "claim.claimStatus.32": "Reset"
 }
