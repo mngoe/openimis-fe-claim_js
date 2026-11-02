@@ -1020,8 +1020,6 @@ export function formatReviewDetail(type, detail) {
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
-    ${type == 'service' && subServices !== null && subServices.length > 0 ?  `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${type == 'service' && subItems !== null && subItems.length > 0 ?  `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
   }`;
