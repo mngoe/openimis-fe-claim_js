@@ -402,7 +402,9 @@ class ClaimForm extends Component {
       this.setState({ reset: this.state.reset + 1 });
       return;
     }
-    this.setState({ lockNew: true, isSaved: true }, () => {
+    // ticket #38283 : en vérification, un enregistrement ne doit pas verrouiller le formulaire
+    // (isSaved=true rend le formulaire readOnly et masque les actions, dont la livraison).
+    this.setState({ lockNew: !this.props.forReview, isSaved: !this.props.forReview }, () => {
       this.props
         .save(claim)
         .then(() => {
@@ -556,6 +558,19 @@ class ClaimForm extends Component {
         ),
         tooltip: formatMessage(this.props.intl, "claim", "claim.edit.duplicate"),
       },
+      {
+        // ticket #38283 : la livraison de la vérification doit rester disponible en permanence
+        // (le FAB standard de fe-core disparaît dès que le formulaire n'est plus "dirty").
+        condition: forReview && !readOnly && this.state.claim?.reviewStatus < 8,
+        content: (
+          <span>
+            <Fab color="primary" onClick={(e) => this._deliverReview(this.state.claim)}>
+              <CheckIcon />
+            </Fab>
+          </span>
+        ),
+        tooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
+      },
     ];
 
     const editingProps = {
@@ -567,11 +582,11 @@ class ClaimForm extends Component {
       reset: this.state.reset,
       back: back,
       forcedDirty: this.state.forcedDirty,
+      // ticket #38283 : en vérification, les actions (enregistrer/livrer) doivent rester
+      // visibles après un enregistrement (sinon il faut recharger la page pour livrer).
+      openDirty: !!forReview,
       add: !!add && !this.state.newClaim ? this._add : null,
-      save: !!save && !forReview && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
-      fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
-      fabAction: this._deliverReview,
-      fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
+      save: !!save && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
       canSave: (e) => this.canSave(forFeedback, forReview),
       reload: (claim_uuid || readOnly) && this.reload,
       actions: actions,
