@@ -128,6 +128,19 @@ class ClaimMasterPanel extends FormPanel {
     this.updateAttribute(name, value)
   }
 
+  preventDoubleQuoteKeyDown = (e) => {
+    if (e.key === '"') {
+      e.preventDefault();
+    }
+  }
+
+  preventDoubleQuotePaste = (e) => {
+    const pastedText = e.clipboardData?.getData("text") ?? "";
+    if (pastedText.includes('"')) {
+      e.preventDefault();
+    }
+  }
+
   validateClaimCode = (v) => {
     const { edited, isRestored } = this.props;
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
@@ -549,13 +562,15 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="code"
                 required
-                value={!edited.uuid ? claimSuffix : suffix}
+                value={!edited.uuid ? (claimSuffix ?? "") : suffix}
                 error={claimCodeError}
                 reset={reset}
                 onChange={this.debounceUpdateCode}
                 readOnly={!!edited && edited[`uuid`] ? true : false}
                 inputProps={{
                   "maxLength": this.codeMaxLength,
+                  onKeyDown: this.preventDoubleQuoteKeyDown,
+                  onPaste: this.preventDoubleQuotePaste,
                 }}
               />
             </Grid>
