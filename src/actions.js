@@ -13,7 +13,8 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash";
 import _uuid from "lodash-uuid";
-import { CLAIMS_WITH_AT_LEAST_ENTERED_STATUS, DEFAULT } from "./constants";
+import { CLAIMS_WITH_AT_LEAST_ENTERED_STATUS } from "./constants";
+import { shouldAutoGenerateClaimCode } from "./helpers/claimCode";
 
 export function selectClaimAdmin(admin) {
   return (dispatch) => {
@@ -254,13 +255,13 @@ export function formatAttachments(mm, attachments) {
   ]`;
 }
 
-export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
-  // to simplify GQL and avoid additional coding, claim code is sent, even if shouldAutogenerate is set to true
-  const claimCodePlaceholder="auto"
-  const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
+export function formatClaimGQL(modulesManager, claim) {
+  // `code` is a required GQL input, so a placeholder is sent when the backend generates the code.
+  const isAutogenerateEnabled = shouldAutoGenerateClaimCode(claim);
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    code: "${claim.code}"
+    code: "${isAutogenerateEnabled ? "AUTO" : formatGQLString(claim.code)}"
+    ${isAutogenerateEnabled ? "autogenerate: true" : ""}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"
@@ -306,8 +307,7 @@ function handleReferHFType(modulesManager, claim){
 }
 
 export function createClaim(mm, claim, clientMutationLabel) {
-  const shouldAutogenerate = mm.getConf("fe-claim", "claimForm.autoGenerateClaimCode", DEFAULT.AUTOGENERATE_CLAIM_CODE)
-  const mutation = formatMutation("createClaim", formatClaimGQL(mm, claim, shouldAutogenerate), clientMutationLabel);
+  const mutation = formatMutation("createClaim", formatClaimGQL(mm, claim), clientMutationLabel);
   var requestedDateTime = new Date();
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_CREATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
     clientMutationId: mutation.clientMutationId,
@@ -317,7 +317,7 @@ export function createClaim(mm, claim, clientMutationLabel) {
 }
 
 export function updateClaim(mm, claim, clientMutationLabel) {
-  const mutation = formatMutation("updateClaim", formatClaimGQL(mm, claim, false), clientMutationLabel);
+  const mutation = formatMutation("updateClaim", formatClaimGQL(mm, claim), clientMutationLabel);
   var requestedDateTime = new Date();
   claim.clientMutationId = mutation.clientMutationId;
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_UPDATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
