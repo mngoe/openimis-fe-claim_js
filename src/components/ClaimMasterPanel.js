@@ -31,9 +31,9 @@ import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
 import TdrNumberPicker from "../pickers/tdrNumberPicker";
+import { shouldAutoGenerateClaimCode } from "../helpers/claimCode";
 import { 
   CLAIM_DETAIL_REJECTED_STATUS, 
-  DEFAULT, 
   DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, 
   IN_PATIENT_STRING, 
   AUDIT_REJECTION_MOTIF, 
@@ -67,11 +67,6 @@ class ClaimMasterPanel extends FormPanel {
     this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 6);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
-    this.autoGenerateClaimCode = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.autoGenerateClaimCode",
-      DEFAULT.AUTOGENERATE_CLAIM_CODE,
-    );
     this.insureePicker = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.insureePicker",
@@ -129,6 +124,12 @@ class ClaimMasterPanel extends FormPanel {
 
   validateClaimCode = (v) => {
     const { edited, isRestored } = this.props;
+    if (shouldAutoGenerateClaimCode(edited)) {
+      // The backend allocates the code on save; drop any manual code typed before switching to a non-CS program.
+      if (edited.code) this.updateAttribute("code", "");
+      this.setState({ claimCode: null, claimCodeError: null, claimSuffix: "", claimPrefix: "", policyNumber: null });
+      return;
+    }
     let insureePolicies = edited?.insuree?.insureePolicies?.edges.map((edge) => edge.node) ?? [];
     var prefix;
     var suffix = v;
@@ -189,7 +190,7 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   shouldValidate = (inputValue) => {
-    if (this.autoGenerateClaimCode) return false;
+    if (shouldAutoGenerateClaimCode(this.props.edited)) return false;
 
     const { savedClaimCode } = this.props;
     const shouldValidate = inputValue !== savedClaimCode;
@@ -277,6 +278,7 @@ class ClaimMasterPanel extends FormPanel {
     let roAudit = !!edited.audited || mission_status === CLAIM_MISSION_STATUS_CLOSED;
 
     var chequeNumber = policyNumber;
+    const autoGenerateClaimCode = shouldAutoGenerateClaimCode(edited);
     var prefix = !!claimPrefix ? claimPrefix : "";
     var suffix = !!claimSuffix ? claimSuffix : "";
     var CLAIMPROGRAM = !!edited && edited.program != undefined ? edited.program?.nameProgram : "";
@@ -305,10 +307,12 @@ class ClaimMasterPanel extends FormPanel {
         suffix = !!claimCode ? claimCode.replace(prefix, '') : edited.code.replace(prefix, '');
       }
     } else {
-      var programCode = !!edited && edited.program != undefined ? edited.program?.code.substring(0, 3) : "";
+      var programCode = !!edited && edited.program != undefined ? edited.program?.code || "" : "";
       var dateTo = !!edited && edited.dateTo != undefined ? edited.dateTo.substring(0, 4) : "";
       var codeFosa = !!edited && edited.healthFacility != undefined ? edited.healthFacility?.code : "";
-      prefix = `${codeFosa}.${dateTo}.${programCode}.`;
+      prefix = autoGenerateClaimCode
+        ? `${codeFosa}.${programCode}.`
+        : `${codeFosa}.${dateTo}.${programCode.substring(0, 3)}.`;
       if (edited.code && prefix != undefined && prefix != "") {
         suffix = edited.code.replace(prefix, '');
       }
@@ -550,12 +554,12 @@ class ClaimMasterPanel extends FormPanel {
               <TextInput
                 module="claim"
                 label="code"
-                required
-                value={!edited.uuid ? claimSuffix : suffix}
-                error={claimCodeError}
+                required={!autoGenerateClaimCode}
+                value={autoGenerateClaimCode ? "Auto" : !edited.uuid ? claimSuffix : suffix}
+                error={autoGenerateClaimCode ? null : claimCodeError}
                 reset={reset}
-                onChange={this.debounceUpdateCode}
-                readOnly={!!edited && edited[`uuid`] ? true : false}
+                onChange={autoGenerateClaimCode ? undefined : this.debounceUpdateCode}
+                readOnly={autoGenerateClaimCode || (!!edited && edited[`uuid`] ? true : false)}
                 inputProps={{
                   "maxLength": this.codeMaxLength,
                 }}
