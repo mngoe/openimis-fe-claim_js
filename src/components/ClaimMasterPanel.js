@@ -827,7 +827,7 @@ class ClaimMasterPanel extends FormPanel {
               module="claim"
               id="Claim.auditStatus"
               field={
-                <Grid item xs={3} className={classes.item}>
+                <Grid item xs={2} className={classes.item}>
                   <PublishedComponent
                     pubRef="claim.AuditStatusPicker"
                     withLabel
