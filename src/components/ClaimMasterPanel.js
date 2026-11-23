@@ -836,6 +836,7 @@ class ClaimMasterPanel extends FormPanel {
                     onChange={(v) => this.updateAttribute("auditStatus", v)}
                     readOnly={roAudit || !forAudit}
                     required={true}
+                    claimStatus={edited.status}
                   />
                 </Grid>
               }
