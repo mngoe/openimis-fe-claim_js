@@ -9,6 +9,7 @@ import ClaimProgramPicker from "./pickers/ClaimProgramPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import AuditStatusPicker from "./pickers/AuditStatusPicker";
+import AuditedStatusPicker from "./pickers/AuditedStatusPicker";
 import CareTypePicker from "./pickers/CareTypePicker"
 import AttachmentGeneralTypePicker from "./pickers/AttachmentGeneralTypePicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
@@ -163,6 +164,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },
     { key: "claim.AuditStatusPicker", ref: AuditStatusPicker },
+    { key: "claim.AuditedStatusPicker", ref: AuditedStatusPicker },
     { key: "claim.CareTypePicker", ref: CareTypePicker},
     { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
