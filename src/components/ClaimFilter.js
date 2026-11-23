@@ -383,10 +383,7 @@ class Details extends Component {
                   id: "auditedStatus",
                   value: v,
                   filter: v === "A"
-                    ? "audited: true"
-                    : v === "N"
-                      ? "audited: null"
-                      : null,
+                    ? "audited: true" :  null,
                 },
               ])
             }
