@@ -372,6 +372,23 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.AuditedStatusPicker"
+            name="auditedStatus"
+            value={(filters["auditedStatus"] && filters["auditedStatus"]["value"]) || null}
+            onChange={(v) =>
+              onChangeFilters([
+                {
+                  id: "auditedStatus",
+                  value: v,
+                  filter: v === "A"
+                    ? "audited: true" :  null,
+                },
+              ])
+            }
+          />
+        </Grid>
         <Grid item xs={2} className={classes.item}>
           <TextInput
             module="claim"
