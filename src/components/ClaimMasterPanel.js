@@ -827,7 +827,7 @@ class ClaimMasterPanel extends FormPanel {
               module="claim"
               id="Claim.auditStatus"
               field={
-                <Grid item xs={3} className={classes.item}>
+                <Grid item xs={2} className={classes.item}>
                   <PublishedComponent
                     pubRef="claim.AuditStatusPicker"
                     withLabel
@@ -836,6 +836,7 @@ class ClaimMasterPanel extends FormPanel {
                     onChange={(v) => this.updateAttribute("auditStatus", v)}
                     readOnly={roAudit || !forAudit}
                     required={true}
+                    claimStatus={edited.status}
                   />
                 </Grid>
               }
