@@ -297,13 +297,9 @@ class ClaimForm extends Component {
     if (this.props.forAudit) {
       if (this.props.fetchingPricelist) return false;
       if (!claim.auditStatus) return false;
-      const requiresAuditExplanation =
-        (claim.status === STATUS_VALUATED && claim.auditStatus === AUDIT_STATUS_REJECTED) ||
-        (claim.status === STATUS_REJECTED && claim.auditStatus === AUDIT_STATUS_ADOPTED);
       if (claim.auditStatus === AUDIT_STATUS_REJECTED) {
         if (!claim.rejectionMotive) return false;
       }
-      if (requiresAuditExplanation && !claim.auditExplanation) return false;
       return true;
     }
     if (!this.state.claim.code) return false;

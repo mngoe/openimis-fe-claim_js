@@ -880,7 +880,6 @@ class ClaimMasterPanel extends FormPanel {
                         });
                       }}
                       readOnly={roAudit || !forAudit}
-                      required={true}
                     />
                   </Grid>
                 }
